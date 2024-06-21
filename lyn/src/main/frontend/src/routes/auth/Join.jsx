@@ -8,6 +8,9 @@ const Join = () => {
 		
 		<>
 			<div>Join</div>
+			<div>
+			
+			</div>
 			<div></div>
 		</>
 	

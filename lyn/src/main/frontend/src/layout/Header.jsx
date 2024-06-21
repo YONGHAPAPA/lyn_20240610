@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 
 
@@ -6,9 +7,9 @@ const Header = () => {
 	
 	return(
 		<header>
-			<a href='/'>Home</a>&nbsp;
-			<a href='/Join'>Join</a>&nbsp;
-			<a href='/Login'>Login</a>&nbsp;
+			<Link to='/'>Home</Link>&nbsp;|&nbsp;
+			<Link to='/auth/Join'>Join</Link>&nbsp;|&nbsp;
+			<Link to='/auth/Login'>Login</Link>&nbsp;
 			<hr/>
 		</header>
 	);
