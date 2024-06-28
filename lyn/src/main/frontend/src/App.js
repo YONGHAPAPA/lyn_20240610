@@ -16,10 +16,14 @@ function App() {
 	const [msg, setMsg] = useState('');
 	
 	useEffect(()=>{
-		axios.get('/index')
-		.then((res)=>{setMsg(res.data)})
+		axios.get('http://localhost:8080/index', {widthwithCredentials:true})
+		.then((res)=>{setMsg(res.data)});
+		
 	});
+	
+	
 
+	
 	return (
 		<>
 			<div className='App'>return msg : {msg}</div>
