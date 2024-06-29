@@ -47,8 +47,8 @@ public class AuthenticationController {
 		newUser.setUserEmail(userEmail);
 		newUser.setUserPassword(userPassword);
 		newUser.setCreateUserId("KMS");
-		
-		
+//		
+//		
 		System.out.println(String.format("userEmail : %s", newUser.getUserEmail()));
 		System.out.println(String.format("userPassword : %s", newUser.getUserPassword()));
 		
@@ -56,7 +56,7 @@ public class AuthenticationController {
 			authService.JoinUser(newUser);
 			result = "User Join Success";
 		} catch(Exception e) {
-			result = "User Join Failed";
+			result = String.format("User Join Failed::%s", e.getMessage());
 		}
 		
 		

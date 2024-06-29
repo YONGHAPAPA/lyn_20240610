@@ -24,12 +24,12 @@ public class AuthencticationConfiguration {
 	
 	
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
-	private static final String[] AUTH_WHITE_LIST = {"/index", "/test/**"};
+	private static final String[] AUTH_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser"};
 
-//	@Bean
-//	PasswordEncoder passwordEncoder() {
-//		return new BCryptPasswordEncoder();
-//	}
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 	
 	
 

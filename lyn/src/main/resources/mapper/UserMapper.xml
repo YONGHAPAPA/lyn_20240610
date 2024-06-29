@@ -3,8 +3,8 @@
 
 <mapper namespace="com.lyn.mapper.user.UserMapper">
 	<insert id="CreateUser" parameterType="com.lyn.dto.UserDto">
-		insert into users(user_email, user_pwd, user_role, cre_id, cre_date, upd_id, upd_date)
-		values (#{userEmail}, #{userPassword}, #{userRole}, #{createUserId}, now(), #{createUserId}, now())
+		insert into users(user_email, user_pwd, user_role_group, cre_id, cre_date, upd_id, upd_date)
+		values (#{userEmail}, #{userPassword}, '', #{createUserId}, now(), #{createUserId}, now())
 	</insert>
 	
 	<select id="GetUserRoles" parameterType="String" resultType="String" >
