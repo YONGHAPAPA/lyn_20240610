@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+    <!-- 해당 설정파일에서 사용하는 프로퍼티-->
+    <Properties>
+        <property name="LOGS_PATH">/PRJ_LOG</property>
+    </Properties>
+
+    <Appenders>
+        <!-- 콘솔 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss}:%-3relative] %-5level %logger{35} - %msg%n" />
+        </Console>
+		
+		
+        <!-- 파일 -->
+        <RollingFile name ="RollingFile">
+            <FileName>${LOGS_PATH}/log4j2.log</FileName>
+            <FilePattern>${LOGS_PATH}/log4j2.%d{yyyy-MM-dd}.%i.log.gz</FilePattern>
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %5p [%c] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="200KB"/>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        
+        <!-- FATAL < ERROR < WARN < INFO < DEBUG < TRACE -->
+        <Root level="INFO">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="RollingFile" />
+        </Root>
+        
+        <!-- Application Loggers -->
+        <!-- Root 보다 우선 순위가 높습니다. -->
+        <logger name="com.sample.mybatis.controller" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+            <!--AppenderRef ref="RollingFile" /-->
+        </logger>
+
+		
+		<!-- 
+			2024.05.10
+			root log level=warn 이상일경우 파라메터 포함된 쿼리로그 표기안됨.(info, debug, trace 레벨일경우 모든 로그 확인가능)
+			root level 이 낮은경우 sql 표기를 위해서는 아래와 같이 별도로 logger 항목 추가필요
+		-->
+        <logger name="com.sample.mybatis.mapper" level="INFO"> 
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="RollingFile" />
+        </logger>
+        
+        
+        <Logger name="jdbc.sqlonly" level="info" additivity="false"> 
+			<AppenderRef ref="Console" />
+		</Logger>
+		
+		
+		<!--
+		<Logger name="jdbc.audit" additivity="false"> 
+			<AppenderRef ref="Console" />
+		</Logger>
+		-->
+        
+    </Loggers>
+</Configuration>
