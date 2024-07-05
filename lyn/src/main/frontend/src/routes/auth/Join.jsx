@@ -28,8 +28,8 @@ const Join = () => {
 	
 		axios.post('/auth/JoinUser', null, {
 			params: {
-				userEmail: "test@email.com", 
-				userPassword: "22222"
+				userEmail: userEmail, 
+				userPassword: userPassword
 			}
 		}).then((res)=>{
 			

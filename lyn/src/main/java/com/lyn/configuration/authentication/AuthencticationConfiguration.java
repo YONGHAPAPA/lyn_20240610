@@ -24,7 +24,8 @@ public class AuthencticationConfiguration {
 	
 	
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
-	private static final String[] AUTH_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser"};
+	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser"};
+	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/myinfo"};	
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
@@ -57,33 +58,35 @@ public class AuthencticationConfiguration {
 	 * */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		/* Form 인증용 설정 (s) */
+		
+		/*  
+		 * Form 인증용 설정 (s)
+		 * */
+//		http
+//			.csrf((csrfConfig) -> csrfConfig.disable())
+//			.headers((headerConfig) -> headerConfig.disable())
+//			.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
+//					//.requestMatchers("/", "/index", "/login", "/register", "/mybatis/insert", "/api/test").permitAll()
+//					.requestMatchers("/", "/**").permitAll()
+//					.requestMatchers("/admin").hasRole(Role.ADMIN.name())
+//					.requestMatchers("/edit").hasRole(Role.USER.name())
+//					.anyRequest().authenticated())
+//			.exceptionHandling((exceptionConfig) -> exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint).accessDeniedHandler(accessDeniedHandler))
+//			.formLogin((formLogin)->{
+//				formLogin
+//				.loginPage("/login")
+//				.usernameParameter("user_id")
+//				.passwordParameter("user_pwd")
+//				.loginProcessingUrl("/login-proc")
+//				.defaultSuccessUrl("/myTask", true);
+//			})
+//			.logout((logoutConfig) -> logoutConfig.logoutSuccessUrl("/"))
+//			.userDetailsService(myUserDetailService);
+//		
+//		return http.build();
 		/*
-		http
-			.csrf((csrfConfig) -> csrfConfig.disable())
-			.headers((headerConfig) -> headerConfig.disable())
-			.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-					//.requestMatchers("/", "/index", "/login", "/register", "/mybatis/insert", "/api/test").permitAll()
-					.requestMatchers("/", "/**").permitAll()
-					.requestMatchers("/admin").hasRole(Role.ADMIN.name())
-					.requestMatchers("/edit").hasRole(Role.USER.name())
-					.anyRequest().authenticated())
-			.exceptionHandling((exceptionConfig) -> exceptionConfig.authenticationEntryPoint(unauthorizedEntryPoint).accessDeniedHandler(accessDeniedHandler))
-			.formLogin((formLogin)->{
-				formLogin
-				.loginPage("/login")
-				.usernameParameter("user_id")
-				.passwordParameter("user_pwd")
-				.loginProcessingUrl("/login-proc")
-				.defaultSuccessUrl("/myTask", true);
-			})
-			.logout((logoutConfig) -> logoutConfig.logoutSuccessUrl("/"))
-			.userDetailsService(myUserDetailService);
-		
-		
-		return http.build();
-		*/
-		/* Form 인증용 설정 (e) */
+		 * Form 인증용 설정 (e) 
+		 * */
 		
 		
 	 
@@ -96,8 +99,11 @@ public class AuthencticationConfiguration {
 		.sessionManagement(sessionManagement->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))	//세션사용안함
 		.formLogin(form->form.disable())	//Form Login 비활성화
 		.httpBasic(AbstractHttpConfigurer::disable)	//BasicHttp 비활성화
-		.authorizeHttpRequests(authorizeRequests->authorizeRequests.requestMatchers(AUTH_WHITE_LIST).permitAll().anyRequest().authenticated());
-		
+		//.authorizeHttpRequests(authorizeRequests->authorizeRequests.requestMatchers(AUTH_WHITE_LIST).permitAll()
+		.authorizeHttpRequests()
+		.requestMatchers(AUTH_API_WHITE_LIST).permitAll()	//AUTH_WHITE_LIST 요청은 인증없이 허가
+		//.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasRole("USER")	//USER Role만 접근허용
+		.anyRequest().authenticated();	//나머지 요청에 대해서는 인증필요
 		
 		/*
 		* JWT 인증방식 필터 설정 (e)
@@ -111,7 +117,7 @@ public class AuthencticationConfiguration {
 	
 	
 	/*
-	 * FrontEnd 측에서 Proxy(Package.json내의 Proxy처리) 모듈을 사용할경우 별도의 CORS 옵션처리를 할필요가 없음
+	 * FrontEnd 측에서 Proxy(Package.json내의 Proxy처리) 모듈을 사용할경우 별도의 CORS 옵션처리를 할필요가 없음, 동일한 Origin 으로 Proxy되어 request 되기 때문, 
 	 * FrontEnd 에서 Proxy 처리할 경우 브라우저 디버깅(네트워크탭, XHR)시 요청헤더/응답헤더의 Orgin/ 
 	 * */
 	@Bean

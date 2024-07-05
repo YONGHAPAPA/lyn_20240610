@@ -8,6 +8,9 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,26 +34,21 @@ public class AuthenticationController {
 	@Autowired
 	IAuthenticationService authService;
 	
-	
+
+	@PostMapping("/LoginUser")
+	public ResponseEntity<String> LoginUser(){
+		
+		
+		return ResponseEntity.status(HttpStatus.OK).body("");
+	}
 	
 	@PostMapping("/JoinUser")
 	public String JoinUser(@RequestParam(required=false, value="userEmail") String userEmail, @RequestParam(required=false, value="userPassword") String userPassword) {
 		
 		String result = "";
-		
-//		UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-//		List<String> roles = mapper.GetUserRoles("aaa");
-//		
-//		System.out.println(roles);
-		
 		UserDto newUser = new UserDto();
 		newUser.setUserEmail(userEmail);
 		newUser.setUserPassword(userPassword);
-		newUser.setCreateUserId("KMS");
-//		
-//		
-		System.out.println(String.format("userEmail : %s", newUser.getUserEmail()));
-		System.out.println(String.format("userPassword : %s", newUser.getUserPassword()));
 		
 		try {
 			authService.JoinUser(newUser);
@@ -59,10 +57,7 @@ public class AuthenticationController {
 			result = String.format("User Join Failed::%s", e.getMessage());
 		}
 		
-		
-		
 		return result;
-		
 	}
 	
 	
