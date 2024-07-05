@@ -37,8 +37,6 @@ public class AuthenticationController {
 
 	@PostMapping("/LoginUser")
 	public ResponseEntity<String> LoginUser(){
-		
-		
 		return ResponseEntity.status(HttpStatus.OK).body("");
 	}
 	
