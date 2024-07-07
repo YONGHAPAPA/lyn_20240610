@@ -9,6 +9,9 @@ public interface IAuthenticationService {
 
 	//public String EncodePassword(String password) throws Exception;
 	
-	public UserDto JoinUser(@Param("user") UserDto user) throws Exception;
+	//public UserDto JoinUser(@Param("user") UserDto user) throws Exception;
+	public UserDto JoinUser(UserDto user) throws Exception;
+	
+	public JwtTokenDto SignInUser(UserDto user) throws Exception;
 	
 }

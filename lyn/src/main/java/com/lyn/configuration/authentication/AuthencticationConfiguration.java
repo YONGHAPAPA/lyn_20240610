@@ -24,7 +24,7 @@ public class AuthencticationConfiguration {
 	
 	
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
-	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser"};
+	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser"};
 	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/myinfo"};	
 
 	@Bean

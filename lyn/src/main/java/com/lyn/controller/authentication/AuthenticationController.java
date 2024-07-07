@@ -7,6 +7,8 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSession;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lyn.dto.UserDto;
+import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
 import com.lyn.service.authentication.IAuthenticationService;
 
@@ -34,19 +37,43 @@ public class AuthenticationController {
 	@Autowired
 	IAuthenticationService authService;
 	
+	Logger logger = LogManager.getLogger(AuthenticationController.class);
+	
+	
+	@PostMapping("/AuthTest")
+	public ResponseEntity<String> AuthTest(@RequestParam(required=true, value="key") String key, @RequestParam(required=true, value="key") String value){
+	
+		
+		return ResponseEntity.ok("AuthTest OK~~~~");
+	}
+	
 
 	@PostMapping("/LoginUser")
-	public ResponseEntity<String> LoginUser(){
-		return ResponseEntity.status(HttpStatus.OK).body("");
+	public ResponseEntity<JwtTokenDto> LoginUser(@RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
+		
+		JwtTokenDto tokenDto = null;
+		//logger.info(String.format("/LoginUser : %s : %s", userEmail, userPassword));
+		
+		UserDto loginUser = new UserDto();
+		loginUser.setUser_email(userEmail);
+		loginUser.setUser_pwd(userPassword);
+		
+		try {
+			tokenDto = authService.SignInUser(loginUser);
+		} catch (Exception e) {
+			logger.error(e.getStackTrace() + e.getMessage());
+		}
+		
+		return ResponseEntity.ok(tokenDto);
 	}
 	
 	@PostMapping("/JoinUser")
-	public String JoinUser(@RequestParam(required=false, value="userEmail") String userEmail, @RequestParam(required=false, value="userPassword") String userPassword) {
+	public String JoinUser(@RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword) {
 		
 		String result = "";
 		UserDto newUser = new UserDto();
-		newUser.setUserEmail(userEmail);
-		newUser.setUserPassword(userPassword);
+		newUser.setUser_email(userEmail);
+		newUser.setUser_pwd(userPassword);
 		
 		try {
 			authService.JoinUser(newUser);

@@ -5,9 +5,12 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import com.lyn.dto.jwt.JwtTokenDto;
 
@@ -17,6 +20,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 
+@Component
 public class JwtUtil {
 
 	private final Key key;
@@ -24,6 +28,7 @@ public class JwtUtil {
 	private final long accessTokenExpTime;
 	private final long refreshTokenExpTime;
 	
+	Logger logger = LogManager.getLogger(JwtUtil.class);
 	
 	/*
 	 * JwtUtil 생성자
@@ -47,6 +52,11 @@ public class JwtUtil {
 		ZonedDateTime now = ZonedDateTime.now();
 		ZonedDateTime accessTokenValidity = now.plusSeconds(accessTokenExpTime);
 		ZonedDateTime refreshTokenValidity = now.plusSeconds(refreshTokenExpTime);
+		
+		
+		
+		logger.info(String.format("authorities:: %s", authorities));
+		
 		
 		
 		//Access Token

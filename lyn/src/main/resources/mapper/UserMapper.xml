@@ -4,19 +4,19 @@
 <mapper namespace="com.lyn.mapper.user.UserMapper">
 	<insert id="CreateUser" parameterType="com.lyn.dto.UserDto">
 		
-		<selectKey resultType="int" keyProperty="userSeq" order="BEFORE">
+		<selectKey resultType="Integer" keyProperty="user_seq" order="BEFORE">
 			select nextval('user_seq') 
 		</selectKey>
 		
 		insert into users(user_seq, user_email, user_pwd, user_role_group, cre_id, cre_date, upd_id, upd_date)
-		values (#{userSeq}, #{userEmail}, #{userPassword}, 'USER', #{createUserId}, now(), #{createUserId}, now())
+		values (#{user_seq}, #{user_email}, #{user_pwd}, 'USER', #{cre_id}, now(), #{cre_id}, now())
 	</insert>
 	
 	<select id="GetUserByUserName" parameterType="String" resultType="com.lyn.dto.UserDto">
-		select user_email, user_pwd, user_role_group, cre_id, cre_date, upd_id, upd_date from users where user_email = #{user_email}
+		select user_seq, user_email, user_pwd, user_role_group from users where user_email = #{userEmail} limit 1
 	</select>
 	
 	<select id="GetUserRoles" parameterType="String" resultType="String" >
-		select role from authority where user_id = #{userId}
+		select role from authority where user_id = ${userId}
 	</select>
 </mapper>

@@ -1,5 +1,7 @@
 package com.lyn.service.authentication;
 
+import java.util.Optional;
+
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lyn.component.jwt.JwtUtil;
 import com.lyn.dto.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
@@ -24,10 +27,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	private final SqlSession sqlSession;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManagerBuilder authManagerBuilder;
+	private final JwtUtil jwtUtil;
 	
 	//private final JOIN_USER_DEFAULT_ROLE = @Value
 	
-	private final Logger log = LogManager.getLogger(AuthenticationServiceImpl.class);
+	private final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
 	@Transactional
 	@Override
@@ -38,29 +42,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		try {
 			
 			UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-			user.setUserPassword(passwordEncoder.encode(user.getUserPassword()));
+			user.setUser_pwd(passwordEncoder.encode(user.getUser_pwd()));
+			//user.setUser_seq(0);
 			Integer result = mapper.CreateUser(user);
 
-//			log.info(String.format("user::: %s", user.toString()));
-//			UserDto joinUser = mapper.GetUserByUserName(user.getUserEmail());
-//			log.info(String.format("joinUser.getUserEmail():: %s", joinUser.getUserEmail()));
-			
-			
-//			JwtTokenDto signedToken = SignInUser(user);
-//			//spring의 userid, password로 만드는 token으로 실제로 인증처리 된 상태의 token은 아님
-//			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword());
-//			
-//			
-//			log.info(String.format("authToken.isAuthenticated(): %b", authToken.isAuthenticated()));	//현재는 false
-//			
-//			
-//			//위에서 만든 authToken의 인증처리, authenticate 함수 실행시 loadUserByUsername 이 처리됨
-//			Authentication auth = authManagerBuilder.getObject().authenticate(authToken);
-//			
-//			log.info(String.format("auth.isAuthenticated: %b", auth.isAuthenticated()));
+			logger.info(String.format("user::: %s", user.toString()));
 			
 		} catch(Exception e) {
-			log.error(String.format("JoinUser:: %s", e.getStackTrace() + "\r\n" + e.getMessage()));
+			logger.error(String.format("JoinUser:: %s", e.getStackTrace() + "\r\n" + e.getMessage()));
 			throw e;
 		}
 		
@@ -68,22 +57,34 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	}
 	
 	
-	
+	@Transactional
+	@Override
 	public JwtTokenDto SignInUser(UserDto user) throws Exception {
 		
-		JwtTokenDto token = null;
+		JwtTokenDto jwtToken = null;
 		
 		try {
-			
-			UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUserEmail(), user.getUserPassword());
+
+			/*
+			 * user_email 과 user_pwd 로 생성한 인증용 token으로 authManagerBuilder.getObject().authenticate(userToken)을 실행시키면 
+			 * UserDetailsService 를 상속한 AuthenticationUserDetailService 의 loadUserByUsername 에서 조회된 UserDetails 객체의 암호와 인증처리를 하게 된다.
+			 * */
+			UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUser_email(), user.getUser_pwd());
 			Authentication auth = authManagerBuilder.getObject().authenticate(userToken);
 			
+			/*
+			 * 인증처리후 jwt token을 생성해준다. 
+			 * */
+			jwtToken = jwtUtil.generateToken(auth);
+			
+			//log.info(String.format("auth: %s", auth.toString()));
+			logger.info(String.format("token: %s", jwtToken));
 			
 		} catch(Exception e) {
-			log.error(String.format("SignInUser::: %s", e.getMessage()));
+			logger.error(String.format("SignInUser::: %s", e.getMessage()));
 		}
 		
-		return token;
+		return jwtToken;
 	}
 	
 	

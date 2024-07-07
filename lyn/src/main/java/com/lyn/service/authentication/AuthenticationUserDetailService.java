@@ -23,11 +23,16 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 	Logger logger = LogManager.getLogger(AuthenticationUserDetailService.class);
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		try {
 			
+			//logger.info(String.format("loadUserByUsername:: userEmail:: %s", userEmail));
 			UserMapper mapper = sqlSession.getMapper(UserMapper.class);
-			return convertUserToUserDetail(mapper.GetUserByUserName(username));
+			
+			UserDto user = new UserDto();
+			user.setUser_email(userEmail);
+			
+			return buildUserDetails(mapper.GetUserByUserName(user.getUser_email()));
 			
 		} catch(Exception e) {
 			throw new UsernameNotFoundException("There is no user");
@@ -35,14 +40,15 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 	}
 	
 	
-	private UserDetails convertUserToUserDetail(UserDto user) {
+	private UserDetails buildUserDetails(UserDto user) {
 		
-		logger.info(String.format("convertUserToUserDetail:: %s", user.getUserEmail()));
+		logger.info(String.format("convertUserToUserDetail:: %s", user.getUser_email()));
 		
 		return User.builder()
-				.username(user.getUserEmail())
-				.password(user.getUserPassword())
-				.roles(user.getUserRoleGroup())
+				.username(user.getUser_email())
+				.password(user.getUser_pwd())
+				.roles(user.getUser_role_group().split(","))			//Authority 와 Role 구분해서 지정하도록 GrantedAuthority.getAuthority 에서 반환
+				//.authorities(user.getUser_role_group().split(","))    //Role 로 지정시 getAutority 에서 반환시 접두어 'Role_' 을 붙여 반
 				.build();
 	}
 }

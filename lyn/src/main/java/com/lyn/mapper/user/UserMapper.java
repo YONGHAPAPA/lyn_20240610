@@ -8,7 +8,7 @@ public interface UserMapper {
 	
 	public Integer CreateUser(UserDto user) throws Exception;
 	
-	public UserDto GetUserByUserName(String userName) throws Exception;
+	public UserDto GetUserByUserName(String userEmail) throws Exception;
 
 	public List<String> GetUserRoles(String userName) throws Exception;
 }
