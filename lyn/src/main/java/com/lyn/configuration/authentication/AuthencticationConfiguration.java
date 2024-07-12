@@ -13,19 +13,33 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.lyn.component.jwt.JwtAccessDeniedHandler;
+import com.lyn.component.jwt.JwtAuthenticationEntryPointHandler;
+import com.lyn.component.jwt.JwtAuthenticationFilter;
+import com.lyn.component.jwt.JwtUtil;
 
+import lombok.RequiredArgsConstructor;
+
+
+@RequiredArgsConstructor
 @Configuration
 public class AuthencticationConfiguration {
 	
 	
+	private final JwtUtil jwtUtil;
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
 	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser"};
-	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/myinfo"};	
+	private static final String[] AUTH_API_USER_ACCESS_LIST = {"member/myInfo"};
+	private static final String[] AUTH_API_ADMIN_ACCESS_LIST = {"/admin/dashBoard"};
+	
+	private final JwtAuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler;
+	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 	@Bean
 	PasswordEncoder passwordEncoder() {
@@ -92,6 +106,7 @@ public class AuthencticationConfiguration {
 	 
 		/*
 		* JWT 인증방식 필터 설정 (s)
+		* 람다식으로 메서드 처리해야됨, and() 체이닝 메소드 사라짐
 		*/
 		http
 		.csrf(csrf->csrf.disable())
@@ -99,12 +114,31 @@ public class AuthencticationConfiguration {
 		.sessionManagement(sessionManagement->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))	//세션사용안함
 		.formLogin(form->form.disable())	//Form Login 비활성화
 		.httpBasic(AbstractHttpConfigurer::disable)	//BasicHttp 비활성화
-		//.authorizeHttpRequests(authorizeRequests->authorizeRequests.requestMatchers(AUTH_WHITE_LIST).permitAll()
-		.authorizeHttpRequests()
-		.requestMatchers(AUTH_API_WHITE_LIST).permitAll()	//AUTH_WHITE_LIST 요청은 인증없이 허가
+		.authorizeHttpRequests(
+				authorizeRequests->authorizeRequests.requestMatchers(AUTH_API_WHITE_LIST).permitAll()
+				.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasRole("USER")
+				.requestMatchers(AUTH_API_ADMIN_ACCESS_LIST).hasRole("ADMIN")
+				.anyRequest().authenticated() //나머지 요청에 대해서는 인증필요
+				
+		)	
+				
+		//.authorizeHttpRequests()
+		//.requestMatchers(AUTH_API_WHITE_LIST).permitAll()	//AUTH_WHITE_LIST 요청은 인증없이 허가
 		//.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasRole("USER")	//USER Role만 접근허용
-		.anyRequest().authenticated();	//나머지 요청에 대해서는 인증필요
 		
+		
+		.exceptionHandling(
+				exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPointHandler)
+				.accessDeniedHandler(jwtAccessDeniedHandler)
+				
+		)
+		
+		/*
+		 * JWT 인증처리용 필터 등록
+		 * */
+		.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+		
+
 		/*
 		* JWT 인증방식 필터 설정 (e)
 		*/

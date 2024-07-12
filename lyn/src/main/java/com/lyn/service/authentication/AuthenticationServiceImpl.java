@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class AuthenticationServiceImpl implements IAuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
 	private final SqlSession sqlSession;
 	private final PasswordEncoder passwordEncoder;
@@ -68,6 +68,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 			/*
 			 * user_email 과 user_pwd 로 생성한 인증용 token으로 authManagerBuilder.getObject().authenticate(userToken)을 실행시키면 
 			 * UserDetailsService 를 상속한 AuthenticationUserDetailService 의 loadUserByUsername 에서 조회된 UserDetails 객체의 암호와 인증처리를 하게 된다.
+			 * 
+			 * (check!!)근데 pwd가 암호와 되어 있는데.. UsernamePasswordAuthenticationToken을 생성시킬때는 plain text로 넘겨주는데 어떻게 비교를 하는지 궁금하네
+			 * 
 			 * */
 			UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUser_email(), user.getUser_pwd());
 			Authentication auth = authManagerBuilder.getObject().authenticate(userToken);

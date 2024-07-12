@@ -26,6 +26,11 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		try {
 			
+			
+			/*
+			 * 인증시 loadUserByUsername 에서 처리된 UserDetails 객체에서 패스워드 인증 처리 및 권한처리가 됨
+			 * */
+
 			//logger.info(String.format("loadUserByUsername:: userEmail:: %s", userEmail));
 			UserMapper mapper = sqlSession.getMapper(UserMapper.class);
 			
@@ -48,7 +53,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 				.username(user.getUser_email())
 				.password(user.getUser_pwd())
 				.roles(user.getUser_role_group().split(","))			//Authority 와 Role 구분해서 지정하도록 GrantedAuthority.getAuthority 에서 반환
-				//.authorities(user.getUser_role_group().split(","))    //Role 로 지정시 getAutority 에서 반환시 접두어 'Role_' 을 붙여 반
+				//.authorities(user.getUser_role_group().split(","))    //Role 로 지정시 getAutority 에서 반환시 접두어 'Role_' 을 붙여 반환
 				.build();
 	}
 }

@@ -40,22 +40,43 @@ const Login = () => {
 	}
 	
 	
-	const authTest_onClick = (e) => {
-		
-		console.log("authTest_onClick");
-		
-		axios.post("/auth/AuthTest", null, {
+	const myInfo_onClick = (e) => {
+		axios.post("/member/myInfo", null, {
 			params:{
-				key: "KEY A", 
-				value: "This is the Key"
+				key: "CD", 
+				value: "TTTTT"
 			}
 		}).then((res)=>{
 			const result = res.data;
 			
-			alert(`result ${result}`);
+			console.log(result);
+			
+			alert(`Status:${res.status}\r\nData:${res.data}`);
 			
 		}).catch((e)=>{
-			alert(`authTest_onClick ${e.response.data}`)
+			//alert(e.response.status);
+			console.log(e);
+			
+			if(e.response.status != "200"){
+				alert(`myInfo_onClick Error :: ${e.message}`);	
+			}
+		})
+	}
+	
+	
+	const adminDashBoard_onClick = (e) => {
+		axios.post("/admin/dashBoard", null, {
+			params:{
+				key:"email", 
+				value:"admin@test.com"
+			}
+		}).then((res)=>{
+			
+			alert(`post then: ${res.data}`);
+			
+		}).catch((e)=>{
+			
+			alert(`adminDashBoard_onClick error :: ${e.message}`);
 		})
 	}
 	
@@ -70,7 +91,8 @@ const Login = () => {
 			
 			<div>
 				<DefaultButton text={"login"} onClick={login_onClick}/>
-				<DefaultButton text={"auth test"} onClick={authTest_onClick} />
+				<DefaultButton text={"my info"} onClick={myInfo_onClick} />
+				<DefaultButton text={"admin dashboard"} onClick={adminDashBoard_onClick} />
 			</div>
 		</>
 		

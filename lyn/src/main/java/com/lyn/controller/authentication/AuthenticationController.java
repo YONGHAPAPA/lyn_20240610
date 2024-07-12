@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lyn.dto.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
-import com.lyn.service.authentication.IAuthenticationService;
+import com.lyn.service.authentication.AuthenticationService;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,7 +35,7 @@ public class AuthenticationController {
 //	SqlSession sqlSession;
 	
 	@Autowired
-	IAuthenticationService authService;
+	AuthenticationService authService;
 	
 	Logger logger = LogManager.getLogger(AuthenticationController.class);
 	
