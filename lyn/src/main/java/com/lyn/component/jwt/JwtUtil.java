@@ -135,7 +135,7 @@ public class JwtUtil {
 		if(claims.get("auth") == null) {
 			throw new RuntimeException("권한 정보가 없는 토큰입니다.");
 		}
-		
+		 
 		
 		/*
 		 * Claims 에서 권한정보 추출하기

@@ -29,13 +29,21 @@ const Login = () => {
 				userPassword: userPassword
 			}
 		}).then((res)=>{
+			
+			console.log(res.data);
+			
 			const jwtToken = res.data;
+			
 			axios.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.accessToken}`
 
 			//console.log(res.data.accessToken);
 		})
 		.catch((e)=>{
-			alert("err : " + e.response.data)
+			
+			//alert("err : " + e.response.data)
+			//console.log(e.response.data.error.message);
+			
+			alert(e.response.data.error.message);
 		})
 	}
 	

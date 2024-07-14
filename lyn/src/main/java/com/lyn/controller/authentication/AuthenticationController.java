@@ -12,7 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,8 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lyn.dto.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
+import com.lyn.model.common.ApiResponse;
+import com.lyn.model.common.CustomException;
+import com.lyn.model.common.ErrorCode;
 import com.lyn.service.authentication.AuthenticationService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -37,8 +45,6 @@ public class AuthenticationController {
 	@Autowired
 	AuthenticationService authService;
 	
-	Logger logger = LogManager.getLogger(AuthenticationController.class);
-	
 	
 	@PostMapping("/AuthTest")
 	public ResponseEntity<String> AuthTest(@RequestParam(required=true, value="key") String key, @RequestParam(required=true, value="key") String value){
@@ -49,7 +55,7 @@ public class AuthenticationController {
 	
 
 	@PostMapping("/LoginUser")
-	public ResponseEntity<JwtTokenDto> LoginUser(@RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
+	public ApiResponse<?> LoginUser(@RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
 		
 		JwtTokenDto tokenDto = null;
 		//logger.info(String.format("/LoginUser : %s : %s", userEmail, userPassword));
@@ -61,10 +67,17 @@ public class AuthenticationController {
 		try {
 			tokenDto = authService.SignInUser(loginUser);
 		} catch (Exception e) {
-			logger.error(e.getStackTrace() + e.getMessage());
+			
+			if(e instanceof UsernameNotFoundException) {
+				return ApiResponse.fail(new CustomException(ErrorCode.USER_NOT_FOUND));
+			} else if (e instanceof BadCredentialsException) {
+				return ApiResponse.fail(new CustomException(ErrorCode.USER_PWD_UNMATCH));
+			} else {
+				return ApiResponse.fail(new CustomException(ErrorCode.USER_CREDENTIAL_ERROR));
+			}
 		}
 		
-		return ResponseEntity.ok(tokenDto);
+		return ApiResponse.ok(tokenDto);
 	}
 	
 	@PostMapping("/JoinUser")

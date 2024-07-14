@@ -3,9 +3,11 @@ package com.lyn.configuration.authentication;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -23,6 +25,7 @@ import com.lyn.component.jwt.JwtAccessDeniedHandler;
 import com.lyn.component.jwt.JwtAuthenticationEntryPointHandler;
 import com.lyn.component.jwt.JwtAuthenticationFilter;
 import com.lyn.component.jwt.JwtUtil;
+import com.lyn.service.authentication.AuthenticationUserDetailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,10 +43,28 @@ public class AuthencticationConfiguration {
 	
 	private final JwtAuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+	
+	@Autowired
+	private AuthenticationUserDetailService userDetailsService;
 
+	
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	/*
+	 * UserNotFoundException 을 별도로 발생시키기 위해 DaoAuthenticationProvide 에 
+	 * setHideUserNotFoundExceptions 옵션을 false 처리, 미설정시 UsernameNotFoundException 이 발생해도 BadCredentialsException 으로 Exception 처리
+	 * setUserDetailsService 는 기본으로 설정해줘야 되는것으로 보임.
+	 * */
+	@Bean
+	public DaoAuthenticationProvider daoAuthenticationProvider() {
+		DaoAuthenticationProvider bean = new DaoAuthenticationProvider();
+		bean.setHideUserNotFoundExceptions(false);
+		bean.setUserDetailsService(userDetailsService);	
+		bean.setPasswordEncoder(this.passwordEncoder());
+		return bean;
 	}
 	
 	
@@ -103,7 +124,6 @@ public class AuthencticationConfiguration {
 		 * */
 		
 		
-	 
 		/*
 		* JWT 인증방식 필터 설정 (s)
 		* 람다식으로 메서드 처리해야됨, and() 체이닝 메소드 사라짐
@@ -120,7 +140,8 @@ public class AuthencticationConfiguration {
 				.requestMatchers(AUTH_API_ADMIN_ACCESS_LIST).hasRole("ADMIN")
 				.anyRequest().authenticated() //나머지 요청에 대해서는 인증필요
 				
-		)	
+		)
+		.authenticationProvider(this.daoAuthenticationProvider()) //setHideUserNotFoundExceptions 옵션처리한 provider 등
 				
 		//.authorizeHttpRequests()
 		//.requestMatchers(AUTH_API_WHITE_LIST).permitAll()	//AUTH_WHITE_LIST 요청은 인증없이 허가
@@ -142,11 +163,9 @@ public class AuthencticationConfiguration {
 		/*
 		* JWT 인증방식 필터 설정 (e)
 		*/
-		
-		
 		return http.build();
-		
 	}
+	
 	
 	
 	

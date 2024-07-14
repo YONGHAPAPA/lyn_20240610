@@ -6,9 +6,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +22,9 @@ import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -31,8 +36,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	//private final JOIN_USER_DEFAULT_ROLE = @Value
 	
-	private final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
-
 	@Transactional
 	@Override
 	public UserDto JoinUser(UserDto user) throws Exception {
@@ -46,10 +49,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			//user.setUser_seq(0);
 			Integer result = mapper.CreateUser(user);
 
-			logger.info(String.format("user::: %s", user.toString()));
+			log.info(String.format("user::: %s", user.toString()));
 			
 		} catch(Exception e) {
-			logger.error(String.format("JoinUser:: %s", e.getStackTrace() + "\r\n" + e.getMessage()));
+			log.error(String.format("JoinUser:: %s", e.getStackTrace() + "\r\n" + e.getMessage()));
 			throw e;
 		}
 		
@@ -59,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	@Transactional
 	@Override
-	public JwtTokenDto SignInUser(UserDto user) throws Exception {
+	public JwtTokenDto SignInUser(UserDto user) throws UsernameNotFoundException {
 		
 		JwtTokenDto jwtToken = null;
 		
@@ -81,10 +84,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			jwtToken = jwtUtil.generateToken(auth);
 			
 			//log.info(String.format("auth: %s", auth.toString()));
-			logger.info(String.format("token: %s", jwtToken));
-			
-		} catch(Exception e) {
-			logger.error(String.format("SignInUser::: %s", e.getMessage()));
+			log.info(String.format("token: %s", jwtToken));
+		} catch(UsernameNotFoundException e) {
+			log.error(String.format("SignInUser UsernameNotFoundException :: %s", e.getClass().toString()));
+			throw new UsernameNotFoundException(e.getMessage());
+		} 
+		catch(Exception e) {
+			log.error(String.format("SignInUser Exception :: %s", e.getClass().toString()));
+			throw new BadCredentialsException(e.getMessage());
 		}
 		
 		return jwtToken;

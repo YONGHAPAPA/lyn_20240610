@@ -13,19 +13,21 @@ import com.lyn.dto.UserDto;
 import com.lyn.mapper.user.UserMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class AuthenticationUserDetailService implements UserDetailsService {
 
 	private final SqlSession sqlSession;
 	
-	Logger logger = LogManager.getLogger(AuthenticationUserDetailService.class);
-	
 	@Override
 	public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
 		try {
 			
+			
+			log.info("loadUserByUsername {}", "1");
 			
 			/*
 			 * 인증시 loadUserByUsername 에서 처리된 UserDetails 객체에서 패스워드 인증 처리 및 권한처리가 됨
@@ -40,6 +42,8 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 			return buildUserDetails(mapper.GetUserByUserName(user.getUser_email()));
 			
 		} catch(Exception e) {
+			
+			log.error("loadUserByUsername:: {}", "user is not exist");
 			throw new UsernameNotFoundException("There is no user");
 		}
 	}
@@ -47,7 +51,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 	
 	private UserDetails buildUserDetails(UserDto user) {
 		
-		logger.info(String.format("convertUserToUserDetail:: %s", user.getUser_email()));
+		log.info(String.format("convertUserToUserDetail:: %s", user.getUser_email()));
 		
 		return User.builder()
 				.username(user.getUser_email())
