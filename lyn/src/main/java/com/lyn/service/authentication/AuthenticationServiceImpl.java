@@ -1,6 +1,8 @@
 package com.lyn.service.authentication;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -78,12 +81,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUser_email(), user.getUser_pwd());
 			Authentication auth = authManagerBuilder.getObject().authenticate(userToken);
 			
+
 			/*
-			 * 인증처리후 jwt token을 생성해준다. 
+			 * 인증처리후(AuthenticationManagaerBuilder.authenticate 로 인증처리후 loadUserByUsername 로 전달받은 UserDetails로 Authentication 객체(auth)로 token을 생성해준다. 
 			 * */
+			
+//			Login시 생성된 Authentication 객체의 Role 확인
+//			List<String> authList = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+//			log.info("AuthenticationServiceImpl:SignInUser::authList: {}", authList);
 			jwtToken = jwtUtil.generateToken(auth);
 			
-			//log.info(String.format("auth: %s", auth.toString()));
+
 			log.info(String.format("token: %s", jwtToken));
 		} catch(UsernameNotFoundException e) {
 			log.error(String.format("SignInUser UsernameNotFoundException :: %s", e.getClass().toString()));

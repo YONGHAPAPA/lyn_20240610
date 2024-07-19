@@ -11,7 +11,6 @@ import Home from './routes/common/Home';
 
 
 function App() {
-
 	
 	const [msg, setMsg] = useState('');
 	
@@ -20,8 +19,6 @@ function App() {
 		.then((res)=>{setMsg(res.data)});
 		
 	});
-	
-	
 
 	
 	return (

@@ -38,7 +38,7 @@ public class AuthencticationConfiguration {
 	private final JwtUtil jwtUtil;
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
 	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser"};
-	private static final String[] AUTH_API_USER_ACCESS_LIST = {"member/myInfo"};
+	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/member/myInfo"};
 	private static final String[] AUTH_API_ADMIN_ACCESS_LIST = {"/admin/dashBoard"};
 	
 	private final JwtAuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler;
@@ -180,7 +180,8 @@ public class AuthencticationConfiguration {
 		CorsConfiguration config = new CorsConfiguration();
 		
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost:3000");
+		config.setAllowedOrigins(Arrays.asList("https://localhost:3000", "https://dev.lyn.com:3000"));	//Front요청의 CORS 허용처리 
+		//config.addAllowedOrigin("http://localhost:3000");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 		config.setMaxAge(600L);

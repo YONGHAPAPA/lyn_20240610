@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /*
  * 인증실패 또는 인증해더를 전달받지 못했을때 처리 핸들러
+ * 일단 필터를 통과한뒤에 처리되는 handler, 필터를 통과하지 않은 일종의 authenticationConfiguration 에서 PermitAll 처리되 세션은 처리되지 않음.
+ * AccessDeniedHandler 도 마찬가지로 보임
  * */
 
 @Slf4j

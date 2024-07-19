@@ -32,10 +32,15 @@ const Login = () => {
 			
 			console.log(res.data);
 			
-			const jwtToken = res.data;
+			const result = res.data.data;
+			const token = result.accessToken;
 			
-			axios.defaults.headers.common["Authorization"] = `Bearer ${jwtToken.accessToken}`
-
+			
+			console.log(token)
+			
+			
+			//console.log(`accessToken :: ${accessToken}`)
+			axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
 			//console.log(res.data.accessToken);
 		})
 		.catch((e)=>{

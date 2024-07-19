@@ -32,15 +32,18 @@
         <!-- FATAL < ERROR < WARN < INFO < DEBUG < TRACE -->
         <Root level="INFO">
             <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
+            <!--AppenderRef ref="RollingFile" /-->
         </Root>
         
         <!-- Application Loggers -->
         <!-- Root 보다 우선 순위가 높습니다. -->
-        <logger name="com.sample.mybatis.controller" level="INFO" additivity="false">
+        <!--
+        <logger name="com.lyn" level="INFO" additivity="false">
             <AppenderRef ref="console" />
-            <!--AppenderRef ref="RollingFile" /-->
+            <AppenderRef ref="RollingFile" />
         </logger>
+        -->
+        
 
 		
 		<!-- 
@@ -48,9 +51,9 @@
 			root log level=warn 이상일경우 파라메터 포함된 쿼리로그 표기안됨.(info, debug, trace 레벨일경우 모든 로그 확인가능)
 			root level 이 낮은경우 sql 표기를 위해서는 아래와 같이 별도로 logger 항목 추가필요
 		-->
-        <logger name="com.sample.mybatis.mapper" level="INFO"> 
+        <logger name="com.lyn" level="INFO" additivity="false"> 
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="RollingFile" />
+			<!--AppenderRef ref="RollingFile" /-->
         </logger>
         
         

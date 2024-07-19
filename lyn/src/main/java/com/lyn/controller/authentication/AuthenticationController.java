@@ -29,6 +29,8 @@ import com.lyn.model.common.CustomException;
 import com.lyn.model.common.ErrorCode;
 import com.lyn.service.authentication.AuthenticationService;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,7 +57,7 @@ public class AuthenticationController {
 	
 
 	@PostMapping("/LoginUser")
-	public ApiResponse<?> LoginUser(@RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
+	public ApiResponse<?> LoginUser(HttpServletResponse response, @RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
 		
 		JwtTokenDto tokenDto = null;
 		//logger.info(String.format("/LoginUser : %s : %s", userEmail, userPassword));
@@ -66,6 +68,18 @@ public class AuthenticationController {
 		
 		try {
 			tokenDto = authService.SignInUser(loginUser);
+			
+			log.info("access Token: {}", tokenDto.getAccessToken());
+			log.info("refresh Token: {}", tokenDto.getRefreshToken());
+			log.info("grant type: {}", tokenDto.getGrantType());
+			
+			//refreshToken 은 Http-Secure Cookie로 전달.
+			Cookie cookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
+			cookie.setMaxAge(30);
+			cookie.setHttpOnly(true);
+			cookie.setSecure(true);
+			response.addCookie(cookie);
+			
 		} catch (Exception e) {
 			
 			if(e instanceof UsernameNotFoundException) {

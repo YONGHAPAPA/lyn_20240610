@@ -27,7 +27,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 		try {
 			
 			
-			log.info("loadUserByUsername {}", "1");
+			log.info("loadUserByUsername::userEmail: {}", userEmail);
 			
 			/*
 			 * 인증시 loadUserByUsername 에서 처리된 UserDetails 객체에서 패스워드 인증 처리 및 권한처리가 됨
@@ -49,9 +49,13 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 	}
 	
 	
+	/*
+	 * 로긴시 사용자 정보(Role 정보포함해서 Token 만들기위한 UerDetails 객체반환)
+	 * */
 	private UserDetails buildUserDetails(UserDto user) {
 		
-		log.info(String.format("convertUserToUserDetail:: %s", user.getUser_email()));
+		//log.info(String.format("convertUserToUserDetail:: %s", user.getUser_email()));
+		//log.info("AuthenticationUserDetailService::buildUserDetails: {}", user.getUser_role_group());
 		
 		return User.builder()
 				.username(user.getUser_email())

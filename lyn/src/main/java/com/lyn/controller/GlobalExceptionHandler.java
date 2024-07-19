@@ -14,6 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice //@ControllerAdvice + @ResponseBody
 public class GlobalExceptionHandler {
+	/*
+	 * GlobalExceptionHandler
+	 * 전역에 대한 Controller 내에 Exception 처리 적용 class
+	 * */
+	
 
 	/*
 	 * 존재하지 않는 요청에 대한 예외처리
