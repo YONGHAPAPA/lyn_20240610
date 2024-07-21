@@ -175,13 +175,11 @@ public class AuthencticationConfiguration {
 	 * */
 	@Bean
 	public FilterRegistrationBean<CorsFilter> corsFilterRegistrationBean() {
-		System.out.println("CorsFilter 3 >>>>>> start");
-		
 		CorsConfiguration config = new CorsConfiguration();
 		
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(Arrays.asList("https://localhost:3000", "https://dev.lyn.com:3000"));	//Front요청의 CORS 허용처리 
-		//config.addAllowedOrigin("http://localhost:3000");
+		//config.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://dev.lyn.com:3000"));
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("*");
 		config.setMaxAge(600L);

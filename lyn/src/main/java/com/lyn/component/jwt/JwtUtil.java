@@ -147,7 +147,7 @@ public class JwtUtil {
 		}
 		
 		
-		if(claims.get("auth") == null) {
+		if(claims.get(ClaimsProp.USER_ROLE.name()) == null) {
 			throw new RuntimeException("권한 정보가 없는 토큰입니다.");
 		}
 		 
@@ -159,7 +159,7 @@ public class JwtUtil {
 		
 		//log.info("getAuthentication::auth >> ", claims.get("auth").toString());
 		
-		Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
+		Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(ClaimsProp.USER_ROLE.name()).toString().split(","))
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 		
@@ -184,17 +184,17 @@ public class JwtUtil {
 	 * */
 	public Collection<? extends GrantedAuthority> getRoleInfoFromAccessToken(String accessToken) {
 		
-		Collection<? extends GrantedAuthority> authorities;
+		Collection<? extends GrantedAuthority> authorities = null;
 		
 		try {
 			
-			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
-			String user_role = claims.get(ClaimsProp.USER_ROLE.name()).toString();
+			if(accessToken != "") {
 			
-			//log.info("JwtUtil::getRoleInfoFromAccessToken:user_role {}", user_role);
-			
-			authorities = Arrays.stream(user_role.split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-			
+				Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+				String user_role = claims.get(ClaimsProp.USER_ROLE.name()).toString();
+				//log.info("JwtUtil::getRoleInfoFromAccessToken:user_role {}", user_role);
+				authorities = Arrays.stream(user_role.split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+			}
 		} catch(Exception ex) {
 			log.error(this.getClass().getName() + "::getRoleInfoFromAccessToken: {}", ex.getMessage());
 			authorities = null;
