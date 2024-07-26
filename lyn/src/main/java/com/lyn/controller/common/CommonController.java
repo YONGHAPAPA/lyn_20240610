@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lyn.model.common.ApiResponse;
+//import com.lyn.model.common.ApiResponse;
+import com.lyn.model.exception.ApiResponse;
 import com.lyn.model.common.CustomException;
 import com.lyn.model.common.ErrorCode;
 import com.lyn.service.authentication.AuthenticationService;

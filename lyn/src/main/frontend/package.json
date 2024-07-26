@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:windows": "set HTTPS=true&&set SSL_CRT_FILE=../../../cert/localhost+3.pem&&set SSL_KEY_FILE=../../../cert/localhost+3-key.pem&&npm run start",
+    "start:win": "set HTTPS=true&&set SSL_CRT_FILE=../../../cert/localhost+3.pem&&set SSL_KEY_FILE=../../../cert/localhost+3-key.pem&&npm run start",
     "start:mac": "HTTPS=true SSL_CRT_FILE=../../../cert/_wildcard.lyn.com+2.pem SSL_KEY_FILE=../../../cert/_wildcard.lyn.com+2-key.pem npm run start", 
     "build": "react-scripts build",
     "test": "react-scripts test",

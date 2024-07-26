@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.lyn.model.common.ApiResponse;
-import com.lyn.model.common.CustomException;
-import com.lyn.model.common.ErrorCode;
+import com.lyn.model.exception.CustomException;
+import com.lyn.model.exception.ErrorCode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value={NoHandlerFoundException.class, HttpRequestMethodNotSupportedException.class})
 	public ApiResponse<?>handleNoPageFoundException(Exception e){
 		log.error("GlobalExceptionHandler >>> handleNoPageFoundException : {}", e.getMessage());
-		return ApiResponse.fail(new CustomException(ErrorCode.NOT_FOUND_END_POINT));
+		return ApiResponse.fail(new CustomException(ErrorCode.NOT_FOUND_API));
 	}
 	
 	
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
 	 * */
 	@ExceptionHandler(value= {CustomException.class})
 	public ApiResponse<?> handleCustomException(CustomException e){
-		log.error("GlobalExceptionHandler >>> handleCustomException : {}", e.getMessage());
+		log.error("GlobalExceptionHandler >>> handleCustomException : {}", e.getErrorMessage());
 		return ApiResponse.fail(e);
 	}
 	

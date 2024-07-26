@@ -10,4 +10,8 @@ public interface AuthenticationService {
 	public UserDto JoinUser(UserDto user) throws Exception;
 	
 	public JwtTokenDto SignInUser(UserDto user) throws Exception;
+	
+	public boolean ValidateJwtToken(String jwtToken) throws Exception;
+	
+	public String regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception;
 }

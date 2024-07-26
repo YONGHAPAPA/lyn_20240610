@@ -1,6 +1,8 @@
 package com.lyn.service.authentication;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +26,11 @@ import com.lyn.component.jwt.JwtUtil;
 import com.lyn.dto.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
+import com.lyn.model.jwt.ClaimsProp;
+import com.lyn.model.jwt.TokenGenerateType;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,9 +88,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(user.getUser_email(), user.getUser_pwd());
 			Authentication auth = authManagerBuilder.getObject().authenticate(userToken);
 			
-
 			/*
-			 * 인증처리후(AuthenticationManagaerBuilder.authenticate 로 인증처리후 loadUserByUsername 로 전달받은 UserDetails로 Authentication 객체(auth)로 token을 생성해준다. 
+			 * 인증처리후(AuthenticationManagaerBuilder.authenticate 로 인증처리후 loadUserByUsername 로 전달받은 UserDetails로 Authentication 객체(auth)로 token을 생성해준다.
+			 * 이 때 Authentication 객체에 "Role 정보"도 같이 포함처리된다. 
 			 * */
 			
 //			Login시 생성된 Authentication 객체의 Role 확인
@@ -98,12 +105,74 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			throw new UsernameNotFoundException(e.getMessage());
 		} 
 		catch(Exception e) {
-			log.error(String.format("SignInUser Exception :: %s", e.getClass().toString()));
+			log.error(String.format("SignInUser Exception :: %s ::%s", e.getClass().toString(), e.getMessage()));
 			throw new BadCredentialsException(e.getMessage());
 		}
 		
 		return jwtToken;
 	}
+	
+	
+	@Override
+	public boolean ValidateJwtToken(String jwtToken) throws Exception {
+		
+		boolean result = false;
+		
+		try {
+			
+			result = jwtUtil.validateToken(jwtToken);
+			
+		} catch(Exception e) {
+			return false;
+		}
+		
+		return result;
+	}
+	
+	
+	
+	/*
+	 * refresh Token 으로 access Token 재생성
+	 * */
+	@Override
+	public String regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception {
+		
+		String accessToken = "";
+		
+		try {
+			
+//			log.info("regenerateAccessTokenByRefreshToken >> ");
+//			Collection<? extends GrantedAuthority> role = jwtUtil.getRoleInfoFromToken(refreshToken);
+//			String role_list = role.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+//			log.info("regenerateAccessTokenByRefreshToken:role_list {}", role_list);
+			
+			Authentication authentication = jwtUtil.getAuthenticationFromJwtToken(refreshToken);
+		
+//			log.info("AuthenticationServiceImpl::regenerateAccessTokenByRefreshToken:authentication.getName > {}", authentication.getName());
+//			List<String> role_list = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+//			log.info("role_list {}", role_list);
+			
+//			for(String role : role_list) {
+//				log.info("role >> {}", role);
+//			}
+			
+			List<Map<TokenGenerateType, String>> token = jwtUtil.generateTokenString(authentication, TokenGenerateType.ACCESS);
+			if(token.size() > 0) {
+				accessToken = (String)token.get(0).get(TokenGenerateType.ACCESS);
+			}
+			
+		}catch(Exception ex) {
+			log.error("regenerateAccessTokenByRefreshToken: {}", ex.getMessage());
+			accessToken = "";
+		}
+		
+		return accessToken;
+	}
+	
+	
+	
+	
+	
 	
 	
 	
