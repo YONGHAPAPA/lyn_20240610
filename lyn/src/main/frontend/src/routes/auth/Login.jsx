@@ -12,70 +12,53 @@ const Login = () => {
 	let refreshTokenExpDuration; //second
 	let slientLoginNextInterval;
 	
-	let slientLoginPids = [];
+	//let slientLoginTimers = [];
+	const slientLoginTimers = useRef([]); 
 	
 	const [userEmail, setUserEmail] = useState('');
 	const [userPassword, setUserPassword] = useState('');
 	const [accessToken, setAccessToken] = useState('');
-	const [slientLoginInvokes, setSlientLoginInvokes] = useState([]);
+	const [timers, setTimers] = useState(['']);
 	const [count, SetCount] = useState(0);
 	
 	
 	useEffect(() => {
-		console.log("useEffect");
-		slient_login_onClick();
-		//console.log("userEmail:: ", userEmail);
-		//console.log("userPassword", userPassword);
-		//console.log("useEffect > slInvokes: ", slientLoginPids);
-		//console.log("accessToken: ", accessToken);
+		
+		//console.log("useEffect > update > ", timers);
 		
 		return() => {
-			console.log("useEffect - cleanup");
-			check_setTimeout();
 			
-			//console.log("[clean up]slInvokes: ", slientLoginPids);
-
-			//unload시 setTimeout 등록된 프로세스 제거
-			/*
-			slientLoginPids.forEach(pid => {
-				console.log("clear pid: ", pid);
+			console.log("slientLoginTimers > close >>> ", slientLoginTimers);
+			
+			slientLoginTimers.current.forEach(pid=>{
 				clearTimeout(pid);
-			});
+			})
+			/*
+			console.log("useEffect > close > ", timers);
+			timers.forEach(pid=>{
+				clearTimeout(pid);
+			})
 			*/
 		}
 	}, []);
 	
+
 	
-	const check_setTimeout = () => {
-		console.log("check_setTimeout:", slientLoginPids);
-	}
+	
+
 	
 	const test_onClick = (e) => {
-		/*
-		SetCount(count+1);
-		console.log("count: ", count);
-		const updateInvokes = [...slientLoginInvokes, count];
-		setSlientLoginInvokes(updateInvokes);
-		console.log("SlientLoginInvokes::", slientLoginInvokes);
-		*/
+	
+		//console.log("test_onClick:: ", slientLoginPids);
 		
-		let g = f();
-		
-		g(); 
-		
-		
+		slientLoginTimers.forEach(pid=>{
+			//console.log("clearTimeout:: ", pid)
+			clearTimeout(pid);
+		})
 	}
 	
-	function f() {
-		
-		let value = Math.random();
+	
 
-		  function g() {
-		    debugger; // Uncaught ReferenceError: value is not defined가 출력됩니다.
-		  }
-
-  		return g;
-	}
 	
 	const useremail_onChange = (e) => {
 		setUserEmail(e.target.value);
@@ -94,6 +77,7 @@ const Login = () => {
 			}
 		}).then((res)=>{
 			afterLoginSuccess(res);
+			alert("Login success")
 		})
 		.catch((e)=>{
 			console.log(e);
@@ -105,6 +89,7 @@ const Login = () => {
 	const afterLoginSuccess = (res) => {
 		
 		let tokenInfo = res.data.data;
+		let pid = 0;
 		
 		try{
 			//console.log(`afterLoginSuccess accessToken :: ${tokenInfo.grantType} ${tokenInfo.accessToken}`);
@@ -118,13 +103,28 @@ const Login = () => {
 				slientLoginNextInterval = (parseFloat(accessTokenExpDuration)) * 1000;
 				//console.log(`slientLoginRefreshDuration:: ${slientLoginNextInterval}`);
 				//console.log("setTimeout >> slient_login_onClick");
-				let pid = setTimeout(slient_login_onClick, 1000);
-				slientLoginPids.push(pid);
+				pid = setTimeout(slient_login_onClick, 1000);
+				//console.log("pid", pid);
+				
+				//slientLoginPids.push(pid);
+				
+				//pid = setTimeout(fn_t(invokedPids), 2000)
+				
 			}
 		} catch(e){
 			console.log(`afterLoginSuccess:: ${e.description}`)
 		}
+		
+		return pid;
 	};
+	
+	
+	
+	
+	
+	
+	
+	
 	
 
 	
@@ -188,18 +188,48 @@ const Login = () => {
 	
 	const slient_login_onClick = () => {
 		
+		//console.log("slient_login_onClick");
+		
+		
 		if(axios.defaults.headers.common["Authorization"] === undefined || axios.defaults.headers.common["Authorization"] === ""){
 			return;
 		}
 		
 		axios.post("/auth/SlientLogin", null, {
 		}).then((res)=>{
-			console.log(res);
-			afterLoginSuccess(res);
+			//console.log(res);
+			
+			//console.log("invokedPids: ", invokedPids);
+			
+			let pid = afterLoginSuccess(res);
+			
+			//const updPids = [...invokedPids, pid]
+			//console.log("updPids", updPids);
+			
+			//invokedPids
+			//setInvokedPids([...invokedPids, pid])
+			
+			//console.log("slient_login_onClick > pid > " + pid);
+			//slientLoginTimers.push(pid);
+			//const updTimers = [...timers, pid];
+			//setTimers(updTimers);
+			slientLoginTimers.current.push(pid);
+			
+			
+			console.log("slientLoginTimers:", slientLoginTimers.current);
+			//slientLoginPids.push(pid);
+			
 		}).catch(e=>{
-			console.log(e.response)
-			alert(e.response.data.error.message);
-		})
+			console.log(e);
+			alert(e);
+			
+			//alert(e.response.data.error.message);
+		}).finally(
+			()=>{
+				//console.log("slientLoginPids", slientLoginPids);
+				//console.log("invokedPids", invokedPids);	
+			}
+		); 
 	}
 	
 	

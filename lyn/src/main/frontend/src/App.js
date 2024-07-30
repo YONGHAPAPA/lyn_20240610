@@ -15,7 +15,7 @@ function App() {
 	const [msg, setMsg] = useState('');
 	
 	useEffect(()=>{
-		axios.get('http://localhost:8080/index', {widthwithCredentials:true})
+		axios.get('https://localhost:8080/index', {widthwithCredentials:true})
 		.then((res)=>{setMsg(res.data)});
 		
 	});

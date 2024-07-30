@@ -35,6 +35,9 @@ public class CommonController {
 	public String index() {
 		
 		try {
+			
+			
+			log.info("this is index page");
 		
 //			String[] arr = new String[] {"a", "b", "c", "d"};
 //			
