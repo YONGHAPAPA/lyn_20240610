@@ -155,6 +155,9 @@ public class AuthenticationController {
 						}
 					}
 					
+					
+					log.info("refreshToken >>>>> ", refreshToken);
+					
 					//RefreshToken 유효성 검사후 access token 재발급, 유효시간은 발급시점부터 새로 갱신
 					if(refreshToken != "" && authService.ValidateJwtToken(refreshToken)) {
 						accessToken = authService.regenerateAccessTokenByRefreshToken(refreshToken);

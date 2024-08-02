@@ -1,4 +1,5 @@
 import {React, useRef, useState, useEffect } from 'react';
+import {useNavigate, useLocation } from 'react-router-dom';
 
 import DefaultInput from '../../components/DefaultInput';
 import DefaultButton from '../../components/DefaultButton';
@@ -11,6 +12,7 @@ const Login = () => {
 	let accessTokenExpDuration;	//second
 	let refreshTokenExpDuration; //second
 	let slientLoginNextInterval;
+
 	
 	//let slientLoginTimers = [];
 	const slientLoginTimers = useRef([]); 
@@ -19,54 +21,57 @@ const Login = () => {
 	const [userPassword, setUserPassword] = useState('');
 	const [accessToken, setAccessToken] = useState('');
 	const [timers, setTimers] = useState(['']);
-	const [count, SetCount] = useState(0);
+	const [count, setCount] = useState(0);
+	
+	let navigate = useNavigate();
+	
+	const location = useLocation();
+	//const tmp = location.state;
+	
+	
+	//console.log(tmp);
 	
 	
 	useEffect(() => {
 		
-		//console.log("useEffect > update > ", timers);
-		
+		let auth = axios.defaults.headers.common["Authorization"];
+		console.log("Login auth:", auth);
+
 		return() => {
+
+			console.log("slientLoginTimers clear", slientLoginTimers);
 			
-			console.log("slientLoginTimers > close >>> ", slientLoginTimers);
 			
-			slientLoginTimers.current.forEach(pid=>{
-				clearTimeout(pid);
-			})
-			/*
-			console.log("useEffect > close > ", timers);
-			timers.forEach(pid=>{
-				clearTimeout(pid);
-			})
-			*/
+			if(slientLoginTimers.current){
+					slientLoginTimers.current.forEach(pid=>{
+					clearTimeout(pid);
+				})
+			
+				slientLoginTimers.current = null;	
+			}
 		}
 	}, []);
-	
-
-	
-	
 
 	
 	const test_onClick = (e) => {
 	
 		//console.log("test_onClick:: ", slientLoginPids);
-		
 		slientLoginTimers.forEach(pid=>{
-			//console.log("clearTimeout:: ", pid)
+			console.log("clearTimeout:: ", pid)
 			clearTimeout(pid);
 		})
 	}
 	
 	
-
-	
 	const useremail_onChange = (e) => {
 		setUserEmail(e.target.value);
 	}
+
 	
 	const userPassword_onChange = (e) => {
 		setUserPassword(e.target.value);	
 	}
+
 	
 	const login_onClick = (e) => {
 
@@ -76,13 +81,51 @@ const Login = () => {
 				userPassword: userPassword
 			}
 		}).then((res)=>{
-			afterLoginSuccess(res);
-			alert("Login success")
+			//console.log(res);
+			//console.log(res.status);
+			//console.log(res.data);
+			
+			if(res.status === 200 && res.data.success === true){
+				const tokenData = res.data.data;
+				moveToMyPage(tokenData);
+			} else {
+				//Login Error
+			}
+			 
+			//afterLoginSuccess(res);
+			//alert("Login success")
 		})
 		.catch((e)=>{
 			console.log(e);
-			//alert(e.response.data.error.message);
+			if(e.response.status === 401){
+				alert(e.response.data.error.message);	
+			}
 		})
+	}
+	
+	
+	function moveToMyPage(token){
+		
+		try{
+			if(token.grantType !== "" && token.accessToken !== ""){
+				//console.log(token.accessToken);
+				axios.defaults.headers.common["Authorization"] = `${token.grantType} ${token.accessToken}`;
+				accessTokenExpDuration = token.accessExpiry;
+				
+				//console.log(axios.defaults.headers.common["Authorization"]);
+				//console.log(accessTokenExpDuration);
+				
+				//Local Storage에 토큰값설정
+				localStorage.clear();
+				localStorage.setItem("grantType", token.grantType)
+				localStorage.setItem("auth", token.accessToken);
+				
+				alert("Login is success.");
+				navigate('/member/MyPage');
+			}
+		} catch(e){
+			alert(`[Login:: moveToMyPage] ${e.description}`);
+		}
 	}
 	
 	
@@ -94,39 +137,24 @@ const Login = () => {
 		try{
 			//console.log(`afterLoginSuccess accessToken :: ${tokenInfo.grantType} ${tokenInfo.accessToken}`);
 			if(tokenInfo.grantType !== "" && tokenInfo.accessToken !== ""){
-				
-				//setAccessToken(tokenInfo.accessToken);
 				axios.defaults.headers.common["Authorization"] = `${tokenInfo.grantType} ${tokenInfo.accessToken}`;
 				accessTokenExpDuration = tokenInfo.accessExpiry;
 				
+				localStorage.setItem("auth", axios.defaults.headers.common["Authorization"]);
+				
+				console.log("localStorage", localStorage.getItem("auth"));
+				
 				//로긴후 access Token 만료 시점 후에 slient login 처리해준다.
 				slientLoginNextInterval = (parseFloat(accessTokenExpDuration)) * 1000;
-				//console.log(`slientLoginRefreshDuration:: ${slientLoginNextInterval}`);
-				//console.log("setTimeout >> slient_login_onClick");
 				pid = setTimeout(slient_login_onClick, 1000);
-				//console.log("pid", pid);
-				
-				//slientLoginPids.push(pid);
-				
-				//pid = setTimeout(fn_t(invokedPids), 2000)
-				
 			}
 		} catch(e){
 			console.log(`afterLoginSuccess:: ${e.description}`)
+			pid = 0;
 		}
 		
 		return pid;
 	};
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
 	
 	
 	const myInfo_onClick = (e) => {
@@ -188,41 +216,23 @@ const Login = () => {
 	
 	const slient_login_onClick = () => {
 		
-		//console.log("slient_login_onClick");
-		
-		
 		if(axios.defaults.headers.common["Authorization"] === undefined || axios.defaults.headers.common["Authorization"] === ""){
 			return;
 		}
 		
 		axios.post("/auth/SlientLogin", null, {
 		}).then((res)=>{
-			//console.log(res);
-			
-			//console.log("invokedPids: ", invokedPids);
-			
 			let pid = afterLoginSuccess(res);
 			
-			//const updPids = [...invokedPids, pid]
-			//console.log("updPids", updPids);
-			
-			//invokedPids
-			//setInvokedPids([...invokedPids, pid])
-			
-			//console.log("slient_login_onClick > pid > " + pid);
-			//slientLoginTimers.push(pid);
-			//const updTimers = [...timers, pid];
-			//setTimers(updTimers);
+			//Slient Login 처리에 대한 Timer Pid를 별도로 저장해뒀다가 페이지 언마운트시 Clear 처리할수 있게 해준다.  
 			slientLoginTimers.current.push(pid);
 			
-			
-			console.log("slientLoginTimers:", slientLoginTimers.current);
-			//slientLoginPids.push(pid);
-			
+			if(pid !== 0)
+				navigate('/member/MyPage/', {replace:true})
+				
 		}).catch(e=>{
 			console.log(e);
-			alert(e);
-			
+			alert(`[Error:: Slient Login] ${e.description}`);  
 			//alert(e.response.data.error.message);
 		}).finally(
 			()=>{
