@@ -27,7 +27,7 @@ import com.lyn.dto.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
 import com.lyn.model.jwt.ClaimsProp;
-import com.lyn.model.jwt.TokenGenerateType;
+import com.lyn.model.jwt.TokenGenKey;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -96,7 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //			Login시 생성된 Authentication 객체의 Role 확인
 //			List<String> authList = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 //			log.info("AuthenticationServiceImpl:SignInUser::authList: {}", authList);
-			jwtToken = jwtUtil.generateToken(auth);
+			jwtToken = jwtUtil.generateFullToken(auth);
 			
 
 			log.info(String.format("token: %s", jwtToken));
@@ -135,9 +135,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 * refresh Token 으로 access Token 재생성
 	 * */
 	@Override
-	public String regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception {
+	public JwtTokenDto regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception {
 		
 		String accessToken = "";
+		
+		JwtTokenDto jwtToken = null;
 		
 		try {
 			
@@ -156,17 +158,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //				log.info("role >> {}", role);
 //			}
 			
-			List<Map<TokenGenerateType, String>> token = jwtUtil.generateTokenString(authentication, TokenGenerateType.ACCESS);
-			if(token.size() > 0) {
-				accessToken = (String)token.get(0).get(TokenGenerateType.ACCESS);
-			}
+			jwtToken = jwtUtil.generateAccessToken(authentication);
 			
 		}catch(Exception ex) {
 			log.error("regenerateAccessTokenByRefreshToken: {}", ex.getMessage());
-			accessToken = "";
+			jwtToken = null;
 		}
 		
-		return accessToken;
+		return jwtToken;
 	}
 	
 	

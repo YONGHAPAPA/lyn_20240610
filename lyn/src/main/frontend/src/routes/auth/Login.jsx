@@ -5,6 +5,8 @@ import DefaultInput from '../../components/DefaultInput';
 import DefaultButton from '../../components/DefaultButton';
 import axios from 'axios';
 
+import * as auth from '../../modules/authentication';
+
 const Login = () => {
 	
 	//const [accessToken, setAccessToken] = useState('');
@@ -75,6 +77,7 @@ const Login = () => {
 	
 	const login_onClick = (e) => {
 
+		//debugger;
 		axios.post("/auth/LoginUser", null, {
 			params:{
 				userEmail: userEmail, 
@@ -86,8 +89,18 @@ const Login = () => {
 			//console.log(res.data);
 			
 			if(res.status === 200 && res.data.success === true){
-				const tokenData = res.data.data;
-				moveToMyPage(tokenData);
+				const tokenDto = res.data.data;
+				if(tokenDto.grantType !== "" && tokenDto.accessToken !== ""){
+					axios.defaults.headers.common["Authorization"] = `${tokenDto.grantType} ${tokenDto.accessToken}`;
+					//accessTokenExpDuration = token.accessExpiry;
+					
+					//Local Storage에 토큰값설정
+					auth.setTokenToLocalStorage(tokenDto);
+					alert("Login is success.");
+					//navigate('/member/MyPage')
+				}
+				
+				//moveToMyPage(tokenData);
 			} else {
 				//Login Error
 			}
@@ -104,29 +117,7 @@ const Login = () => {
 	}
 	
 	
-	function moveToMyPage(token){
-		
-		try{
-			if(token.grantType !== "" && token.accessToken !== ""){
-				//console.log(token.accessToken);
-				axios.defaults.headers.common["Authorization"] = `${token.grantType} ${token.accessToken}`;
-				accessTokenExpDuration = token.accessExpiry;
-				
-				//console.log(axios.defaults.headers.common["Authorization"]);
-				//console.log(accessTokenExpDuration);
-				
-				//Local Storage에 토큰값설정
-				localStorage.clear();
-				localStorage.setItem("grantType", token.grantType)
-				localStorage.setItem("auth", token.accessToken);
-				
-				alert("Login is success.");
-				navigate('/member/MyPage');
-			}
-		} catch(e){
-			alert(`[Login:: moveToMyPage] ${e.description}`);
-		}
-	}
+
 	
 	
 	const afterLoginSuccess = (res) => {

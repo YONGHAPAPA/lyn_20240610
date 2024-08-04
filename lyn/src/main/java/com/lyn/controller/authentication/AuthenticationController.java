@@ -129,25 +129,19 @@ public class AuthenticationController {
 				return ApiResponse.fail(new CustomException(ErrorCode.ACCESS_TOKEN_INVALID));
 			}
 			
-			
-			
 			if(StringUtils.isNotEmpty(authorizationToken) && authorizationToken.startsWith("Bearer")) {
 				accessToken = authorizationToken.substring(7);
 			}
 			
-			
-			
-			
 			if(StringUtils.isNotEmpty(accessToken)) {
 				if(!authService.ValidateJwtToken(accessToken)) {
-					//RefreshToken 확인
+					
+					//RefreshToken Cookie 확인
 					Cookie[] cookies = request.getCookies();
 					if(cookies != null) {
 						
 						for(Cookie cookie : cookies) {
-							
-							log.info("AuthenticationController::SlientLogin: {}", cookie.getName()) ;
-							
+							//log.info("AuthenticationController::SlientLogin: {}", cookie.getName()) ;
 							if(cookie.getName().equalsIgnoreCase("refreshToken")) {
 								refreshToken = cookie.getValue();
 								break;
@@ -160,20 +154,14 @@ public class AuthenticationController {
 					
 					//RefreshToken 유효성 검사후 access token 재발급, 유효시간은 발급시점부터 새로 갱신
 					if(refreshToken != "" && authService.ValidateJwtToken(refreshToken)) {
-						accessToken = authService.regenerateAccessTokenByRefreshToken(refreshToken);
-						//log.info("/SlientLogin:: accessToken: {}", accessToken);
-						tokenDto.setGrantType(grantType);
-						tokenDto.setAccessToken(accessToken);
-						tokenDto.setAccessExpiry(accessTokenExpSec); 
+						tokenDto = authService.regenerateAccessTokenByRefreshToken(refreshToken);
 					} else {
+						//Refresh Token Cookie 없음 
 						return ApiResponse.fail(new CustomException(ErrorCode.REFRESH_TOKEN_INVALID));
 					}
 				} else {
-					
 					//유효한 accessToken 이면 재발급하지 않음.
-					tokenDto.setGrantType(grantType);
-					tokenDto.setAccessToken(accessToken);
-					tokenDto.setAccessExpiry(accessTokenExpSec);
+					tokenDto = null;
 				}
 			}
 		} catch(Exception ex) {

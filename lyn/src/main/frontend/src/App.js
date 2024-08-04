@@ -23,7 +23,7 @@ function App() {
 	
 	useEffect(()=>{
 		
-		console.log("app localStorage", localStorage.getItem("auth"));
+		//console.log("app localStorage", localStorage.getItem("auth"));
 		
 		
 		ref_token.current = "newtoken~~~";
@@ -36,14 +36,14 @@ function App() {
 		*/
 		
 		let accessToken = common.extractAccessTokenFromRequestHeader(axios.defaults.headers.common["Authorization"]);
-		console.log("App:: accessToken", accessToken);
+		//console.log("App:: accessToken", accessToken);
 		
 	
 		
 		if(accessToken){
 			//isAuthenticated = true;
 			let newAccessToken = slientLogin(accessToken);
-			console.log("newAccessToken", newAccessToken)
+			//console.log("newAccessToken", newAccessToken)
 		}
 		
 	}, []);

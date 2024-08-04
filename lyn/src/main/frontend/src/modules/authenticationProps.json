@@ -1,0 +1,8 @@
+
+{
+	"JWT_GRANT_TYPE": "Bearer",
+	"SLIENT_LOGIN_URL": "/auth/SlientLogin",
+	"LOCAL_STRG_AUTH_TYPE_NM": "authType",
+	"LOCAL_STRG_AUTH_NM": "accessToken", 
+	"LOCAL_STRG_AUTH_EXP_TIME_NM": "effectDt"
+}

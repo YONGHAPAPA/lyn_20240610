@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.dto.jwt.JwtTokenDto.JwtTokenDtoBuilder;
 import com.lyn.model.jwt.ClaimsProp;
-import com.lyn.model.jwt.TokenGenerateType;
+import com.lyn.model.jwt.TokenGenKey;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -67,23 +67,25 @@ public class JwtUtil {
 	/*
 	 * access, refresh Token String 값을 각각 또는 한꺼번에 생성하는 함수
 	 * */
-	public List<Map<TokenGenerateType, String>> generateTokenString(Authentication authentication, TokenGenerateType tokenGenType) {
+	public List<Map<TokenGenKey, String>> generateTokenString(Authentication authentication, TokenGenKey tokenGenKey) {
 		
-		List<Map<TokenGenerateType, String>> tokenList = new ArrayList<Map<TokenGenerateType, String>>();
-		Map<TokenGenerateType, String> tokenMap = new HashMap<TokenGenerateType, String>();
+		List<Map<TokenGenKey, String>> tokenList = new ArrayList<Map<TokenGenKey, String>>();
+		Map<TokenGenKey, String> tokenMap = new HashMap<TokenGenKey, String>();
 		
 		try {
 			
 			ZonedDateTime now = ZonedDateTime.now();
 			ZonedDateTime accessTokenExpiry = now.plusSeconds(accessTokenExpSec);
+			String accExpIns = now.plusSeconds(accessTokenExpSec).toInstant().toString();
 			ZonedDateTime refreshTokenExpiry = now.plusSeconds(refreshTokenExpSec);
+			
 			
 			String str_user_roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")); 
 			Claims claims = Jwts.claims().setSubject(authentication.getName());
 			claims.put(ClaimsProp.USER_ROLE.name(), str_user_roles);
 			
-			if(tokenGenType == tokenGenType.ACCESS) {
-				
+			if(tokenGenKey == TokenGenKey.ACCESS) {
+
 				String accessToken = Jwts.builder()
 						.setClaims(claims)
 						.setIssuedAt(Date.from(now.toInstant()))
@@ -91,11 +93,13 @@ public class JwtUtil {
 						.signWith(key, SignatureAlgorithm.HS256)
 						.compact();
 				
-				tokenMap.put(tokenGenType.ACCESS, accessToken);
+				tokenMap.put(TokenGenKey.ACCESS, accessToken);
+				tokenMap.put(TokenGenKey.ACCESS_EXP_DT, Date.from(accessTokenExpiry.toInstant()).toString());
+				tokenMap.put(TokenGenKey.ACCESS_EXP, String.valueOf(accessTokenExpiry.toInstant()));
 				tokenList.add(tokenMap);
 			}  
 			
-			if(tokenGenType == tokenGenType.REFRESH) {
+			if(tokenGenKey == TokenGenKey.REFRESH) {
 				
 				String refreshToken = Jwts.builder()
 						.setClaims(claims)
@@ -104,11 +108,19 @@ public class JwtUtil {
 						.signWith(key, SignatureAlgorithm.HS256)
 						.compact();
 				
-				tokenMap.put(TokenGenerateType.REFRESH, refreshToken);
+				tokenMap.put(TokenGenKey.REFRESH, refreshToken);
+				tokenMap.put(TokenGenKey.REFRESH_EXP_DT, Date.from(refreshTokenExpiry.toInstant()).toString());
+				tokenMap.put(TokenGenKey.REFRESH_EXP, String.valueOf(refreshTokenExpiry.toInstant()));
 				tokenList.add(tokenMap);
 			}
 			
-			if(tokenGenType == tokenGenType.ALL) {
+			if(tokenGenKey == TokenGenKey.ALL) {
+				//token test
+//				Date temp = Date.from(accessTokenExpiry.toInstant());
+				log.info("generateTokenString:accessTokenExpiry.toInstant >>>> {}", accessTokenExpiry.toInstant());
+				log.info("generateTokenString:accExpIns.now.toInstant >>>> {}", now.toInstant());
+				
+//				log.info("temp >>>> {}", temp.toString());
 				
 				String accessToken = Jwts.builder()
 						.setClaims(claims)
@@ -117,7 +129,9 @@ public class JwtUtil {
 						.signWith(key, SignatureAlgorithm.HS256)
 						.compact();
 				
-				tokenMap.put(TokenGenerateType.ACCESS, accessToken);
+				tokenMap.put(TokenGenKey.ACCESS, accessToken);
+				tokenMap.put(TokenGenKey.ACCESS_EXP_DT, Date.from(accessTokenExpiry.toInstant()).toString());
+				tokenMap.put(TokenGenKey.ACCESS_EXP, String.valueOf(accessTokenExpiry.toInstant()));
 				
 				String refreshToken = Jwts.builder()
 						.setClaims(claims)
@@ -126,7 +140,9 @@ public class JwtUtil {
 						.signWith(key, SignatureAlgorithm.HS256)
 						.compact();
 				
-				tokenMap.put(TokenGenerateType.REFRESH, refreshToken);
+				tokenMap.put(TokenGenKey.REFRESH, refreshToken);
+				tokenMap.put(TokenGenKey.REFRESH_EXP_DT, Date.from(refreshTokenExpiry.toInstant()).toString());
+				tokenMap.put(TokenGenKey.REFRESH_EXP, String.valueOf(refreshTokenExpiry.toInstant()));
 				tokenList.add(tokenMap);
 			}
 		} catch(Exception e) {
@@ -142,44 +158,13 @@ public class JwtUtil {
 	/*
 	 * 인증처리된(AuthManagerBuilder.authenticate) Authentication 객체로 JWT Token 을 생성한다.  
 	 */
-	public JwtTokenDto generateToken(Authentication authentication) {
+	public JwtTokenDto generateFullToken(Authentication authentication) {
 		/*
 		 * Role 정보 String로 token에 설정
 		 * (참고)전달받는 매개변수 authentication 은 authManagerBuilder.getObject().authenticate(userToken); 처리될때  
 		 * */
 		
-		/*
-		String user_role = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
-		//최초 token 생성시점에서는 authorities 정보는 없음/ 아래는 있음
-		log.info("JwtUtil::generateToken: authorities: {}", user_role);
-
-		ZonedDateTime now = ZonedDateTime.now();
-		ZonedDateTime accessTokenValidity = now.plusSeconds(refreshTokenExpSec);
-		ZonedDateTime refreshTokenValidity = now.plusSeconds(refreshTokenExpSec);
-		
-		//logger.info(String.format("authorities:: %s", authorities));
-		Claims claims = Jwts.claims().setSubject(authentication.getName()); //JWT Payload 데이터
-		claims.put(ClaimsProp.USER_ROLE.name(), user_role);	//User Role info
-
-		//Access Token
-		String accessToken = Jwts.builder()
-				.setClaims(claims)
-				.setIssuedAt(Date.from(now.toInstant()))	//Token 발행시간
-				.setExpiration(Date.from(accessTokenValidity.toInstant()))	//Token 유효시간
-				.signWith(key, SignatureAlgorithm.HS256)	//암호화 알고리즘, key는 accessToken, resfreshToken 각각 다르게 설정하기도 함
-				.compact();
-				
-		//Refresh Token
-		String refreshToken = Jwts.builder()
-				.setClaims(claims)
-				.setIssuedAt(Date.from(now.toInstant()))
-				.setExpiration(Date.from(refreshTokenValidity.toInstant()))
-				.signWith(key, SignatureAlgorithm.HS256)
-				.compact();
-				
-		*/
-		
-		List<Map<TokenGenerateType, String>> tokens = generateTokenString(authentication, TokenGenerateType.ALL);
+		List<Map<TokenGenKey, String>> newTokenList = generateTokenString(authentication, TokenGenKey.ALL);
 		
 		String accessToken = "";
 		String refreshToken = "";
@@ -187,25 +172,39 @@ public class JwtUtil {
 		JwtTokenDtoBuilder tokenBuilder = JwtTokenDto.builder();
 		tokenBuilder.grantType(this.grantType);
 		
-		for(Map token: tokens) {
-			if(token.containsKey(TokenGenerateType.ACCESS)) {
-				accessToken = (String)token.get(TokenGenerateType.ACCESS);
-				tokenBuilder.accessToken(accessToken).accessExpiry(String.valueOf(accessTokenExpSec));
+		for(Map token: newTokenList) {
+			if(token.containsKey(TokenGenKey.ACCESS)) {
+				accessToken = (String)token.get(TokenGenKey.ACCESS);
+				//log.info("generateTokenString ACCESS_EXP >>>> {}", token.get(TokenGenKey.ACCESS_EXP));
+				//log.info("generateTokenString ACCESS_EXP_DT >>>> {}", token.get(TokenGenKey.ACCESS_EXP_DT));
+				tokenBuilder.accessToken(accessToken).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP)));
 			}
 			
-			if(token.containsKey(TokenGenerateType.REFRESH)) {
-				refreshToken = (String)token.get(TokenGenerateType.REFRESH);
-				tokenBuilder.refreshToken(refreshToken).refreshExpiry(String.valueOf(refreshTokenExpSec));
+			if(token.containsKey(TokenGenKey.REFRESH)) {
+				refreshToken = (String)token.get(TokenGenKey.REFRESH);
+				tokenBuilder.refreshToken(refreshToken).refreshExpiry(String.valueOf(token.get(TokenGenKey.REFRESH_EXP)));
+				//log.info("generateTokenString refreExp >>>> {}", String.valueOf(token.get(TokenGenKey.REFRESH_EXP)));
 			}
 		}
 		
-//		return JwtTokenDto.builder()
-//				.grantType(this.grantType)
-//				.accessToken(accessToken)
-//				.accessExpiry(String.valueOf(accessTokenExpSec))
-//				.refreshToken(refreshToken)
-//				.refreshExpiry(String.valueOf(refreshTokenExpSec))
-//				.build();
+		return tokenBuilder.build();
+	}
+	
+	
+	public JwtTokenDto generateAccessToken(Authentication authentication) {
+		
+		JwtTokenDtoBuilder tokenBuilder = JwtTokenDto.builder();
+		tokenBuilder.grantType(this.grantType);
+		
+		String accessTokenStr = "";
+		
+		List<Map<TokenGenKey, String>> newTokenList = generateTokenString(authentication, TokenGenKey.ACCESS);
+		
+		for(Map token: newTokenList) {
+			if(token.containsKey(TokenGenKey.ACCESS)) {
+				tokenBuilder.accessToken(String.valueOf(token.get(TokenGenKey.ACCESS))).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP)));
+			}
+		}
 		
 		return tokenBuilder.build();
 	}

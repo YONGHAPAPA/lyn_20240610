@@ -1,7 +1,7 @@
 import {React, useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
-import * as common from '../../modules/authentication';
+import * as auth from '../../modules/authentication';
 
 
 
@@ -13,34 +13,51 @@ const MyPage = () => {
  	let pids = useRef([]);
     
 	useEffect(()=>{
-		accessToken.current = common.extractAccessTokenFromRequestHeader(axios.defaults.headers.common["Authorization"]);
+		
+		console.log("start myPage");
+		
+		//화면 refresh 시 header 값은 사라지기 때문에 localstorage 에서 설정된 token으로 유효성체크한다. 
+		
+		//accessToken.current = common.extractAccessTokenFromRequestHeader(axios.defaults.headers.common["Authorization"]);
 		//console.log("MyPage::accessToken: ", accessToken.current)
-		
 		//console.log("MyPage pids", pids);
-		console.log("MyPage >> ");
-
-		
+		//console.log("MyPage >> ");
+		/*
+		accessToken.current = auth.getTokenFromLocalStorage();
 		
 		
 		if(accessToken.current !== ""){
 			//refreshAccessTokenBySlientLogin(accessToken.current);
+			auth.refreshAccessToken().then(result=>{
+				
+				alert(`refreshAccessToken ${result}`)
+				
+				if(!result){
+					alert("Your session is expired.\r\nplease login again.");
+					navigate("/auth/Login");
+				}
+			});
+			
 		} else {
 			
 			//Access Token이 없는경우 Login 페이지로 이동
 			alert("Your token is invalid. Login again!");
 			navigate('/auth/Login');
 		}
+		*/
 			
 		return()=>{
 			
-			console.log("clear pids", pids);
+			//console.log("clear pids", pids);
 			
+			/*
 			pids.current.forEach(pid=>{
 				
 				console.log("clear pid:: ", pid);
 				clearTimeout(pid);	
 				
 			})
+			*/
 			
 			//clearTimeout();
 			pids.current = "";
@@ -55,7 +72,7 @@ const MyPage = () => {
 		try{
 		
 			if(oldAccessToken){
-				let newTokenData = await common.doSlientLogin(oldAccessToken, "/auth/SlientLogin");
+				let newTokenData = await auth.doSlientLogin("/auth/SlientLogin");
 				
 				if(newTokenData){
 					accessToken.current = newTokenData.accessToken;
@@ -67,12 +84,12 @@ const MyPage = () => {
 					
 					let pid = setTimeout(refreshAccessTokenBySlientLogin, accessExpiry, accessToken.current);
 					
-					console.log("refreshAccessTokenBySlientLogin pid: ", pid);
+					//console.log("refreshAccessTokenBySlientLogin pid: ", pid);
 					pids.current.push(pid);
 					
 					//pids.current = [...pids, pid];
 					
-					console.log("refreshAccessTokenBySlientLogin 누적 pids.current", pids.current);
+					//console.log("refreshAccessTokenBySlientLogin 누적 pids.current", pids.current);
 				}
 				
 			}

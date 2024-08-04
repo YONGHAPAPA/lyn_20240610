@@ -13,5 +13,5 @@ public interface AuthenticationService {
 	
 	public boolean ValidateJwtToken(String jwtToken) throws Exception;
 	
-	public String regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception;
+	public JwtTokenDto regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception;
 }
