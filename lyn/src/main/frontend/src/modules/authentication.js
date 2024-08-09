@@ -24,21 +24,46 @@ export function extractAccessTokenFromRequestHeader(accessToken){
 
 
 export async function doSlientLogin(slientLoginUrl){
+	
 	//debugger;
-	//console.log("doSlientLogin");
+	
+	console.log(slientLoginUrl);
+	
+	
 	let newAccessToken = null;
+	
+	const result = {
+		status : true,
+		data : Object 
+	};	
 
 	try{
 		initRequestAuthHeader();	//토큰재발급시 request Header 의 access Token을 localStorage 의 것으로 새로 설정해준다.  
 		
 		let response = await axios.post(slientLoginUrl, "", null);
-		newAccessToken = response.data.data;
-		//console.log(newAccessToken);
-		return newAccessToken;
+		//newAccessToken = response.data.data;
+		result.status = true;
+		result.data = response.data.data;
+		
+		/*
+		await axios.post(slientLoginUrl, "", null).then((result)=>{
+			console.log(result);
+		}).catch(e=>{
+			console.log(e);
+		})
+		*/
+		
+		console.log(newAccessToken);
+		
+		//return newAccessToken;
 	}catch(e){
 		console.log(e);
-		throw e;
+		result.status = false;
+		result.data = e.response.data.error
+		//throw e;
 	}
+	
+	return result; 
 }
 
 
@@ -48,34 +73,44 @@ export async function doSlientLogin(slientLoginUrl){
 */
 export async function invokeAccessToken(){
 	
-	let result = false;
+	let result;
 	
 	try{
 		
 		//debugger;
 		
-		
 		//컴포넌트 리플래쉬 토큰 헤더가 없어졌으면 localStorage에 토큰값이 존재하면 그대로 헤더로 설정해준다.
 		//if(!localStorage.getItem(authProps.LOCAL_STRG_AUTH_NM)){
 		//	result = false;
 		//}
-			
 		 
-		if(isTokenExpired()){
+		if(isAuthenticationExpired()){
 			//유효기간 지났으면 slientlogin 으로 accessToken 재갱신해준다.
-			console.log("token-expired");
-			await doSlientLogin(authProps.SLIENT_LOGIN_URL).then((tokenDto)=>{
-				console.log(tokenDto);
-				setTokenToLocalStorage(tokenDto);
-				result = true;
-			}).catch(e=>{
-				//Refresh Token Invalid
-				removeAuthentication();
+			//console.log("token-expired");
+			
+			console.log("authProps.SLIENT_LOGIN_URL: ", authProps.SLIENT_LOGIN_URL);
+			
+			result = await doSlientLogin(authProps.SLIENT_LOGIN_URL).then((result)=>{
 				
-				if(e.response.status === 401){
-					alert(`${e.response.data.error.code} ${e.response.data.error.message}`)
-					result = false;	
+				//debugger;
+				
+				if(result.status === true){
+					console.log(result);
+					//const tokenData = result.data;
+					setTokenToLocalStorage(result.data);
+					return true;	
+				} else {
+					removeAuthentication();
+					if(result.data.code === "REFRESH_TOKEN_INVALID"){
+						//Refresh Token Invalid
+						console.log(`${result.data.code} :: ${result.data.message}`);
+					}
+					return false;
 				}
+			}).catch(e=>{
+				//removeAuthentication();
+				alert(`${e.response.data.error.code} ${e.response.data.error.message}`)
+				return false;	
 			}) 
 		} else {
 			//const accessToken = getTokenFromLocalStorage();
@@ -88,18 +123,23 @@ export async function invokeAccessToken(){
 		result = false;
 	}
 	
+	console.log("invokeAccessToken:result > ", result);
+	
 	return result;
 }
 
 
 export function initRequestAuthHeader(){
 
+	//debugger;
+	
 	try{
-		if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE_NM) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH_NM) !== null){
-				axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE_NM)} ${localStorage.getItem(authProps.LOCAL_STRG_AUTH_NM)}`;
+		if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH) !== null){
+			axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE)} ${localStorage.getItem(authProps.LOCAL_STRG_AUTH)}`;
 		}
 		
-		console.log(`1. [initRequestAuthHeader] >> ${axios.defaults.headers.common["Authorization"]}`)	
+		console.log(`1. [initRequestAuthHeader] >> ${axios.defaults.headers.common["Authorization"]}`);
+		console.log(`1. [initRequestAuthHeader] localStorage.getItem(authProps.LOCAL_STRG_ROLES) >> ${localStorage.getItem(authProps.LOCAL_STRG_ROLES)}`)
 	} catch(e){
 		
 	}
@@ -107,37 +147,39 @@ export function initRequestAuthHeader(){
 
 
 export function setTokenToLocalStorage(tokenDto){
-	
-	localStorage.clear();
-	
 	try{
-		localStorage.setItem(authProps.LOCAL_STRG_AUTH_TYPE_NM, tokenDto.grantType)
-		localStorage.setItem(authProps.LOCAL_STRG_AUTH_NM, tokenDto.accessToken);
-		localStorage.setItem(authProps.LOCAL_STRG_AUTH_EXP_TIME_NM, tokenDto.accessExpiry)
-		initRequestAuthHeader();
+		
+		localStorage.clear();
+		
+		if(tokenDto.grantType && tokenDto.accessToken && tokenDto.accessExpiry){
+			localStorage.setItem(authProps.LOCAL_STRG_AUTH_TYPE, tokenDto.grantType);
+			localStorage.setItem(authProps.LOCAL_STRG_AUTH, tokenDto.accessToken);
+			localStorage.setItem(authProps.LOCAL_STRG_AUTH_EXP_DT, tokenDto.accessExpiry);
+			localStorage.setItem(authProps.LOCAL_STRG_ROLES, tokenDto.roles);
+		}
 	}catch(e){
 		console.log("authentication::setTokenToLocalStorage");
 	}
 }
 
+
+
 export function getTokenFromLocalStorage(){
-	return localStorage.getItem(authProps.LOCAL_STRG_AUTH_NM); 
+	return localStorage.getItem(authProps.LOCAL_STRG_AUTH); 
 }
 
 
-export function isTokenExpired(){
+
+export function isAuthenticationExpired(){
 
 	//localstorage의 access토큰의 유효기간을 체크한다. 
 	//token정보가 없으면 expired 된것으로 처리한다.  	
     //let result = false;
 	try{
 		
-		if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_TIME_NM) !== null){
-			//alert("isTokenExpired >> " + localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_TIME_NM));
+		if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT) !== null){
 			const now = new Date();
-			const localTokenExpireDateTime = new Date(localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_TIME_NM));
-			//result = (localTokenExpireDateTime.getTime() < now.getTime());
-			//alert("isTokenExpired::localToken:" + localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_TIME_NM) + "::" + result);
+			const localTokenExpireDateTime = new Date(localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT));
 			return localTokenExpireDateTime.getTime() < now.getTime();
 		} else {
 			return true;
@@ -150,6 +192,36 @@ export function isTokenExpired(){
 export function removeAuthentication(){
 	delete axios.defaults.headers.common["Authorization"];
 	localStorage.clear();
+}
+
+
+export function isAuthenctedUser(){
+	if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT) !== null)
+		return true;
+	else 
+		return false;
+}
+
+
+export function getUserRoles(){
+	if(localStorage.getItem(authProps.LOCAL_STRG_ROLES) !== null){
+		return localStorage.getItem(authProps.LOCAL_STRG_ROLES);
+	}
+}
+
+export function getUserType(){
+	const userRoles = getUserRoles();
+	
+	if(userRoles){
+		let roles = userRoles.split(",");
+		
+		//debugger;
+		if(roles.includes(authProps.USER_ROLE_ADM)){
+			return authProps.USER_TYPE_ADMIN;
+		} else {
+			return authProps.USER_TYPE_USR;
+		} 
+	}
 }
 
 

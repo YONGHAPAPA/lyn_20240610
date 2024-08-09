@@ -1,7 +1,7 @@
 import {React, useEffect, useRef, useState} from 'react';
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
-import * as auth from '../../modules/authentication';
+//import * as auth from '../../modules/authentication';
 
 
 
@@ -66,43 +66,9 @@ const MyPage = () => {
 	
 	
 	
-	
-	const refreshAccessTokenBySlientLogin = async (oldAccessToken) => {
-
-		try{
-		
-			if(oldAccessToken){
-				let newTokenData = await auth.doSlientLogin("/auth/SlientLogin");
-				
-				if(newTokenData){
-					accessToken.current = newTokenData.accessToken;
-					axios.defaults.headers.common["Authorization"] = `${newTokenData.grantType} ${newTokenData.accessToken}`;
-					
-					let accessExpiry = (newTokenData.accessExpiry * 1000);
-					
-					console.log("accessExpiry", accessExpiry);
-					
-					let pid = setTimeout(refreshAccessTokenBySlientLogin, accessExpiry, accessToken.current);
-					
-					//console.log("refreshAccessTokenBySlientLogin pid: ", pid);
-					pids.current.push(pid);
-					
-					//pids.current = [...pids, pid];
-					
-					//console.log("refreshAccessTokenBySlientLogin 누적 pids.current", pids.current);
-				}
-				
-			}
-		} catch (e){
-			
-		}
-	}
-	
-	
-	
 	return(<>
 		<div>
-			My page			
+			My page
 		</div>
 	</>);
 	

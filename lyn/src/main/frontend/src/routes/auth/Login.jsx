@@ -29,21 +29,18 @@ const Login = () => {
 	
 	const location = useLocation();
 	//const tmp = location.state;
-	
-	
 	//console.log(tmp);
-	
 	
 	useEffect(() => {
 		
 		let auth = axios.defaults.headers.common["Authorization"];
-		console.log("Login auth:", auth);
+		//console.log("Login auth:", auth);
 
 		return() => {
 
-			console.log("slientLoginTimers clear", slientLoginTimers);
+			//console.log("slientLoginTimers clear", slientLoginTimers);
 			
-			
+			/*
 			if(slientLoginTimers.current){
 					slientLoginTimers.current.forEach(pid=>{
 					clearTimeout(pid);
@@ -51,6 +48,7 @@ const Login = () => {
 			
 				slientLoginTimers.current = null;	
 			}
+			*/
 		}
 	}, []);
 
@@ -96,8 +94,9 @@ const Login = () => {
 					
 					//Local Storage에 토큰값설정
 					auth.setTokenToLocalStorage(tokenDto);
-					alert("Login is success.");
-					//navigate('/member/MyPage')
+					auth.initRequestAuthHeader();	
+					alert("인증성공 - MyPage로 이동합니다.");
+					navigate('/member/MyPage');
 				}
 				
 				//moveToMyPage(tokenData);
@@ -119,7 +118,7 @@ const Login = () => {
 	
 
 	
-	
+	/*
 	const afterLoginSuccess = (res) => {
 		
 		let tokenInfo = res.data.data;
@@ -146,6 +145,7 @@ const Login = () => {
 		
 		return pid;
 	};
+	*/
 	
 	
 	const myInfo_onClick = (e) => {
@@ -205,6 +205,7 @@ const Login = () => {
 	}
 	
 	
+	/*
 	const slient_login_onClick = () => {
 		
 		if(axios.defaults.headers.common["Authorization"] === undefined || axios.defaults.headers.common["Authorization"] === ""){
@@ -232,6 +233,7 @@ const Login = () => {
 			}
 		); 
 	}
+	*/
 	
 	
 	return (
@@ -247,7 +249,7 @@ const Login = () => {
 				<DefaultButton text={"my info"} onClick={myInfo_onClick} />
 				<DefaultButton text={"admin dashboard"} onClick={adminDashBoard_onClick} />
 				<DefaultButton text={"except test1"} onClick={exception_test_onClick} />
-				<DefaultButton text={"slient login"} onClick={slient_login_onClick} />
+				<DefaultButton text={"slient login"}  />
 				<DefaultButton text={"test"} onClick={test_onClick} />
 			</div>
 		</>

@@ -15,4 +15,5 @@ public class JwtTokenDto {
 	private String accessExpiry;
 	private String refreshToken;
 	private String refreshExpiry;
+	private String roles;
 }

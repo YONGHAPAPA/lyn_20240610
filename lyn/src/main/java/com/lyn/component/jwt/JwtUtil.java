@@ -168,16 +168,19 @@ public class JwtUtil {
 		
 		String accessToken = "";
 		String refreshToken = "";
+		String roles = "";
 		
 		JwtTokenDtoBuilder tokenBuilder = JwtTokenDto.builder();
 		tokenBuilder.grantType(this.grantType);
+		
+		roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 		
 		for(Map token: newTokenList) {
 			if(token.containsKey(TokenGenKey.ACCESS)) {
 				accessToken = (String)token.get(TokenGenKey.ACCESS);
 				//log.info("generateTokenString ACCESS_EXP >>>> {}", token.get(TokenGenKey.ACCESS_EXP));
 				//log.info("generateTokenString ACCESS_EXP_DT >>>> {}", token.get(TokenGenKey.ACCESS_EXP_DT));
-				tokenBuilder.accessToken(accessToken).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP)));
+				tokenBuilder.accessToken(accessToken).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP))).roles(roles);
 			}
 			
 			if(token.containsKey(TokenGenKey.REFRESH)) {
@@ -196,13 +199,12 @@ public class JwtUtil {
 		JwtTokenDtoBuilder tokenBuilder = JwtTokenDto.builder();
 		tokenBuilder.grantType(this.grantType);
 		
-		String accessTokenStr = "";
-		
 		List<Map<TokenGenKey, String>> newTokenList = generateTokenString(authentication, TokenGenKey.ACCESS);
+		String roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 		
 		for(Map token: newTokenList) {
 			if(token.containsKey(TokenGenKey.ACCESS)) {
-				tokenBuilder.accessToken(String.valueOf(token.get(TokenGenKey.ACCESS))).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP)));
+				tokenBuilder.accessToken(String.valueOf(token.get(TokenGenKey.ACCESS))).accessExpiry(String.valueOf(token.get(TokenGenKey.ACCESS_EXP))).roles(roles);
 			}
 		}
 		
@@ -251,31 +253,32 @@ public class JwtUtil {
 					.build()
 					.parseClaimsJws(jwtToken)
 					.getBody();
+				
+				if(claims.get(ClaimsProp.USER_ROLE.name()) == null) {
+					throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+				}
+				 
+				
+				/*
+				 * Claims 에서 권한정보 추출하기
+				 * */
+				//log.info("getAuthentication::auth >> ", claims.get("auth").toString());
+				Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(ClaimsProp.USER_ROLE.name()).toString().split(","))
+						.map(SimpleGrantedAuthority::new)
+						.collect(Collectors.toList());
+
+				/*
+				 * UserDetails 객체를 생성해서 Authentication 객체로 리턴
+				 * UserDetails > 인터페이스/ User > UserDetails를 구현한 클래스
+				 * 권한정보를 Authentication 객체에 넣어 준다?
+				 * */
+				UserDetails principal = new User(claims.getSubject(), "", authorities);	
+				return new UsernamePasswordAuthenticationToken(principal, "", authorities);	//인증되지 않은 authentication 객체 생성 클래스
+				
 		} catch(ExpiredJwtException e) {
 			logger.error(String.format("Expired JWT :: %s", e.getMessage()));
 			return (Authentication) e.getClaims();
-		}		
-		
-		if(claims.get(ClaimsProp.USER_ROLE.name()) == null) {
-			throw new RuntimeException("권한 정보가 없는 토큰입니다.");
 		}
-		 
-		
-		/*
-		 * Claims 에서 권한정보 추출하기
-		 * */
-		//log.info("getAuthentication::auth >> ", claims.get("auth").toString());
-		Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(ClaimsProp.USER_ROLE.name()).toString().split(","))
-				.map(SimpleGrantedAuthority::new)
-				.collect(Collectors.toList());
-
-		/*
-		 * UserDetails 객체를 생성해서 Authentication 객체로 리턴
-		 * UserDetails > 인터페이스/ User > UserDetails를 구현한 클래스
-		 * 권한정보를 Authentication 객체에 넣어 준다?
-		 * */
-		UserDetails principal = new User(claims.getSubject(), "", authorities);	
-		return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 	}
 	
 	

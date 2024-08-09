@@ -44,3 +44,13 @@
 .div-header-menu-right {
 	float: right;
 }
+
+.div-side-nav-left {
+	float: left;
+	top: 0;
+	height: 100%;
+	background-color: rgb(255, 255, 255);
+	overflow-x: hidden; /* disable horizontal scroll*/
+	padding-top: 5px;	/* place content xx px from the top */
+	transition: 0.5s; /* second trasnition effect to slide in the sidenav*/
+}

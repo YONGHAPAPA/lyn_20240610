@@ -114,6 +114,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	
 	@Override
+	public Collection<? extends GrantedAuthority> getUserRolesFromToken(String accessToken) throws Exception {
+		
+		Collection<? extends GrantedAuthority> roles = null;
+		
+		try {
+			roles = jwtUtil.getRoleInfoFromToken(accessToken);
+		}catch(Exception e) {
+			throw new Exception(e.getMessage());
+		}
+		
+		return roles; 
+	}
+	
+	
+	@Override
 	public boolean ValidateJwtToken(String jwtToken) throws Exception {
 		
 		boolean result = false;

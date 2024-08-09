@@ -141,22 +141,32 @@ public class AuthenticationController {
 					if(cookies != null) {
 						
 						for(Cookie cookie : cookies) {
-							//log.info("AuthenticationController::SlientLogin: {}", cookie.getName()) ;
+							
+							
+							log.info("AuthenticationController::SlientLogin: {} : {}", cookie.getName(), cookie.getValue()) ;
+							
 							if(cookie.getName().equalsIgnoreCase("refreshToken")) {
 								refreshToken = cookie.getValue();
+								
+								
+								log.info("Cookie::refreshToken: {}", refreshToken) ;
+								
+								
 								break;
 							}
 						}
 					}
 					
 					
-					log.info("refreshToken >>>>> ", refreshToken);
+					log.info("refreshToken >>>>> {}", refreshToken);
 					
 					//RefreshToken 유효성 검사후 access token 재발급, 유효시간은 발급시점부터 새로 갱신
 					if(refreshToken != "" && authService.ValidateJwtToken(refreshToken)) {
+						log.info("Refresh Token 처리성공");
 						tokenDto = authService.regenerateAccessTokenByRefreshToken(refreshToken);
 					} else {
 						//Refresh Token Cookie 없음 
+						log.info("Refresh Token Cookie 없음");
 						return ApiResponse.fail(new CustomException(ErrorCode.REFRESH_TOKEN_INVALID));
 					}
 				} else {
