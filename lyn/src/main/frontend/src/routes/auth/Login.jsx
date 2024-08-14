@@ -111,6 +111,8 @@ const Login = () => {
 			console.log(e);
 			if(e.response.status === 401){
 				alert(e.response.data.error.message);	
+			} else {
+				alert(e.message)
 			}
 		})
 	}

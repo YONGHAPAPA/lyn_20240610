@@ -210,18 +210,43 @@ export function getUserRoles(){
 }
 
 export function getUserType(){
+	
+	//일단 사용자 Role 정보는 단일정보로 처리하는걸로 처리(나중에 멀티로 필요하면 구현)
 	const userRoles = getUserRoles();
+	
+	let userType = "";
 	
 	if(userRoles){
 		let roles = userRoles.split(",");
 		
 		//debugger;
-		if(roles.includes(authProps.USER_ROLE_ADM)){
-			return authProps.USER_TYPE_ADMIN;
-		} else {
-			return authProps.USER_TYPE_USR;
-		} 
+		//console.log(authProps);
+		
+		const USER_TYPES = Object.keys(authProps).filter((key)=>key.includes("USER_TYPE_"));
+		
+		//console.log(USER_TYPES);
+		
+		if(roles){
+			roles.forEach((userRole) => {
+				if(USER_TYPES){
+					USER_TYPES.forEach((key)=>{
+						
+						let roles = [];
+						roles = authProps[key];
+						
+						if(roles && roles.includes(userRole)){
+							//console.log(`${userRole} > ${key}`);
+							userType = key.replace("USER_TYPE_", "");
+						}
+					})
+				}
+			})
+		}
 	}
+	
+	return userType;
 }
+
+
 
 

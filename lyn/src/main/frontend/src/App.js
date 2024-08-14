@@ -11,8 +11,8 @@ import Login from './routes/auth/Login';
 import Home from './routes/common/Home';
 import MyPage from './routes/member/MyPage';
 import WorkBench from './routes/admin/WorkBench';
-import Page1 from './routes/admin/routes/Page1';
-import Page2 from './routes/admin/routes/Page2';
+import UserManagement from './routes/admin/layout/UserManagement';
+import UserConfig from './routes/admin/layout/UserConfig';
 
 import { useInsertionEffect } from 'react';
 
@@ -23,12 +23,7 @@ function App() {
 	let isAuthenticated = false;
 	const [msg, setMsg] = useState('');
 	
-	let ref_token = useRef('');
-	
 	useEffect(()=>{
-		
-		//console.log("app localStorage", localStorage.getItem("auth"));
-		ref_token.current = "newtoken~~~";
 		
 		/*
 		axios.get('https://localhost:8080/index', {widthwithCredentials:true})
@@ -36,7 +31,6 @@ function App() {
 		*/
 		
 		let accessToken = common.extractAccessTokenFromRequestHeader(axios.defaults.headers.common["Authorization"]);
-		//console.log("App:: accessToken", accessToken);
 		
 		if(accessToken){
 			//isAuthenticated = true;
@@ -46,47 +40,24 @@ function App() {
 		
 	}, []);
 	
-	
-	
-	
-	const slientLogin = async (oldAccessToken) => {
-		
-		let newAccessToken = "";
-		
-		try{
-			newAccessToken = await common.doSlientLogin(oldAccessToken, "/auth/SlientLogin");	
-		} catch(e){
-			console.log("slientLogin", e.description);
-			newAccessToken = "";
-		}
-		
-		return newAccessToken;
-		
-	}
-	
-	
-	
-	console.log("isAuthenticated: ",isAuthenticated);
-	
-	function app_test(){
-		console.log("app_test");
-	}
-	
-	
+
 	return (
 		<>
 			<div className='App'>return API index msg : {msg}</div>
-			<div><hr/></div>
-			<Routes>
-				<Route path="/" element={<Home/>} />
-				<Route path="auth/Join" element={<Join/>} />
-	            <Route path="auth/login" element={isAuthenticated ? <MyPage/> : <Login/>} />
-				<Route path="member/Mypage" element={<MyPage/>} />
-				<Route path="admin/WorkBench" element={<WorkBench/>}>
-					<Route path="routes/Page1" element={<Page1/>} />
-					<Route path="routes/Page2" element={<Page2/>} />
-				</Route>
-			</Routes>
+			<div className='main-wrapper'>
+				<Routes>
+					<Route path="/" element={<Home/>} />
+					<Route path="/auth/Join" element={<Join/>} />
+		            <Route path="/auth/login" element={isAuthenticated ? <MyPage/> : <Login/>} />
+					<Route path="/member/Mypage" element={<MyPage/>} />
+					<Route path="/admin/" element={<WorkBench/>}> 
+						<Route index path="layout/UserConfig" element={<UserConfig/>} />
+						<Route path="layout/UserManagement" element={<UserManagement/>} />
+
+					</Route>
+				</Routes>
+			</div>
+			
 		</>
 	);
 }

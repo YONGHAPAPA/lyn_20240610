@@ -1,0 +1,7 @@
+.component-outer-div {
+	border: 1px solid rgb(232, 234, 232);
+	padding: 5px;
+	padding-top: 3px;
+	padding-bottom: 15px;
+	border-radius: 7px;
+}

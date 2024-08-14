@@ -11,6 +11,6 @@ public class UserDto {
 	private Integer user_seq;
 	private String user_email;
 	private String user_pwd;
-	private String user_role_group;
+	private String user_role;
 	private String cre_id;
 }

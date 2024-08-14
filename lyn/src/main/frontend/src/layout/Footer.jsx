@@ -1,10 +1,14 @@
 import React from 'react';
 
+import App from '../App';
+
 const Footer = () => {
 	return (
-		<footer>
-			<hr/> 
-		</footer>
+		<>
+			<footer className='footer'>
+				Footer
+			</footer>
+		</>
 	);
 }
 

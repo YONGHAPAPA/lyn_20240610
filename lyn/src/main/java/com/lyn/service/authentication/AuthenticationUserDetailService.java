@@ -60,7 +60,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 		return User.builder()
 				.username(user.getUser_email())
 				.password(user.getUser_pwd())
-				.roles(user.getUser_role_group().split(","))			//Authority 와 Role 구분해서 지정하도록 GrantedAuthority.getAuthority 에서 반환
+				.roles(user.getUser_role().split(","))			//Authority 와 Role 구분해서 지정하도록 GrantedAuthority.getAuthority 에서 반환
 				//.authorities(user.getUser_role_group().split(","))    //Role 로 지정시 getAutority 에서 반환시 접두어 'Role_' 을 붙여 반환
 				.build();
 	}

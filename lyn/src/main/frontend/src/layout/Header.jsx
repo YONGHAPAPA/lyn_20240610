@@ -118,13 +118,13 @@ const Header = () => {
 
 	
 	return(
-		<header>
+		<header className='header'>
 			<div className='div-header-menu-left'>
 				<Link to='/' key={1} name="home" onClick={(e)=> {link_onClick(e, "home")}}>Home</Link>&nbsp;|&nbsp;
 				<Link to='/auth/Join' onClick={(e) => {link_onClick(e, "join")}}>Join</Link>&nbsp;|&nbsp;
 				<Link to='/auth/login' onClick={(e) => {link_onClick(e, "login")}} state={{data: '1'}}>Login</Link>&nbsp;|&nbsp;
 				<Link to='/member/MyPage' onClick={(e) => {link_onClick(e, "mypage")}}>My Page</Link>&nbsp;|&nbsp;
-				{userType === authProps.USER_TYPE_ADMIN && <Link to="/admin/WorkBench" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
+				{userType === "ADMIN" && <Link to="/admin" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
 			</div>
 			
 			<div className='div-header-menu-right'>
@@ -132,7 +132,6 @@ const Header = () => {
 			</div>
 			<div className='div-header-menu-right'>[{userType}]</div>
 			<br/>
-			<hr/>
 		</header>
 	);
 }

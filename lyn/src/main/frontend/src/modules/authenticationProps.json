@@ -2,12 +2,16 @@
 {
 	"JWT_GRANT_TYPE": "Bearer",
 	"SLIENT_LOGIN_URL": "/auth/SlientLogin",
+	
 	"LOCAL_STRG_AUTH_TYPE": "authType",
 	"LOCAL_STRG_AUTH": "accessToken", 
 	"LOCAL_STRG_AUTH_EXP_DT": "effectDt",
-	"LOCAL_STRG_ROLES": "roles", 
-	"USER_ROLE_ADM": "ROLE_ADMIN",
-	"USER_ROLE_USR": "ROLE_USER", 
-	"USER_TYPE_ADMIN": "ADM",
-	"USER_TYPE_USR": "USR" 
+	"LOCAL_STRG_ROLES": "roles",
+	 
+	"USER_ROLE_ROOT": "ROLE_ROOT", 
+	"USER_ROLE_ADMN": "ROLE_ADMN",
+	"USER_ROLE_USER": "ROLE_USER", 
+	
+	"USER_TYPE_ADMIN": ["ROLE_ROOT", "ROLE_ADMN"],
+	"USER_TYPE_USER": ["ROLE_USER"] 
 }

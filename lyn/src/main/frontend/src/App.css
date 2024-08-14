@@ -39,10 +39,12 @@
 
 .div-header-menu-left {
 	float: left;
+	
 }
 
 .div-header-menu-right {
 	float: right;
+	
 }
 
 .div-side-nav-left {
@@ -53,4 +55,69 @@
 	overflow-x: hidden; /* disable horizontal scroll*/
 	padding-top: 5px;	/* place content xx px from the top */
 	transition: 0.5s; /* second trasnition effect to slide in the sidenav*/
+	
+}
+
+.div-side-nav-right {
+	float: left;
+	top: 0;
+	height: 100%;
+	background-color: rgb(255, 255, 255);
+	overflow-x: hidden; /* disable horizontal scroll*/
+	padding-top: 5px;	/* place content xx px from the top */
+	transition: 0.5s; /* second trasnition effect to slide in the sidenav*/
+	padding-left: 30px;
+	
+}
+
+
+.main-wrapper {
+	height: auto;
+	min-height: 0%;
+	padding-bottom: 20px; /* footer 높이*/
+	font-size: smaller; 
+	
+	
+}
+
+
+/* Link 태그 CSS */
+a:-webkit-any-link {
+	text-decoration: none;
+	/*color: white;*/
+}
+
+.nav_item {
+	font-family: 'Segoe UI';
+}
+
+.nav_list {
+	
+	padding-right: 3px;
+	padding-left: 5px;
+	list-style: none;
+}
+
+.header {
+	background-color: rgb(252, 249, 224);
+	font-size:smaller;
+}
+
+.footer {
+	width: 100%;
+	background-color: rgb(252, 249, 224);
+	position: absolute;
+	bottom: 0px;
+	/*height: 20px;*/
+	/*position: relative;*/
+	/*transform: translateY(-100%);*/
+	font-size:smaller;
+}
+
+.component-outer {
+	border: 1px solid rgb(232, 234, 232);
+	padding: 5px;
+	padding-top: 3px;
+	padding-bottom: 15px;
+	border-radius: 7px;
 }
