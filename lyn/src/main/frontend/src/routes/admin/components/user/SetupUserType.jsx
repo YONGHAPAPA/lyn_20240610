@@ -197,6 +197,9 @@ const SetupUserType = () => {
 		
 		setSelected([]);
 	}
+	
+	
+	const visibleRows = React.userMemo();
 
 	
 	return (
@@ -220,6 +223,10 @@ const SetupUserType = () => {
 									onRequestSort={handleRequestSort}
 									rowCount={rows.length}
 								/>
+								
+								<TableBody>
+								
+								</TableBody>
 							</Table>
 						</TableContainer>
 					</Paper>
