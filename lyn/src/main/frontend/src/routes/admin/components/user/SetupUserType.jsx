@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {alpha, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography, Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import {visuallyHidden} from '@mui/utils'
+
 function createData(id, name, caloris, fat, carbs, protein){
 	return {
 		id, 
@@ -145,7 +145,7 @@ function EnhancedTableHead(props){
 									
 									{headCell.label}
 									{orderBy === headCell.id ? (
-										<Box component="span" sx={visuallyHidden}>
+										<Box component="span" >
 											{order === 'desc' ? 'sorted descending' : 'sorted ascending'}
 										</Box>
 									) : null
