@@ -1,5 +1,5 @@
 import '../../../App.css';
-import SetupUserType from '../components/user/SetupUserType';
+import SetupUserType from '../user/SetupUserType';
 
 
 const UserConfig = () => {

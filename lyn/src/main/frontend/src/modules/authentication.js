@@ -27,7 +27,7 @@ export async function doSlientLogin(slientLoginUrl){
 	
 	//debugger;
 	
-	console.log(slientLoginUrl);
+	//console.log(slientLoginUrl);
 	
 	
 	let newAccessToken = null;
@@ -53,7 +53,7 @@ export async function doSlientLogin(slientLoginUrl){
 		})
 		*/
 		
-		console.log(newAccessToken);
+		//console.log(newAccessToken);
 		
 		//return newAccessToken;
 	}catch(e){
@@ -88,14 +88,14 @@ export async function invokeAccessToken(){
 			//유효기간 지났으면 slientlogin 으로 accessToken 재갱신해준다.
 			//console.log("token-expired");
 			
-			console.log("authProps.SLIENT_LOGIN_URL: ", authProps.SLIENT_LOGIN_URL);
+			//console.log("authProps.SLIENT_LOGIN_URL: ", authProps.SLIENT_LOGIN_URL);
 			
 			result = await doSlientLogin(authProps.SLIENT_LOGIN_URL).then((result)=>{
 				
 				//debugger;
 				
 				if(result.status === true){
-					console.log(result);
+					//console.log(result);
 					//const tokenData = result.data;
 					setTokenToLocalStorage(result.data);
 					return true;	
@@ -103,7 +103,7 @@ export async function invokeAccessToken(){
 					removeAuthentication();
 					if(result.data.code === "REFRESH_TOKEN_INVALID"){
 						//Refresh Token Invalid
-						console.log(`${result.data.code} :: ${result.data.message}`);
+						//console.log(`${result.data.code} :: ${result.data.message}`);
 					}
 					return false;
 				}
@@ -123,7 +123,7 @@ export async function invokeAccessToken(){
 		result = false;
 	}
 	
-	console.log("invokeAccessToken:result > ", result);
+	//console.log("invokeAccessToken:result > ", result);
 	
 	return result;
 }
@@ -138,8 +138,8 @@ export function initRequestAuthHeader(){
 			axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE)} ${localStorage.getItem(authProps.LOCAL_STRG_AUTH)}`;
 		}
 		
-		console.log(`1. [initRequestAuthHeader] >> ${axios.defaults.headers.common["Authorization"]}`);
-		console.log(`1. [initRequestAuthHeader] localStorage.getItem(authProps.LOCAL_STRG_ROLES) >> ${localStorage.getItem(authProps.LOCAL_STRG_ROLES)}`)
+		//console.log(`1. [initRequestAuthHeader] >> ${axios.defaults.headers.common["Authorization"]}`);
+		//console.log(`1. [initRequestAuthHeader] localStorage.getItem(authProps.LOCAL_STRG_ROLES) >> ${localStorage.getItem(authProps.LOCAL_STRG_ROLES)}`)
 	} catch(e){
 		
 	}

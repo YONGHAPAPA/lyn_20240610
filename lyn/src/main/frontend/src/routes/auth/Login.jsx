@@ -57,7 +57,7 @@ const Login = () => {
 	
 		//console.log("test_onClick:: ", slientLoginPids);
 		slientLoginTimers.forEach(pid=>{
-			console.log("clearTimeout:: ", pid)
+			//console.log("clearTimeout:: ", pid)
 			clearTimeout(pid);
 		})
 	}
@@ -197,7 +197,7 @@ const Login = () => {
 				var2:"2"
 			}
 		}).then((res)=>{
-			console.log(res);
+			//console.log(res);
 			alert(`[res] ${res.data}`);
 		}).catch(e => {
 			

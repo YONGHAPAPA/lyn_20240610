@@ -1,8 +1,8 @@
 import * as React from 'react'
 import PropTypes from 'prop-types';
-import {alpha, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography, Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete'
-import FilterListIcon from '@material-ui/icons/FilterList'
+import {alpha, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography, Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch, TablePagination } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete'
+import FilterListIcon from '@mui/icons-material/FilterList'
 
 function createData(id, name, caloris, fat, carbs, protein){
 	return {
@@ -17,11 +17,11 @@ function createData(id, name, caloris, fat, carbs, protein){
 
 const rows = [
 	createData(1, 'cake', 100, 3.7, 67, 1.3), 
-	createData(1, 'cake2', 130, 1.2, 38, 2.7),
-	createData(1, 'cake3', 107, 5.9, 17, 5.9),
-	createData(1, 'cake4', 110, 2.8, 54, 7.3),
-	createData(1, 'cake5', 190, 4.7, 99, 9.1),
-	createData(1, 'cake6', 200, 7.9, 6, 8.3),
+	createData(2, 'cake2', 130, 1.2, 38, 2.7),
+	createData(3, 'cake3', 107, 5.9, 17, 5.9),
+	createData(4, 'cake4', 110, 2.8, 54, 7.3),
+	createData(5, 'cake5', 190, 4.7, 99, 9.1),
+	createData(6, 'cake6', 200, 7.9, 6, 8.3),
 	
 ];
 
@@ -84,7 +84,7 @@ function EnhancedTableToolbar(props){
 			) : ( 
 				<Typography
 					sx={{flex: '1 1 100%'}}
-					variant='h7'
+					variant='inherit'
 					id='tableTitle'
 					component='div'
 				>Nutrition</Typography>
@@ -180,7 +180,7 @@ const SetupUserType = () => {
 	const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0); 
 	const [dense, setDense] = React.useState(false);
-	const [rowsPerPage, setRowPerPage] = React.useState(5);
+	const [rowsPerPage, setRowPerPage] = React.useState(10);
 	
 	const handleRequestSort = (event, property) => {
 		const isAsc = orderBy === property && order === 'asc';
@@ -198,8 +198,102 @@ const SetupUserType = () => {
 		setSelected([]);
 	}
 	
+	function descendingComparator(a, b, orderBy){
+		if(b[orderBy] < a[orderBy]){
+			return -1;
+		}
+		
+		if(b[orderBy] > a[orderBy]){
+			return 1;
+		}
+		
+		return 0;
+			
+	}
 	
-	const visibleRows = React.userMemo();
+	function getComparator(order, orderBy){
+		return order === 'desc'
+		? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy); 
+	}
+	
+	
+	function stableSort(array, comparator) {
+		const stablizedThis = array.map((el, index) => [el, index]);
+		
+		stablizedThis.sort((a, b) => {
+			const order = comparator(a[0], b[0]);
+			
+			if(order !==0){
+				return order;
+			}
+			
+			return a[1] - b[1];	//이부분은 왜 필요할까??
+				
+		});
+		
+		
+		return stablizedThis.map((el) => el[0]);
+	}
+	
+	
+	const isSelected = (id) => selected.indexOf(id) !== -1;
+	
+	
+	const visibleRows = React.useMemo(()=> 
+		stableSort(rows, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), 
+		[order, orderBy, page, rowsPerPage]
+	);
+	
+
+	
+	const handlClick = (event, id) =>{
+		
+		console.log(id);
+		
+		const selectedIndex = selected.indexOf(id);
+		let newSelected = [];
+		
+		
+		//debugger;
+		if(selectedIndex === -1){
+			newSelected = newSelected.concat(selected, id);
+		} else if (selectedIndex === 0) {
+			newSelected = newSelected.concat(selected.slice(1));
+		} else if (selectedIndex === selected.length - 1) {
+			newSelected = newSelected.concat(selected.slice(0, -1));
+		} else if (selectedIndex > 0) {
+			newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex+1));
+		}
+		
+		console.log("newSelected", newSelected);
+		
+		
+		setSelected(newSelected);
+		
+		
+		console.log("selected", selected)
+		
+		
+	}
+	
+	
+	const handleChangePage = (event, newPage) => {
+		
+		//debugger;
+		console.log("newPage", newPage)
+		setPage(newPage);
+	}
+	
+	//console.log(result);;
+	
+	
+	const handleChangeRowsPerPage = (event) => {
+		
+		//debugger;
+		console.log("handleChangeRowsPerPage", event.target.value);
+		setRowPerPage(parseInt(event.target.value, 10));
+		setPage(0);
+	}
 
 	
 	return (
@@ -211,7 +305,7 @@ const SetupUserType = () => {
 						<EnhancedTableToolbar numSelected={selected.length} />
 						<TableContainer>
 							<Table 
-								sx={{ minWidth: 750}}
+								sx={{ minWidth: 550}}
 								aria-labelledby='tableTitle'
 								size={dense ? 'small':'medium'}
 							>
@@ -225,11 +319,69 @@ const SetupUserType = () => {
 								/>
 								
 								<TableBody>
-								
+									{
+										
+										visibleRows.map((row, index) => {
+											const isItemSelected = isSelected(row.id);
+											const labelId = `enhanced-table-checkbox-${index}`;
+											
+											return(
+												<TableRow 
+													hover
+													onClick={(e) => handlClick(e, row.id)}
+													role="checkbox"
+													aria-checked={isItemSelected}
+													tabIndex={-1}
+													key={row.id}
+													selected={isItemSelected}
+													sx={{cursor: 'pointer'}}
+												>
+													<TableCell padding='checkbox'>
+														<Checkbox 
+															color='primary'
+															checked={isItemSelected}
+															inputProps={{
+																'aria-labelledby' : labelId,
+															}}
+														/>
+													</TableCell>
+													
+													<TableCell
+														component="th"
+														id={labelId}
+														scope='row'
+														padding='none'
+													>
+													{row.name}
+													</TableCell>
+													
+													<TableCell align='right'>{row.calories}</TableCell>
+													<TableCell align='right'>{row.fat}</TableCell>
+													<TableCell align='right'>{row.carbs}</TableCell>
+													<TableCell align='right'>{row.protein}</TableCell>
+													
+												</TableRow>
+											);
+										})
+									}
 								</TableBody>
 							</Table>
 						</TableContainer>
+						
+						<TablePagination 
+							rowsPerPageOptions={[2, 3, 4]}
+							component="div"
+							count={rows.length}
+							rowsPerPage={rowsPerPage}
+							page={page}
+							onPageChange={handleChangePage}
+							onRowsPerPageChange={handleChangeRowsPerPage}
+						/>
 					</Paper>
+					<FormControlLabel 
+						control={<Switch checked={dense} />}
+						label="Dense padding"
+					/>
 				</Box>
 			</div>
 		</>
