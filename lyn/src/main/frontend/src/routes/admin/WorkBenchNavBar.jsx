@@ -25,6 +25,8 @@ import Dns from '@mui/icons-material/Dns';
 import Public from '@mui/icons-material/Public';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
+import * as menuUtil from '../../modules/menu/menuUtility';
+
 
 
 
@@ -110,12 +112,14 @@ const WorkBenchNavBar = () => {
 		
 	//debugger;
 	
+	menuUtil.getNavMenu("BUNKR");
+	
 	const [navMenu, setNavMenu] = React.useState(SidebarData);
 	//setNavMenu(SidebarData);
 	
 	const getNavMenuData = () => {
 		
-		console.log(navMenu);
+		//console.log(navMenu);
 		
 		return navMenu;
 	}
@@ -131,7 +135,7 @@ const WorkBenchNavBar = () => {
 
 	const nav_menu_toggle = (event, selectedId) => {
 		
-		console.log("nav_menu_toggle", selectedId);
+		//console.log("nav_menu_toggle", selectedId);
 		//console.log(navMenu);
 		
 		let newNavMenus = [];
@@ -143,7 +147,7 @@ const WorkBenchNavBar = () => {
 			return menu;
 		});
 		
-		console.log(newNavMenus);
+		//console.log(newNavMenus);
 		setNavMenu(newNavMenus);
 	}
 		
@@ -159,9 +163,9 @@ const WorkBenchNavBar = () => {
 		            },
 		          },
 		          palette: {
-		            mode: 'dark',
-		            primary: { main: 'rgb(102, 157, 246)' },
-		            background: { paper: 'rgb(5, 30, 52)' },
+		            mode: 'light',	//light, dark
+		            primary: { main: '#696969' },
+		            background: { paper: '#DCDCDC' },
 		          },
 		        })}
 		      >
@@ -249,7 +253,7 @@ const WorkBenchNavBar = () => {
 						navMenus.map((item, index)=>{
 							//console.log("index", index)
 							//debugger;
-							console.log(item.id);
+							//console.log(item.id);
 							return (
 									<React.Fragment key={`nav_menu_${index}`}>
 										<ListItemButton key={item.id} onClick={(e)=>nav_menu_toggle(e, item.id)}>

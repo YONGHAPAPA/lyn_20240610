@@ -34,14 +34,17 @@ public class JwtAuthenticationEntryPointHandler implements AuthenticationEntryPo
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
 		final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-		
+		String accept = request.getHeader("Accept");
+
 		log.info(String.format("JwtAuthenticationEntryPointHandler::authorization:%s", authorization));
 		log.info(String.format("JwtAuthenticationEntryPointHandler::authException:%s", authException.getMessage()));
-		
-		String accept = request.getHeader("Accept");
 		log.info(String.format("JwtAuthenticationEntryPointHandler::accept:%s", accept));
 		
-		JwtAuthenticationFilter.setErrorResponse(response, ErrorCode.ACCESS_FORBIDDEN);
+		if(authorization == "") {
+			JwtAuthenticationFilter.setErrorResponse(response, ErrorCode.ACCESS_TOKEN_NULL);
+		} else {
+			//권한 없는 token 일경우. 
+			JwtAuthenticationFilter.setErrorResponse(response, ErrorCode.UNAUTHORIZED);
+		}
 	}
-
 }

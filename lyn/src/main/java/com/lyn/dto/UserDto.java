@@ -13,4 +13,5 @@ public class UserDto {
 	private String user_pwd;
 	private String user_role;
 	private String cre_id;
+	private String upd_id;
 }

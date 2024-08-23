@@ -19,6 +19,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.dto.jwt.JwtTokenDto.JwtTokenDtoBuilder;
 import com.lyn.model.jwt.ClaimsProp;
@@ -37,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+ 
 
 
 @Slf4j
@@ -215,27 +220,72 @@ public class JwtUtil {
 	
 	
 	/*
-	 * jwt Token 유효성 검증
+	 * jwt Refresh Token 유효성 검증
 	 * */
-	public boolean validateToken(String jwtToken) {
+	public boolean validateRefreshToken(String jwtRefreshToken) {
 
 		try {
 			Jwts.parserBuilder()
 			.setSigningKey(key)
 			.build()
-			.parseClaimsJws(jwtToken);
+			.parseClaimsJws(jwtRefreshToken);
 			return true;
 		} catch(SecurityException | MalformedJwtException e) {
-			logger.error(String.format("Invalid JWT Token :: %s", e.getMessage()));
+			logger.error(String.format("Invalid Refresh Token :: %s", e.getMessage()));
 		} catch(ExpiredJwtException e) {
-			logger.error(String.format("Expired JWT Token :: %s", e.getMessage()));
+			logger.error(String.format("Expired Refresh Token :: %s", e.getMessage()));
+			//throw e;
 		} catch(UnsupportedJwtException e) {
-			logger.error(String.format("Unsupported JWT Token :: %s", e.getMessage()));
+			logger.error(String.format("Unsupported Refresh Token :: %s", e.getMessage()));
 		} catch(IllegalArgumentException e) {
-			logger.error(String.format("JWT Claims string is empty :: %s", e.getMessage()));
+			logger.error(String.format("Refresh JWT Claims string is empty :: %s", e.getMessage()));
 		}
 		
 		return false;
+	}
+	
+	/*
+	 * jwt Access Token 유효성 검증
+	 * */
+	public boolean validateAccessToken(String jwtAccessToken) {
+
+		try {
+			Jwts.parserBuilder()
+			.setSigningKey(key)
+			.build()
+			.parseClaimsJws(jwtAccessToken);
+			return true;
+			
+		} catch(SecurityException | MalformedJwtException e) {
+			logger.error(String.format("Invalid Access Token :: %s", e.getMessage()));
+		} catch(ExpiredJwtException e) {
+			logger.error(String.format("Expired Access Token :: %s", e.getMessage()));
+			//throw e;
+		} catch(UnsupportedJwtException e) {
+			logger.error(String.format("Unsupported Access Token :: %s", e.getMessage()));
+		} catch(IllegalArgumentException e) {
+			logger.error(String.format("JWT Access Claims string is empty :: %s", e.getMessage()));
+		}
+		
+		return false;
+	}
+	
+	
+	
+	public boolean isExpiredAccessToken(String jwtAccessToken) {
+		
+		boolean expired = false;
+		
+		try {
+			DecodedJWT decodedJWT = JWT.decode(jwtAccessToken);
+			Date expiresAt = decodedJWT.getExpiresAt();
+			expired = expiresAt.before(new Date());
+			log.info("isExpiredAccessToken >>>>>> jwtAccessToken : {} decodedJWT: {}, expiredAt:{}, expired:{} ", jwtAccessToken, decodedJWT, expiresAt.toString(), expired);
+		} catch(JWTDecodeException e) {
+			log.error("isExpiredToken >>> {}", e.getMessage());
+		}
+		
+		return expired;
 	}
 	
 	 
@@ -296,7 +346,7 @@ public class JwtUtil {
 				Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwtToken).getBody();
 				String user_role = claims.get(ClaimsProp.USER_ROLE.name()).toString();
 				
-				log.info("JwtUtil::getRoleInfoFromAccessToken:user_role {}", user_role);
+				//log.info("JwtUtil::getRoleInfoFromAccessToken:user_role {}", user_role);
 				
 				authorities = Arrays.stream(user_role.split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 			}
@@ -307,5 +357,22 @@ public class JwtUtil {
 		
 		return authorities;
 	}
+	
+	
+	public String getUserIdFromToken(String jwtToken) {
+
+		String userId = "";
+		
+		try {
+			
+			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwtToken).getBody();
+			userId = claims.getSubject();
+			
+		}catch(Exception e) {
+			log.error("[getUserIdFromToken] : {}", e.getMessage());
+		}
+		
+		return userId;
+	} 
 	
 }

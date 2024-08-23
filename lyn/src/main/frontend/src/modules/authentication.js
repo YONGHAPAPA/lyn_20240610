@@ -38,7 +38,8 @@ export async function doSlientLogin(slientLoginUrl){
 	};	
 
 	try{
-		initRequestAuthHeader();	//토큰재발급시 request Header 의 access Token을 localStorage 의 것으로 새로 설정해준다.  
+		
+		//initRequestAuthHeader();	//토큰재발급시 request Header 의 access Token을 localStorage 의 것으로 새로 설정해준다.  
 		
 		let response = await axios.post(slientLoginUrl, "", null);
 		//newAccessToken = response.data.data;
@@ -87,7 +88,6 @@ export async function invokeAccessToken(){
 		if(isAuthenticationExpired()){
 			//유효기간 지났으면 slientlogin 으로 accessToken 재갱신해준다.
 			//console.log("token-expired");
-			
 			//console.log("authProps.SLIENT_LOGIN_URL: ", authProps.SLIENT_LOGIN_URL);
 			
 			result = await doSlientLogin(authProps.SLIENT_LOGIN_URL).then((result)=>{
@@ -95,15 +95,21 @@ export async function invokeAccessToken(){
 				//debugger;
 				
 				if(result.status === true){
-					//console.log(result);
+					console.log("Access Token 재발급결과 >> ", result);
 					//const tokenData = result.data;
 					setTokenToLocalStorage(result.data);
+					
+					//토큰재발급시 request Header 의 access Token을 localStorage 의 것으로 새로 설정해준다.
+					//initRequestAuthHeader();
+					axios.defaults.headers.common["Authorization"] = `${result.data.grantType} ${result.data.accessToken}`; 
+					   
 					return true;	
 				} else {
 					removeAuthentication();
 					if(result.data.code === "REFRESH_TOKEN_INVALID"){
 						//Refresh Token Invalid
 						//console.log(`${result.data.code} :: ${result.data.message}`);
+						alert("인증이 만료되었습니다. 재인증 해주세요.")
 					}
 					return false;
 				}
@@ -220,6 +226,7 @@ export function getUserType(){
 		let roles = userRoles.split(",");
 		
 		//debugger;
+		//console.log(roles);
 		//console.log(authProps);
 		
 		const USER_TYPES = Object.keys(authProps).filter((key)=>key.includes("USER_TYPE_"));
@@ -233,6 +240,8 @@ export function getUserType(){
 						
 						let roles = [];
 						roles = authProps[key];
+						
+						//console.log(roles.includes(userRole));
 						
 						if(roles && roles.includes(userRole)){
 							//console.log(`${userRole} > ${key}`);

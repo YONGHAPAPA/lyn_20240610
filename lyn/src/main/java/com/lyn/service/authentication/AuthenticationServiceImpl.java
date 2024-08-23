@@ -129,16 +129,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	
 	
 	@Override
-	public boolean ValidateJwtToken(String jwtToken) throws Exception {
+	public boolean isExpiredAccessToken(String jwtAccessToken) {
+		boolean isExpired = false;
+		
+		try {
+			isExpired = jwtUtil.isExpiredAccessToken(jwtAccessToken);
+		}catch(Exception e) {
+			log.error("isExpiredAccessToken: {}", e.getMessage());
+			isExpired = false;
+		}
+		
+		return isExpired;
+	}
+	
+	
+	@Override
+	public boolean ValidateJwtRefreshToken(String jwtRefreshToken) throws Exception {
 		
 		boolean result = false;
 		
 		try {
-			
-			result = jwtUtil.validateToken(jwtToken);
+			result = jwtUtil.validateRefreshToken(jwtRefreshToken);
 			
 		} catch(Exception e) {
-			return false;
+			result = false;
 		}
 		
 		return result;

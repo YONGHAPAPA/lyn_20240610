@@ -111,6 +111,9 @@ public class AuthenticationController {
 	@PostMapping("/SlientLogin")
 	public ApiResponse<?> SlientLogin(HttpServletRequest request){
 		
+		
+		log.info("SlientLogin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		
 		JwtTokenDto tokenDto = new JwtTokenDto();
 		String authorizationToken = "";
 		String accessToken = "";
@@ -123,7 +126,7 @@ public class AuthenticationController {
 			 * */
 			authorizationToken = request.getHeader("Authorization");
 			
-			log.info("authorizationToken: {}", authorizationToken);
+			//log.info("authorizationToken: {}", authorizationToken);
 			
 			if(StringUtils.isEmpty(authorizationToken)) {
 				return ApiResponse.fail(new CustomException(ErrorCode.ACCESS_TOKEN_INVALID));
@@ -134,36 +137,38 @@ public class AuthenticationController {
 			}
 			
 			if(StringUtils.isNotEmpty(accessToken)) {
-				if(!authService.ValidateJwtToken(accessToken)) {
+				
+				//Access token 유효일 체크
+				authService.isExpiredAccessToken(accessToken);
+				
+				//if(!authService.ValidateJwtToken(accessToken)) {
+				if(authService.isExpiredAccessToken(accessToken)) {
 					
 					//RefreshToken Cookie 확인
 					Cookie[] cookies = request.getCookies();
 					if(cookies != null) {
 						
 						for(Cookie cookie : cookies) {
-							
-							
-							log.info("AuthenticationController::SlientLogin: {} : {}", cookie.getName(), cookie.getValue()) ;
+							//log.info("AuthenticationController::SlientLogin: {} : {}", cookie.getName(), cookie.getValue()) ;
 							
 							if(cookie.getName().equalsIgnoreCase("refreshToken")) {
 								refreshToken = cookie.getValue();
-								
-								
-								log.info("Cookie::refreshToken: {}", refreshToken) ;
-								
-								
+								//log.info("Cookie::refreshToken: {}", refreshToken) ;
 								break;
 							}
 						}
 					}
 					
 					
-					log.info("refreshToken >>>>> {}", refreshToken);
+					//log.info("refreshToken >>>>> {}", refreshToken);
 					
 					//RefreshToken 유효성 검사후 access token 재발급, 유효시간은 발급시점부터 새로 갱신
-					if(refreshToken != "" && authService.ValidateJwtToken(refreshToken)) {
-						log.info("Refresh Token 처리성공");
+					if(refreshToken != "" && authService.ValidateJwtRefreshToken(refreshToken)) {
+						
 						tokenDto = authService.regenerateAccessTokenByRefreshToken(refreshToken);
+						
+						log.info("Access Token 재발급 >>>> New AccessToken: {}", tokenDto.getAccessToken());
+						
 					} else {
 						//Refresh Token Cookie 없음 
 						log.info("Refresh Token Cookie 없음");
@@ -188,6 +193,9 @@ public class AuthenticationController {
 		UserDto newUser = new UserDto();
 		newUser.setUser_email(userEmail);
 		newUser.setUser_pwd(userPassword);
+		newUser.setCre_id("SA");
+		newUser.setUpd_id("SA");
+		
 		
 		try {
 			authService.JoinUser(newUser);

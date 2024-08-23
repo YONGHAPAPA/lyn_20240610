@@ -9,11 +9,19 @@
 		</selectKey>
 		
 		insert into users(user_seq, user_email, user_pwd, user_role, cre_id, cre_date, upd_id, upd_date)
-		values (#{user_seq}, #{user_email}, #{user_pwd}, 'USER', #{cre_id}, now(), #{cre_id}, now())
+		values (#{user_seq}, #{user_email}, #{user_pwd}, 'USER', #{cre_id}, now(), #{upd_id}, now())
 	</insert>
 	
 	<select id="GetUserByUserName" parameterType="String" resultType="com.lyn.dto.UserDto">
-		select user_seq, user_email, user_pwd, user_role from users where user_email = #{userEmail} limit 1
+		SELECT 
+		USER_SEQ, 
+		USER_EMAIL, 
+		USER_PWD, 
+		(SELECT STRING_AGG(C.ROLE, ',') FROM USERS A, USER_ROLES B, USER_ROLE_GROUP C 
+		WHERE A.USER_ROLE = B.ROLE_CD
+		AND B.ROLE_GROUP = C.ROLE_GROUP_CD AND A.USER_EMAIL = USERS.USER_EMAIL ) USER_ROLE 
+		FROM USERS 
+		WHERE USER_EMAIL = #{userEmail} limit 1
 	</select>
 	
 	<select id="GetUserRoles" parameterType="String" resultType="String" >

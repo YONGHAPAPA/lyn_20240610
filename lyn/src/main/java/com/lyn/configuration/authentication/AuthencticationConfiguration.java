@@ -39,7 +39,9 @@ public class AuthencticationConfiguration {
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
 	private static final String[] AUTH_API_WHITE_LIST = {"/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser", "/auth/SlientLogin", "/except1"};
 	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/member/myInfo"};
-	private static final String[] AUTH_API_ADMIN_ACCESS_LIST = {"/admin/dashBoard"};
+	private static final String[] AUTH_API_USER_ACCESS_ROLE = {"USR01", "USR02", "ADM01", "ADM00"};
+	private static final String[] AUTH_API_ADMIN_ACCESS_LIST = {"/admin/dashBoard", "/menu/getNavMenuByDomain"};
+	private static final String[] AUTH_API_ADMIN_ACCESS_ROLE = {"ADM00", "ADM01"};
 	
 	private final JwtAuthenticationEntryPointHandler jwtAuthenticationEntryPointHandler;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -136,8 +138,11 @@ public class AuthencticationConfiguration {
 		.httpBasic(AbstractHttpConfigurer::disable)	//BasicHttp 비활성화
 		.authorizeHttpRequests(
 				authorizeRequests->authorizeRequests.requestMatchers(AUTH_API_WHITE_LIST).permitAll()
-				.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasRole("USER")
-				.requestMatchers(AUTH_API_ADMIN_ACCESS_LIST).hasRole("ADMIN")
+				.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasAnyRole(AUTH_API_USER_ACCESS_ROLE)
+				//.requestMatchers(AUTH_API_USER_ACCESS_LIST).hasRole("ROLE4")
+
+				.requestMatchers(AUTH_API_ADMIN_ACCESS_LIST).hasAnyRole(AUTH_API_ADMIN_ACCESS_ROLE)
+				//.requestMatchers(AUTH_API_ADMIN_ACCESS_LIST).hasRole("ROLE4")
 				.anyRequest().authenticated() //나머지 요청에 대해서는 인증필요
 				
 		)

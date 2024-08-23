@@ -15,7 +15,9 @@ public interface AuthenticationService {
 	
 	public JwtTokenDto SignInUser(UserDto user) throws Exception;
 	
-	public boolean ValidateJwtToken(String jwtToken) throws Exception;
+	public boolean ValidateJwtRefreshToken(String jwtToken) throws Exception;
+	
+	public boolean isExpiredAccessToken(String jwtAccessToken) throws Exception;
 	
 	public JwtTokenDto regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception;
 	

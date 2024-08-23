@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 			 *accessToken 의 유효성 체크한다.
 			 *유효할 경우 token 에서 Authentication 객체를 추출해서 SecurityContext 에 세팅처리. 
 			 * */
-			if(accessToken != "" && jwtUtil.validateToken(accessToken)) {
+			if(accessToken != "" && jwtUtil.validateAccessToken(accessToken)) {
 				Authentication authentication = jwtUtil.getAuthenticationFromJwtToken(accessToken);
 				
 //				Collection<? extends GrantedAuthority> tokenRoles= authentication.getAuthorities();

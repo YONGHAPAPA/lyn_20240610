@@ -14,7 +14,7 @@ const MyPage = () => {
     
 	useEffect(()=>{
 		
-		console.log("start myPage");
+		//console.log("start myPage");
 		
 		//화면 refresh 시 header 값은 사라지기 때문에 localstorage 에서 설정된 token으로 유효성체크한다. 
 		
