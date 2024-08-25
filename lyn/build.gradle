@@ -10,7 +10,7 @@ version = '0.0.1-SNAPSHOT'
 java {
 	toolchain {
 		/*window:java 17, mac:java21*/
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 

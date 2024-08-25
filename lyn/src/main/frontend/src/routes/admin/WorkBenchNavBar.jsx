@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 //import '../../App.css'
 
 
@@ -111,8 +111,9 @@ const SidebarData = [
 const WorkBenchNavBar = () => {
 		
 	//debugger;
+	const navigate = useNavigate();
 	
-	menuUtil.getNavMenu("BUNKR");
+	menuUtil.getNavMenu("BUNKR", navigate);
 	
 	const [navMenu, setNavMenu] = React.useState(SidebarData);
 	//setNavMenu(SidebarData);
