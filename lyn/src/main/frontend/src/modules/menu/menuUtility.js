@@ -20,6 +20,8 @@ export const getNavMenu = (domainCd) => {
 		} ).then((data)=>{
 			
 			console.log(data);
+			
+			
 		}).catch((err)=>{
 			
 			console.log(err);

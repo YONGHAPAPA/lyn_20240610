@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lyn.mapper.menu.NavMenuMapper">
+	
+	<resultMap id="navManuMap" type="com.lyn.dto.menu.NavMenuDto">
+		<result property="seq" column="SEQ" />
+		<result property="domainCd" column="DOMAIN_CD" />
+		<result property="title" column="TITLE" />
+		<result property="orderSeq" column="ORDER_SEQ" />
+		<result property="parentSeq" column="PARENT_SEQ" />
+		<result property="url" column="URL" />
+		<result property="icon" column="ICON" />
+		<result property="rmk" column="RMK" />
+		<result property="isUse" column="IS_USE" />
+		<result property="deltFlg" column="DELT_FLG" />
+		<result property="creId" column="CRE_ID" />
+		<result property="creDt" column="CRE_DT" />
+		<result property="updId" column="UPD_ID" />
+		<result property="upd_dt" column="UPD_DT" />
+	</resultMap>
+	
+	<select id="GetNavMenuByDomain" resultMap="navManuMap">
+		WITH RECURSIVE SEARCH_NAV(SEQ, DOMAIN_CD, TITLE, ORDER_SEQ, PARENT_SEQ, URL, ICON, RMK, IS_USE, DELT_FLG, CRE_ID, CRE_DT, UPD_ID, UPD_DT, LEVEL, PATH, CYCLE) AS (
+			SELECT M.SEQ, M.DOMAIN_CD, M.TITLE, M.ORDER_SEQ, M.PARENT_SEQ, M.URL, M.ICON, M.RMK, M.IS_USE, M.DELT_FLG, M.CRE_ID, M.CRE_DT, M.UPD_ID, M.UPD_DT,  0, ARRAY[M.SEQ], FALSE  FROM NAV_MENU M
+			WHERE M.PARENT_SEQ = 0 AND M.DOMAIN_CD = #{domain_cd}
+			UNION ALL
+			SELECT M.SEQ, M.DOMAIN_CD, M.TITLE, M.ORDER_SEQ, M.PARENT_SEQ, M.URL, M.ICON, M.RMK, M.IS_USE, M.DELT_FLG, M.CRE_ID, M.CRE_DT, M.UPD_ID, M.UPD_DT, LEVEL+1, PATH||M.SEQ, M.SEQ = ANY(PATH)
+			FROM NAV_MENU M, SEARCH_NAV SN
+			WHERE SN.SEQ = M.PARENT_SEQ AND M.DOMAIN_CD = #{domainCd} 
+			AND NOT CYCLE 
+		)
+		SELECT SEQ, DOMAIN_CD, TITLE, ORDER_SEQ, PARENT_SEQ, URL, ICON, RMK, IS_USE, DELT_FLG, CRE_ID, CRE_DT, UPD_ID, UPD_DT 
+		FROM SEARCH_NAV ORDER BY PATH
+	</select>
+
+</mapper>
