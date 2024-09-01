@@ -17,7 +17,7 @@ const Header = () => {
 	useEffect(()=>{
 		//debugger;
 		
-		//console.log("Header-useEffect::start");
+		console.log("Header-useEffect::start");
 		//console.log("LOCAL_STRG_ROLES:", localStorage.getItem(authProps.LOCAL_STRG_ROLES));
 
 		//default header 메뉴처리

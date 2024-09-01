@@ -3,7 +3,7 @@ import * as auth from '../authentication';
 
 
 
-export const getNavMenu = (domainCd) => {
+export const getNavMenu = async (domainCd) => {
 	//console.log("domainCd", domainCd);
 	//console.log("getNavMenu >> ", axios.defaults.headers.common["Authorization"]);
 	
@@ -20,6 +20,8 @@ export const getNavMenu = (domainCd) => {
 		} ).then((data)=>{
 			
 			console.log(data);
+			
+			return data;
 			
 			
 		}).catch((err)=>{
@@ -46,5 +48,28 @@ export const getNavMenu = (domainCd) => {
 		})
 	}catch(e){
 		console.log("[Error]getNavMenu", e.description);
+	}
+
+}
+
+
+export const getNavMenuByDomain = async (domainCd) => {
+	
+	const url = "/menu/getNavMenuByDomain";
+	
+	try{
+		
+		const response = await axios.post(url, null, {
+			params:{
+				domainCd: domainCd,
+			}		
+		});
+		
+		return response;
+		
+	}catch(e){
+		//console.log("[Error]getNavMenuByDomain", e.message);
+		auth.responseAuthError(e);
+		return "";
 	}
 }

@@ -257,5 +257,17 @@ export function getUserType(){
 }
 
 
+export const responseAuthError = (error) =>{
+	switch(error.response.status){
+		case 401: 
+			alert("Access Token 이 거부되었습니다. 재인증하세요.");
+		break;
+		
+		default: 
+		
+	}
+}
+
+
 
 

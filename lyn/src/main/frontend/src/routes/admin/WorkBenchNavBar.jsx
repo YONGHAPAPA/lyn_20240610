@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 //import '../../App.css'
 
@@ -24,6 +24,9 @@ import PermMedia from '@mui/icons-material/PermMedia';
 import Dns from '@mui/icons-material/Dns';
 import Public from '@mui/icons-material/Public';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+
+import Grow from '@mui/material/Grow';
+
 
 import * as menuUtil from '../../modules/menu/menuUtility';
 
@@ -107,37 +110,109 @@ const SidebarData = [
 ];
 
 
+const SidebarData2 = [
+    {
+        "title": "Menu Settings",
+        "id": 1,
+        "url": "",
+        "icon": null,
+        "open": false,
+        "sub": [
+            {
+                "title": "menu creation",
+                "id": 5,
+                "key": 5,
+                "url": "",
+                "icon": null
+            },
+            {
+                "title": "menu role setting",
+                "id": 3,
+                "key": 3,
+                "url": "",
+                "icon": null
+            }
+        ]
+    },
+    {
+        "title": "User Settings",
+        "id": 2,
+        "key": 2,
+        "url": "",
+        "icon": null,
+        "open": false,
+        "sub": [
+            {
+                "title": "user type",
+                "id": 4,
+                "key": 4,
+                "url": "",
+                "icon": null
+            },
+            {
+                "title": "user management",
+                "id": 6,
+                "key": 6,
+                "url": "",
+                "icon": null
+            },
+            {
+                "title": "user management2",
+                "id": 7,
+                "key": 7,
+                "url": "",
+                "icon": null
+            }
+        ]
+    }
+];
+
+
 
 const WorkBenchNavBar = () => {
 		
 	//debugger;
 	const navigate = useNavigate();
 	
-	menuUtil.getNavMenu("BUNKR", navigate);
 	
-	const [navMenu, setNavMenu] = React.useState(SidebarData);
+	
+	//const [navMenu, setNavMenu] = React.useState(SidebarData);
+	//const [navMenu, setNavMenu] = React.useState(SidebarData2);
+	const [navMenu, setNavMenu] = React.useState([]);
 	//setNavMenu(SidebarData);
 	
+	/*
 	const getNavMenuData = () => {
-		
-		//console.log(navMenu);
+			
+		console.log("getNavMenuData >> ", navMenu);
 		
 		return navMenu;
 	}
+	*/
 	
 	
+	const containerRef = React.useRef(null);
+	
+		
 	const navMenus = React.useMemo(()=>{
-		//debugger;
-		return getNavMenuData();
-	}
+			const getNavMenuData = () => {
+				return navMenu;
+			}
+		
+			return getNavMenuData();
+		}
 	, [navMenu]);
+			
+			
+	
+	
 	
 
 
 	const nav_menu_toggle = (event, selectedId) => {
-		
 		//console.log("nav_menu_toggle", selectedId);
 		//console.log(navMenu);
+		
 		
 		let newNavMenus = [];
 		
@@ -150,7 +225,90 @@ const WorkBenchNavBar = () => {
 		
 		//console.log(newNavMenus);
 		setNavMenu(newNavMenus);
+		
 	}
+	
+	
+	
+	
+	/*
+	 	useEffect 두번째 파라메터가 빈배열일경우는 최초 컴포넌트 로드시에만 실
+	 */
+	
+	useEffect(()=>{
+		
+		menuUtil.getNavMenuByDomain("BUNKR").then(res=>{
+			
+			//console.log(res);
+			
+			if(res && res.data.success){
+				const navMenuData = res.data.data;
+				
+				const navObj = [];
+				navMenuData.forEach((item) => {
+					//console.log(item)
+					let navItem = {};
+					
+					if(item.level === 0){
+						navItem.title = item.title;
+						navItem.id = item.seq;
+						navItem.key = item.seq;
+						navItem.url = item.url;
+						navItem.icon = item.icon;
+						navItem.open = false;
+						navItem.sub = [];
+						navObj.push(navItem);
+					}
+					
+					if(item.level === 1){
+						navObj.forEach((upper)=>{
+							//console.log(item);
+							if(upper.id === item.parentSeq){
+								navItem.title = item.title;
+								navItem.id = item.seq;
+								navItem.key = item.seq;
+								navItem.url = item.url;
+								navItem.icon = item.icon;
+								upper.sub.push(navItem); 
+							}
+							
+						})
+					}
+				});
+				
+				//console.log(navObj);
+				
+				
+				let jsonString = JSON.stringify(navObj);
+				//setNavMenu(jsonString); json 데이터를 stringify 로 navMenu 로 할당하면 문자열로 들어가게 되므로 Array 함수사용못해서 랜더링시 오류남, array로 만든거 그대로 useState Hook에 할(기억!!!)
+				//console.log(jsonString)	
+				
+				//debugger;
+				setNavMenu(navObj)
+				
+			}
+			
+		})
+		
+	},[]);
+	
+	
+	
+
+	//navMenu 변수 디버깅용 		
+	function Tender(){
+		console.log(navMenu.length, navMenu);
+		if(navMenu){
+			navMenu.map(item=>{
+				console.log(item);
+			})
+		}
+		
+		return (<></>)
+	}
+	
+	
+		
 		
 	return(
 		<Box sx={{ display: 'flex' }}>
@@ -251,7 +409,10 @@ const WorkBenchNavBar = () => {
 					>
 					{
 						
-						navMenus.map((item, index)=>{
+						//console.log(navMenu);
+						//navMenu && <Tender/>
+						
+						navMenus.length > 0 && navMenus.map((item, index)=>{
 							//console.log("index", index)
 							//debugger;
 							//console.log(item.id);
@@ -271,18 +432,27 @@ const WorkBenchNavBar = () => {
 										</ListItemButton>
 										
 										{item.open === true && item.sub.map((sub_menu)=>(
-											<ListItemButton key={sub_menu.id}>
-												<ListItemIcon>{sub_menu.icon}</ListItemIcon>
-												<ListItemText primary={sub_menu.title} primaryTypographyProps={{
-													fontSize:13, 
-													fontWeight:'medium'
-												}} />
-											</ListItemButton>
+											<Grow key={`grow_${sub_menu.id}`}
+												in={item.open} 
+												style={{transformOrigin:'0 4 4 0'}}
+												{...(item.open ? {timeout: 600} : {})}
+												>
+												<ListItemButton key={sub_menu.id}>
+													<ListItemIcon>{sub_menu.icon}</ListItemIcon>
+													<ListItemText primary={sub_menu.title} primaryTypographyProps={{
+														fontSize:13, 
+														fontWeight:'medium'
+													}} />
+												</ListItemButton>
+											</Grow>
+											
 										))}
 										
 									</React.Fragment>
 							)
 						})
+						
+						
 						
 					}
 					

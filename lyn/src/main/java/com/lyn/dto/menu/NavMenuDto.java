@@ -20,8 +20,9 @@ public class NavMenuDto {
 	private long seq;
 	private String domainCd;
 	private String title;
-	private int orderSeq;
+	private long orderSeq;
 	private long parentSeq;
+	private long level;
 	private String url;
 	private String icon; 
 	private String rmk;
