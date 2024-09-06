@@ -24,15 +24,9 @@ import PermMedia from '@mui/icons-material/PermMedia';
 import Dns from '@mui/icons-material/Dns';
 import Public from '@mui/icons-material/Public';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-
 import Grow from '@mui/material/Grow';
 
-
 import * as menuUtil from '../../modules/menu/menuUtility';
-
-
-
-
 
 
 
@@ -174,8 +168,7 @@ const WorkBenchNavBar = () => {
 	//debugger;
 	const navigate = useNavigate();
 	
-	
-	
+
 	//const [navMenu, setNavMenu] = React.useState(SidebarData);
 	//const [navMenu, setNavMenu] = React.useState(SidebarData2);
 	const [navMenu, setNavMenu] = React.useState([]);
@@ -189,6 +182,8 @@ const WorkBenchNavBar = () => {
 		return navMenu;
 	}
 	*/
+	
+	
 	
 	
 	const containerRef = React.useRef(null);
@@ -305,6 +300,15 @@ const WorkBenchNavBar = () => {
 		}
 		
 		return (<></>)
+	}
+	
+	
+	function navSumMenuClick(e, subMenu){
+		
+		//console.log(e)
+		//console.log(subMenu);
+		const url = subMenu.url;
+		navigate(url);
 	}
 	
 	
@@ -435,9 +439,9 @@ const WorkBenchNavBar = () => {
 											<Grow key={`grow_${sub_menu.id}`}
 												in={item.open} 
 												style={{transformOrigin:'0 4 4 0'}}
-												{...(item.open ? {timeout: 600} : {})}
+												{...(item.open ? {timeout: 200} : {})}
 												>
-												<ListItemButton key={sub_menu.id}>
+												<ListItemButton key={sub_menu.id} onClick={(e)=>navSumMenuClick(e, sub_menu)}>
 													<ListItemIcon>{sub_menu.icon}</ListItemIcon>
 													<ListItemText primary={sub_menu.title} primaryTypographyProps={{
 														fontSize:13, 
@@ -451,9 +455,6 @@ const WorkBenchNavBar = () => {
 									</React.Fragment>
 							)
 						})
-						
-						
-						
 					}
 					
 					</Box>

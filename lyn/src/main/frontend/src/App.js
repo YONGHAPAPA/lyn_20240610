@@ -11,8 +11,10 @@ import Login from './routes/auth/Login';
 import Home from './routes/common/Home';
 import MyPage from './routes/member/MyPage';
 import WorkBench from './routes/admin/WorkBench';
-import UserManagement from './routes/admin/layout/UserManagement';
-import UserConfig from './routes/admin/layout/UserConfig';
+import UserManagement from './routes/admin/user/UserManagement';
+import UserConfig from './routes/admin/user/UserConfig';
+import MenuCreation from './routes/admin/menu/MenuCreation';
+import MenuRole from './routes/admin/menu/MenuRole';
 
 import { useInsertionEffect } from 'react';
 
@@ -54,13 +56,13 @@ function App() {
 		            <Route path="/auth/login" element={isAuthenticated ? <MyPage/> : <Login/>} />
 					<Route path="/member/Mypage" element={<MyPage/>} />
 					<Route path="/admin/" element={<WorkBench/>}> 
-						<Route index path="layout/UserConfig" element={<UserConfig/>} />
-						<Route path="layout/UserManagement" element={<UserManagement/>} />
-
+						<Route index path="user/UserConfig" element={<UserConfig/>} />
+						<Route path="user/UserManagement" element={<UserManagement/>} />
+						<Route path="menu/MenuCreation" element={<MenuCreation/>} />
+						<Route path="menu/MenuRole" element={<MenuRole/>} />
 					</Route>
 				</Routes>
 			</div>
-			
 		</>
 	);
 }
