@@ -10,14 +10,14 @@ const TableList = (props) => {
 	*/	
 	const {dataSource, onSelectAll} = props;
 	
-	console.log(dataSource.headerCellData)
+	//console.log(dataSource.headerCellData)
 	//console.log(dataSource.rowData)
 	//const [headCellData, setHeadCellData] = React.useState(dataSource.headCellData);
 	//const [order, setOrder] = React.useState('asc');
 	
 	//setHeadCellData(dataSource.headerData)
 	//console.log("headCellData", headCellData);
-	console.log(dataSource.rowData)
+	//console.log(dataSource.rowData)
 	
 	//console.log('order >> ', order)
 	
@@ -39,9 +39,14 @@ const TableList = (props) => {
 											<Checkbox/>
 										</TableCell>
 										
+										{row.map(cell=>(
+											<TableCell>
+												{cell.value}
+											</TableCell>
+										))}
 										
 									</TableRow>
-									//console.log(cell.title)
+									
 								))
 							}
 						</TableBody>
@@ -64,7 +69,8 @@ const TableList = (props) => {
 function TableListHead(props){
 	
 	const {headerCellData} = props;
-	//console.log("headCellData", headerCellData);
+	
+	console.log("headCellData", headerCellData);
 	
 	return(
 		<TableHead>

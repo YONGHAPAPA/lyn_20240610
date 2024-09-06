@@ -39,69 +39,86 @@ const MenuCreation = () => {
 		menuUtil.getNavMenuByDomain('').then((res)=>{
 			
 			//console.log(res.data.data);
-			let newHeaderCellData = [
+			let headerColumns = [
+				{
+					title: "SEQ", 
+					cell_id: "seq", 
+					type:"",
+					hidden: true,
+				},
 				{
 					title: "DOMAIN", 
 					cell_id: "domainCd",
 					type: "",
+					hidden: false, 
 				}, 
 				{
 					title: "TITLE",
 					cell_id: "title",
 					type: "",
+					hidden: false, 
 				}, 
 				{
 					title: "LEVEL", 
 					cell_id: "level",
 					type: "", 
+					hidden: false, 
 				}, 
 				{
 					title: "ISUSE", 
 					cell_id: "isUse",
-					type: "", 
+					type: "",
+					hidden: false,  
 				}, 
 				{
 					title: "DELETE", 
 					cell_id: "deltFlg",
 					type: "",
+					hidden: false, 
 				}, 
 				{
 					title: "REMARK", 
 					cell_id: "rmk",
 					type: "",
+					hidden: false, 
 				}];
-			//setListDataSource({...listDataSource, headerData:newHeaderData});
+			
 			
 			const menuRawData = res.data.data;
 			let newRowData = [];
 			
 			if(menuRawData){
-				menuRawData.forEach(rowData=>{
-
-					let rowCells = [];
-					let keys = Object.keys(rowData);
+				
+				for(let i=0; i<menuRawData.length; i++){
+					//Row 단위별로 Table List 에 populated 될 datasource 생성	
+					let rawRowData = menuRawData[i];	//{seq:'', domainCd:'', title:'', icon:''....}
+					//console.log(rawRowData);
 					
-					keys.forEach(key=>{
+					let rowCells = [];
+					for(let i=0; i<headerColumns.length;i++){
 
-						let cell = {};
-						cell.id = key;
-						cell.value = rowData[key];
+						let headerColumn = headerColumns[i];
+						//console.log(headerColumn.cell_id);
 						
-						newHeaderCellData.forEach(headerCell => {
-							if(headerCell.cell_id === cell.id){
+						let cellKeys = Object.keys(rawRowData);
+						for(let i=0; i<cellKeys.length;i++){
+							
+							let cell = {};
+							if(headerColumn.cell_id === cellKeys[i]){
+								cell.id = cellKeys[i];
+								cell.value = rawRowData[cellKeys[i]];
 								rowCells.push(cell);
 							}
-						})
-					})
+						}
+					}
 					
-					//console.log(rowCells);
 					newRowData.push(rowCells);
-				})
+				}
 				
-				//console.log(newRowData);
+				console.log(newRowData);
 				
 				//console.log(listDataSource);
-				const newDataSource = {headerCellData: newHeaderCellData, rowData: newRowData};
+				const newDataSource = {headerCellData: headerColumns, rowData: newRowData};
 				//console.log(newDataSource);
 				setListDataSource(newDataSource);
 			}
