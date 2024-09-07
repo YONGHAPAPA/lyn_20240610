@@ -45,42 +45,56 @@ const MenuCreation = () => {
 					cell_id: "seq", 
 					type:"",
 					hidden: true,
+					width: "",
+					align:"",
 				},
 				{
 					title: "DOMAIN", 
 					cell_id: "domainCd",
-					type: "",
-					hidden: false, 
+					type: "text",
+					hidden: false,
+					width: "",
+					align:"", 
 				}, 
 				{
 					title: "TITLE",
 					cell_id: "title",
-					type: "",
-					hidden: false, 
+					type: "text",
+					hidden: false,
+					width: "",
+					align:"left", 
 				}, 
 				{
 					title: "LEVEL", 
 					cell_id: "level",
 					type: "", 
-					hidden: false, 
+					hidden: false,
+					width: "",
+					align:"", 
 				}, 
 				{
 					title: "ISUSE", 
 					cell_id: "isUse",
 					type: "",
-					hidden: false,  
+					hidden: false,
+					width: "",
+					align:"",  
 				}, 
 				{
 					title: "DELETE", 
 					cell_id: "deltFlg",
 					type: "",
-					hidden: false, 
+					hidden: false,
+					width: "",
+					align:"", 
 				}, 
 				{
 					title: "REMARK", 
 					cell_id: "rmk",
-					type: "",
-					hidden: false, 
+					type: "text",
+					hidden: false,
+					width: "",
+					align:"", 
 				}];
 			
 			
@@ -115,7 +129,7 @@ const MenuCreation = () => {
 					newRowData.push(rowCells);
 				}
 				
-				console.log(newRowData);
+				//console.log(newRowData);
 				
 				//console.log(listDataSource);
 				const newDataSource = {headerCellData: headerColumns, rowData: newRowData};
@@ -136,7 +150,7 @@ const MenuCreation = () => {
 				{
 					listDataSource && 
 					<Box>
-						<TableList dataSource={listDataSource} onSelectAll={handleSelectAllClick} />					
+						<TableList dataSource={listDataSource}/>					
 					</Box>
 				}
 				
@@ -148,11 +162,12 @@ const MenuCreation = () => {
 }
 
 
+/*
 function handleSelectAllClick(e){
 	
 	console.log("handleSelectAllClick");
 	
 }
-
+*/
 
 export default MenuCreation;
