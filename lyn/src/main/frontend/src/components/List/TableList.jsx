@@ -42,7 +42,7 @@ const TableList = (props) => {
 				return [...row, {id:'isEdit', value: false}];
 			});
 			
-			console.log("newRowDataSource", newRowDataSource);
+			//console.log("newRowDataSource", newRowDataSource);
 					
 			setRowData(newRowDataSource);	 
 		} else {
@@ -70,11 +70,11 @@ const TableList = (props) => {
 		setSelectedRows([]);
 	}
 	
-	const isSelected = (index) => {
-		return selectedRows.indexOf(index) !== -1; 
+	const isSelected = (rowSeq) => {
+		return selectedRows.indexOf(rowSeq) !== -1; 
 	}
 	
-	const handleCheckClick = (event, index) => {
+	const handleCheckClick = (event, rowSeq) => {
 		
 		/*
 			C.F) Table Row 객체에서 클릭이벤트시 이벤트 Row의 index 속성값을 useState 객체에 할당하면 
@@ -82,10 +82,10 @@ const TableList = (props) => {
 		*/
 		
 		let newSelectedRows = [];
-		if(selectedRows.includes(index)){
-			newSelectedRows = selectedRows.filter(n => n !== index);	
+		if(selectedRows.includes(rowSeq)){
+			newSelectedRows = selectedRows.filter(n => n !== rowSeq);	
 		} else {
-			newSelectedRows = [...selectedRows, index];
+			newSelectedRows = [...selectedRows, rowSeq];
 		}
 		
 		setSelectedRows([...newSelectedRows])
@@ -93,9 +93,48 @@ const TableList = (props) => {
 	
 	
 	
-	const onToggleEditMode = (event, index) => {
-		console.log("onToggleEditMode", index, editRow);
-		setEditRow([...editRow, index]);
+	const onToggleEditMode = (event, editRowSeq) => {
+		console.log("onToggleEditMode", editRowSeq);
+		
+		if(!editRow.includes(editRowSeq)){
+			setEditRow([...editRow, editRowSeq]);
+			
+			/*
+			const editedRow = rowData.filter(row => {
+				console.log("row.seq", row.seq, rowSeq);
+				const cellSeq = getRowCellValueById(row, "seq");
+				return cellSeq === rowSeq});
+			
+			console.log("editedRow", editedRow)
+			*/
+			
+			//console.log("rowData", rowData);
+			
+			const newRowDataSource = rowData.map(row => {
+				
+				if(getRowCellValueById(row, "seq") === editRowSeq){
+					
+					const updatedRow = row.map(cell => {
+						if(cell.id === "isEdit"){
+							return {id:'isEdit', value: true}
+						} else {
+							return cell;
+						}
+					})
+					
+					//console.log("updatedRow", updatedRow);
+					return updatedRow;
+				} else {
+					return row;
+				}
+			})
+			
+			
+			console.log("onToggleEditMode", newRowDataSource);
+			setRowData(newRowDataSource);
+		}
+		
+		
 	}
 	
 	const getCellAlign = (cellId) => {
@@ -125,26 +164,22 @@ const TableList = (props) => {
 	}
 	
 	
-	
-	
-	function getComparator(order, orderBy){
+	function getRowCellValueById(rowCells, cellId){
+		const cell = rowCells.filter(n=> n.id === cellId);
 		
-		//console.log("getComparator", order, orderBy)
-		
-		const getCellValueById = (rowCells, cellId) => {
-			let cellValue = "";
-			const cell = rowCells.filter(n => n.id === cellId);
-		
-			if(cell.length > 0){
-				cellValue = cell[0].value;
-			}
-			
-			return cellValue;
+		if(cell.length > 0){
+			return cell[0].value;
 		}
 		
+		return "";
+	}
+	
+	function getComparator(order, orderBy){
 		const descendingOrder = (a, b) => {
-			const valueA = getCellValueById(a, orderBy);
-			const valueB = getCellValueById(b, orderBy);
+			const valueA = getRowCellValueById(a, orderBy);
+			const valueB = getRowCellValueById(b, orderBy);
+			
+			//console.log("descendingOrder", valueA, valueB);
 			
 			if(valueA > valueB){
 				return 1;
@@ -166,7 +201,7 @@ const TableList = (props) => {
 	const visibleRows = React.useMemo(
 		()=>{
 			
-			console.log("visibleRows", "start");
+			//console.log("visibleRows", "start");
 			//console.log("rowData", rowData);
 			//debugger;
 			
@@ -199,20 +234,27 @@ const TableList = (props) => {
 								<TableBody>
 									{
 										
-										visibleRows.length > 0 && visibleRows.map((row, idx)=>{
+										visibleRows.length > 0 && visibleRows.map((row, rowIdx)=>{
 											
-											console.log("Render Table Body !!!!")
+											//console.log("Render Table Body !!!!")
 											//console.log("tablebody visibleRows", visibleRows);
 											//console.log("table body", idx);
-											const labelId = `table-checkbox-${idx}`;
-											const isSelectedRow = isSelected(idx);
+											//console.log("row", row)
 											
+											const labelId = `table-checkbox-${rowIdx}`;
+											const rowSeq = getRowCellValueById(row, "seq");
+											const isEditRow = getRowCellValueById(row, "isEdit");
+											const isSelectedRow = isSelected(rowSeq);
+
+											//console.log("rowSeq", rowSeq);
+											//console.log("editRow", editRow);
 											//console.log("isSelectedRow", idx, isSelectedRow);
+											console.log("isEditRow", isEditRow);
 
 											return(
 												<TableRow 
 													hover 
-													key={idx} 
+													key={rowSeq} 
 													//onClick={(e)=>handleRowClick(e, idx)}	//min 일단 셀별로 클릭이벤트 처리해야 할듯... 에디트 모드 처리하려면 전체 ROW에 클릭에 이벤트 주면 안되겠네.. 
 													//selected={isSelectedRow}
 													sx={{cursor:'pointer'}}
@@ -229,7 +271,7 @@ const TableList = (props) => {
 															inputProps={{
 																'aria-labelledby': labelId,
 															}}
-															onClick={(e)=>handleCheckClick(e, idx)}
+															onClick={(e)=>handleCheckClick(e, rowSeq)}
 															/>
 													</TableCell>
 													
@@ -237,13 +279,13 @@ const TableList = (props) => {
 														
 														const cellAlign = getCellAlign(cell.id);
 														
-														console.log(`${cell.id} : ${cellAlign}`)
+														//console.log(`${cell.id} : ${cellAlign}`)
 														
 														return(
 															
 															(cell.id === 'isEdit') ?
 															<TableCell id='edit'>
-																<IconButton aria-label="edit" onClick={(e) => onToggleEditMode(e, idx)}>
+																<IconButton aria-label="edit" onClick={(e) => onToggleEditMode(e, rowSeq)}>
 																	<ModeEditOutlineOutlinedIcon/>
 																</IconButton>
 															</TableCell> 
