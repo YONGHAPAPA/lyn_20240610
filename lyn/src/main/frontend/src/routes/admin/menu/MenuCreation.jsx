@@ -47,6 +47,7 @@ const MenuCreation = () => {
 					hidden: true,
 					width: "",
 					align:"",
+					disablePadding: false,
 				},
 				{
 					title: "DOMAIN", 
@@ -54,7 +55,8 @@ const MenuCreation = () => {
 					type: "text",
 					hidden: false,
 					width: "",
-					align:"", 
+					align:"center", 
+					disablePadding: true,
 				}, 
 				{
 					title: "TITLE",
@@ -62,7 +64,8 @@ const MenuCreation = () => {
 					type: "text",
 					hidden: false,
 					width: "",
-					align:"left", 
+					align:"left",
+					disablePadding: true, 
 				}, 
 				{
 					title: "LEVEL", 
@@ -71,6 +74,7 @@ const MenuCreation = () => {
 					hidden: false,
 					width: "",
 					align:"", 
+					disablePadding: false,
 				}, 
 				{
 					title: "ISUSE", 
@@ -78,7 +82,8 @@ const MenuCreation = () => {
 					type: "",
 					hidden: false,
 					width: "",
-					align:"",  
+					align:"",
+					disablePadding: false,  
 				}, 
 				{
 					title: "DELETE", 
@@ -86,7 +91,8 @@ const MenuCreation = () => {
 					type: "",
 					hidden: false,
 					width: "",
-					align:"", 
+					align:"",
+					disablePadding: false, 
 				}, 
 				{
 					title: "REMARK", 
@@ -94,7 +100,8 @@ const MenuCreation = () => {
 					type: "text",
 					hidden: false,
 					width: "",
-					align:"", 
+					align:"",
+					disablePadding: false, 
 				}];
 			
 			
@@ -129,11 +136,14 @@ const MenuCreation = () => {
 					newRowData.push(rowCells);
 				}
 				
+				
+				//debugger;
+				
 				//console.log(newRowData);
 				
 				//console.log(listDataSource);
-				const newDataSource = {headerCellData: headerColumns, rowData: newRowData};
-				//console.log(newDataSource);
+				const newDataSource = {headerCellData: headerColumns, rowDataSource: newRowData};
+				console.log("MenuCreation", newDataSource);
 				setListDataSource(newDataSource);
 			}
 		});

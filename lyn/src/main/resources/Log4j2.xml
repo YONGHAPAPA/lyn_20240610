@@ -30,7 +30,7 @@
     <Loggers>
         
         <!-- FATAL < ERROR < WARN < INFO < DEBUG < TRACE -->
-        <Root level="INFO">
+        <Root level="ERROR">
             <AppenderRef ref="Console" />
             <!--AppenderRef ref="RollingFile" /-->
         </Root>
