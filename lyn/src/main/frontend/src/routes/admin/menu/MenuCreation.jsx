@@ -25,8 +25,8 @@ const MenuCreation = () => {
 	]);*/
 	
 	const initListDataSource = {
-		headerCellData: [],
-		rowData: [],
+		headerDataSource: [],
+		rowDataSource: [],
 	};
 	
 	
@@ -43,63 +43,70 @@ const MenuCreation = () => {
 				{
 					title: "SEQ", 
 					cell_id: "seq", 
+					editable: false, 
 					type:"",
 					hidden: true,
-					width: "",
-					align:"",
+					width: "10%",
+					align:"center",
 					disablePadding: false,
 				},
 				{
 					title: "DOMAIN", 
 					cell_id: "domainCd",
+					editable: false, 
 					type: "text",
 					hidden: false,
-					width: "",
+					width: "15%",
 					align:"center", 
 					disablePadding: true,
 				}, 
 				{
 					title: "TITLE",
 					cell_id: "title",
+					editable: true, 
 					type: "text",
 					hidden: false,
-					width: "",
+					width: "30%",
 					align:"left",
 					disablePadding: true, 
 				}, 
 				{
 					title: "LEVEL", 
 					cell_id: "level",
+					editable: false, 
 					type: "", 
 					hidden: false,
-					width: "",
+					width: "10%",
 					align:"", 
 					disablePadding: false,
 				}, 
 				{
 					title: "ISUSE", 
 					cell_id: "isUse",
-					type: "",
+					editable: false, 
+					type: "combo",
 					hidden: false,
-					width: "",
+					width: "10%",
 					align:"",
 					disablePadding: false,  
 				}, 
 				{
 					title: "DELETE", 
 					cell_id: "deltFlg",
-					type: "",
+					editable: false, 
+					type: "combo",
 					hidden: false,
-					width: "",
+					width: "10%",
 					align:"",
 					disablePadding: false, 
 				}, 
 				{
 					title: "REMARK", 
 					cell_id: "rmk",
+					editable: true, 
 					type: "text",
 					hidden: false,
-					width: "",
+					width: "30%",
 					align:"",
 					disablePadding: false, 
 				}];
@@ -142,8 +149,8 @@ const MenuCreation = () => {
 				//console.log(newRowData);
 				
 				//console.log(listDataSource);
-				const newDataSource = {headerCellData: headerColumns, rowDataSource: newRowData};
-				console.log("MenuCreation", newDataSource);
+				const newDataSource = {headerDataSource: headerColumns, rowDataSource: newRowData};
+				//console.log("MenuCreation", newDataSource);
 				setListDataSource(newDataSource);
 			}
 		});
