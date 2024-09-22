@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button, Stack } from '@mui/material';
+import { Save } from '@mui/icons-material';
 import TableList from '../../../components/List/TableList';
 import * as menuUtil from '../../../modules/menu/menuUtility';
 
@@ -31,6 +32,7 @@ const MenuCreation = () => {
 	
 	
 	const [listDataSource, setListDataSource] = React.useState(initListDataSource);
+	const [changedListData, setChangedListData] = React.useState([]); 
 	
 	
 	React.useEffect(()=>{
@@ -157,6 +159,17 @@ const MenuCreation = () => {
 	}, []);
 	
 	
+	
+	
+	const handleOnClickSave = (event) => {
+		
+		//console.log("handleOnClickSave", event);
+		
+		console.log("changedListData", changedListData);
+	}
+	
+	
+	
 	if(listDataSource) {
 		return(
 			<div>
@@ -164,10 +177,22 @@ const MenuCreation = () => {
 				
 				
 				{/* menu table list (s)*/}
+				<Box sx={{'& button' : {m: 1}}}>
+					<Stack direction="row" spacing={2} sx={{justifyContent: "flex-start", marginBottom: '10px'}} >
+						<Button 
+							variant='outlined' 
+							size='medium' 
+							startIcon={<Save/>} 
+							sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}}
+							onClick={(e)=>{handleOnClickSave(e)}}
+						>Save</Button>
+					</Stack>
+				</Box>
+				
 				{
 					listDataSource && 
 					<Box>
-						<TableList dataSource={listDataSource}/>					
+						<TableList dataSource={listDataSource} changedListData={changedListData} setChangedListData={setChangedListData}/>					
 					</Box>
 				}
 				

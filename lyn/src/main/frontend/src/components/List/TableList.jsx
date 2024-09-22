@@ -9,9 +9,12 @@ const TableList = (props) => {
 	/*
 		테이블 리스트는 TableContainer > Table > TableHead > TableRow 구조를 포함해서 구성해야 오류 발생안함
 	*/	
-	const {dataSource} = props;
+	const {dataSource, changedListData, setChangedListData} = props;
 	
-	//console.log(dataSource);
+	//console.log("changedList", changedList);
+	//console.log("setChangedList", setChangedList);
+	
+	//console.log("populateChangedTableList", populateChangedTableList);
 	
 	const {headerDataSource, rowDataSource} = dataSource;
 	const [selectedRows, setSelectedRows] = React.useState([]);
@@ -21,10 +24,6 @@ const TableList = (props) => {
 	const rowsPerPageOption = [3, 5, 10];
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 	const [page, setPage] = React.useState(0);
-	
-	const [tmp, setTmp] = React.useState(0);
-	
-	//console.log("rowDataSource", rowDataSource);
 	const [headerData, setHeaderData] = React.useState([]);
 	const [rowData, setRowData] = React.useState([]);
 	const [editRow, setEditRow] = React.useState([]);
@@ -32,11 +31,10 @@ const TableList = (props) => {
 	//console.log("headerDataSource", ...headerDataSource);
 	
 	React.useEffect(()=>{
+
 		//console.log("rowDataSource", rowDataSource);
-		
 		if(dataSource){
-			setHeaderData(dataSource.headerDataSource);
-			
+			setHeaderData(headerDataSource);
 		}
 		
 		/* 각 Row edit 여부 속성값 추가*/
@@ -205,6 +203,10 @@ const TableList = (props) => {
 		
 		//console.log(newRowData);
 		setRowData(newRowData);
+		
+		
+		//변경사항 내용추가 
+		setChangedListData(newRowData);
 	}
 	
 	
@@ -459,6 +461,8 @@ TableListHead.propTypes = {
 TableList.propTypes = {
 	dataSource: PropTypes.object.isRequired,
 	//onSelectAll: PropTypes.func.isRequired,
+	changedListData: PropTypes.array,
+	setChangedListData: PropTypes.func
 }
 
 

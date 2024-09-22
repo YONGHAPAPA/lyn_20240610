@@ -99,8 +99,10 @@ a:-webkit-any-link {
 }
 
 .header {
+	/*
 	background-color: rgb(252, 249, 224);
 	font-size:smaller;
+	*/
 }
 
 .footer {

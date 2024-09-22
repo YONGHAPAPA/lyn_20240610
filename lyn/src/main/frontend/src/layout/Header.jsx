@@ -3,6 +3,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import axios from 'axios'
 import * as auth from '../../src/modules/authentication';
 import authProps from '../modules/authenticationProps';
+import { Box, ButtonGroup, Button, Divider } from '@mui/material'
 
 
 const Header = () => {
@@ -17,11 +18,13 @@ const Header = () => {
 	useEffect(()=>{
 		//debugger;
 		
-		console.log("Header-useEffect::start");
+		//console.log("Header-useEffect::start");
 		//console.log("LOCAL_STRG_ROLES:", localStorage.getItem(authProps.LOCAL_STRG_ROLES));
+		
+		
 
 		//default header 메뉴처리
-		buildUserRole();
+		populateUserRole();
 		//renderHeaderMenu();
 		
 		//console.log("Header -------------------------");
@@ -58,7 +61,7 @@ const Header = () => {
 
 	
 	
-	const buildUserRole = () => {
+	const populateUserRole = () => {
 		//debugger;
 		if(auth.isAuthenctedUser()){
 			setUserRoles(auth.getUserRoles());
@@ -72,13 +75,19 @@ const Header = () => {
 	
 	const link_onClick = (e, menu) => {
 		
+		//console.log("link_onClick");
+		e.preventDefault();
+		
 		switch(menu){
-			case "home": 
+			case "home":
+				navigate("/"); 
 			break;
 			case "join": 
+				navigate("/auth/join");
 			break;
 			case "login":
-				e.preventDefault();
+				//debugger;
+				//e.preventDefault();
 				if(auth.isAuthenctedUser()){
 					alert("이미 로긴한 사용자입니다.");	
 				} else {
@@ -86,7 +95,7 @@ const Header = () => {
 				}
 			break;
 			case "mypage":
-				e.preventDefault();
+				//e.preventDefault();
 
 				//console.log("link to mypage::: ", axios.defaults.headers.common["Authorization"]);
 				//mypage 내에 접근하기전에 먼저 AccessToken이 유효한지 체크
@@ -111,6 +120,9 @@ const Header = () => {
 				
 				navigate("/");
 			break;
+			case "admin": 
+				navigate("/admin");
+			break;
 			
 			default : 
 		}
@@ -119,18 +131,53 @@ const Header = () => {
 	
 	return(
 		<header className='header'>
-			<div className='div-header-menu-left'>
-				<Link to='/' key={1} name="home" onClick={(e)=> {link_onClick(e, "home")}}>Home</Link>&nbsp;|&nbsp;
-				<Link to='/auth/Join' onClick={(e) => {link_onClick(e, "join")}}>Join</Link>&nbsp;|&nbsp;
-				<Link to='/auth/login' onClick={(e) => {link_onClick(e, "login")}} state={{data: '1'}}>Login</Link>&nbsp;|&nbsp;
-				<Link to='/member/MyPage' onClick={(e) => {link_onClick(e, "mypage")}}>My Page</Link>&nbsp;|&nbsp;
-				{userType === "ADMIN" && <Link to="/admin" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
-			</div>
+			<Box 
+				sx={{
+					display: 'flex', 
+					flexDirection: 'row', 
+					alignItems: 'center', 
+					'& > *' : {
+						m: 1, 
+						
+					}
+				}}
+			>
+				<Box>
+					<ButtonGroup size='small' variant='contained' aria-label='Basic button group' sx={{float: "left"}}>
+						<Button onClick={(e) => link_onClick(e, 'home')}>Home</Button>
+						<Button onClick={(e) => link_onClick(e, 'join')}>join</Button>
+						<Button onClick={(e) => link_onClick(e, 'login')}>login</Button>
+						<Button onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>
+						
+						{
+							userType === "ADMIN" && <Button onClick={(e)=>link_onClick(e, 'admin')}>bunker</Button>
+						}
+					</ButtonGroup>
+				</Box>
+				
+				<Box>
+					<ButtonGroup size='small' sx={{float:"right"}}>
+						<Button onClick={(e) => link_onClick(e, 'logout')}>logout</Button>
+					</ButtonGroup>
+				</Box>
+				<Box>[{userType}]</Box>				
+			</Box>
 			
-			<div className='div-header-menu-right'>
-				<Link to='' onClick={(e) => {link_onClick(e, "logout")}}>[Log out]</Link>
-			</div>
-			<div className='div-header-menu-right'>[{userType}]</div>
+			{/*
+			<div className='div-header-menu-left'>
+							<Link to='/' key={1} name="home" onClick={(e)=> {link_onClick(e, "home")}}>Home</Link>&nbsp;|&nbsp;
+							<Link to='/auth/Join' onClick={(e) => {link_onClick(e, "join")}}>Join</Link>&nbsp;|&nbsp;
+							<Link to='/auth/login' onClick={(e) => {link_onClick(e, "login")}} state={{data: '1'}}>Login</Link>&nbsp;|&nbsp;
+							<Link to='/member/MyPage' onClick={(e) => {link_onClick(e, "mypage")}}>My Page</Link>&nbsp;|&nbsp;
+							{userType === "ADMIN" && <Link to="/admin" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
+						</div>
+						
+						<div className='div-header-menu-right'>
+							<Link to='' onClick={(e) => {link_onClick(e, "logout")}}>[Log out]</Link>
+						</div>
+			*/}
+			
+			
 			<br/>
 		</header>
 	);

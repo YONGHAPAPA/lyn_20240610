@@ -26,9 +26,7 @@ export function extractAccessTokenFromRequestHeader(accessToken){
 export async function doSlientLogin(slientLoginUrl){
 	
 	//debugger;
-	
 	//console.log(slientLoginUrl);
-	
 	
 	let newAccessToken = null;
 	
@@ -202,10 +200,22 @@ export function removeAuthentication(){
 
 
 export function isAuthenctedUser(){
-	if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT) !== null)
-		return true;
-	else 
+	
+	
+	if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT) !== null){
+		
+		//alert("isAuthenctedUser > true");
+		
+		console.log("LOCAL_STRG_AUTH_TYPE", localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE));
+		console.log("LOCAL_STRG_AUTH", localStorage.getItem(authProps.LOCAL_STRG_AUTH));
+		console.log("LOCAL_STRG_AUTH_EXP_DT", localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT));
+		
+		return true;	
+	} else {
+		
+		//alert("isAuthenctedUser > false"); 
 		return false;
+	}
 }
 
 
