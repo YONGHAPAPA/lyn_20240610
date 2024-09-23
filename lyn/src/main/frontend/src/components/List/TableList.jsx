@@ -1,4 +1,4 @@
-import { Paper, TableHead, TableRow, Box, TableContainer, Table, TableCell, Checkbox, TableSortLabel, TableBody, TablePagination, IconButton } from "@mui/material";
+import { Paper, TableHead, TableRow, Box, TableContainer, Table, TableCell, Checkbox, TableSortLabel, TableBody, TablePagination, IconButton, Collapse } from "@mui/material";
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import PropTypes from 'prop-types';
 import * as React from "react";
@@ -28,21 +28,68 @@ const TableList = (props) => {
 	const [rowData, setRowData] = React.useState([]);
 	const [editRow, setEditRow] = React.useState([]);
 	
+	
 	//console.log("headerDataSource", ...headerDataSource);
 	
 	React.useEffect(()=>{
 
 		//console.log("rowDataSource", rowDataSource);
-		if(dataSource){
-			setHeaderData(headerDataSource);
+		if(headerDataSource){
+			
+			//console.log()
+			
+			let newHeaderDataSource = [];
+			const rowIdCell = {
+				title: "RID", 
+				cell_id: "rowId", 
+				type: "number", 
+				hidden: true, 
+				width: 0,
+				align: "", 
+				disablePadding: false, 
+			}
+			
+			const editCell = {
+				title: "EDIT", 
+				cell_id: "edit", 
+				type: "icon", 
+				hidden: false,
+				width: 10, 
+				align: "center", 
+				disablePadding: false, 
+			}
+			
+			newHeaderDataSource = [rowIdCell, ...headerDataSource, editCell];
+			
+			setHeaderData(newHeaderDataSource);
 		}
 		
-		/* 각 Row edit 여부 속성값 추가*/
+		
+		
+		/* 최초 Row Data에 rowid 및 Row edit 여부 속성값 추가*/
 		let newRowDataSource = [];
 		if(Array.isArray(rowDataSource)){
 
+			let index = 0;
 			newRowDataSource = rowDataSource.map((row)=>{
-				return [...row, {id:'isEdit', value: false}];
+				
+				//Header Cell과 매핑해준다. 헤더컬럼과 순서매핑, 헤더에 없는 컬럼은 제외처리한다. 
+				const headerCells = headerDataSource.map(cell => (cell.cell_id));
+				
+				//console.log("headerCells", headerCells);
+				//let reRangedRow = [];
+				
+				let reRangedRow = headerCells.map(headerCellId => {
+					return row.filter(cell => cell.id === headerCellId)[0];
+				})
+				
+				//console.log("reRangedRow", reRangedRow, row);
+				//console.log("reRangedRow", reRangedRow);
+				//let reRangeRow2 = reRangedRow
+				
+				const rowData = [{id:'rowId', value:index}, ...reRangedRow, {id:'isEdit', value: false},];
+				index = index + 1;
+				return rowData;
 			});
 			
 			//console.log("newRowDataSource", newRowDataSource);
@@ -51,10 +98,7 @@ const TableList = (props) => {
 		} else {
 			setRowData([]);
 		}
-		
-		
-		
-		
+
 	}, [dataSource])
 	
 	
@@ -99,7 +143,6 @@ const TableList = (props) => {
 	const onToggleEditMode = (event, editRowSeq) => {
 		
 		//console.log("onToggleEditMode", editRow, editRowSeq);
-		
 		//console.log(rowData);
 		
 		if(!editRow.includes(editRowSeq)){
@@ -136,22 +179,33 @@ const TableList = (props) => {
 		
 	}
 	
-	const getCellAlign = (cellId) => {
+	const getCellAlignFromHeader = (cellId) => {
 		const cell = headerData.filter(n=> n.cell_id === cellId);
 		return cell.length > 0 ? (cell[0].align === "" ? "center" : cell[0].align) : "center";
 	}
 	
-	const getCellType = (cellId) => {
+	const getCellTypeFromHeader = (cellId) => {
 		const cell = headerData.filter(n=> n.cell_id === cellId);
 		//console.log("getCellType", cellId, cell)
 		return cell.length > 0 ? cell[0].type ? cell[0].type : "" : "";
 	}
 	
-	const getCellEditable = (cellId) => {
+	const getCellEditableFromHeader = (cellId) => {
 		const cell = headerData.filter(n => n.cell_id === cellId);
 		
 		//if(cell.length > 0) console.log("cellId", cell[0].editable)
 		return cell.length > 0 ? cell[0].editable ? cell[0].editable : false : false;
+	}
+	
+	const getCellHiddenFromHeader = (cellId) => {
+		const cell = headerData.filter(cell => cell.cell_id === cellId);
+		return cell.length > 0 ? cell[0].hidden ? cell[0].hidden : false : false;
+	}
+	
+	
+	const getCellPaddingFromHeader = (cellId) => {
+		const cell = headerData.filter(cell => cell.cell_id === cellId);
+		return cell.length > 0 ? cell[0].disablePadding ? cell[0].disablePadding : false : false; 
 	}
 	
 	
@@ -172,7 +226,7 @@ const TableList = (props) => {
 	
 	const handleSortTableList = (e, cellId) => {
 		
-		console.log(rowData); //>> 접근됨...
+		//console.log(rowData); //>> 접근됨...
 		
 		const isAsc = orderBy === cellId && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
@@ -183,6 +237,10 @@ const TableList = (props) => {
 
 	const handleCellChange = (event, row, editCell) => {
 		//console.log(row);
+		
+		console.log("changedListData", changedListData);
+		
+		
 		const editRowSeq = row.filter(cell => cell.id === "seq")[0].value;
 		
 		const newRowData = rowData.map(
@@ -310,7 +368,12 @@ const TableList = (props) => {
 													aria-checked={isSelectedRow}
 													/* props ?? (e) */
 													>
-													<TableCell padding="checkbox">
+													<TableCell 
+														padding="checkbox"
+														sx={{
+															//border:1
+														}}
+													>
 														<Checkbox
 															color="primary" 
 															checked={isSelectedRow} 
@@ -323,9 +386,14 @@ const TableList = (props) => {
 													
 													{row.map(cell=>{
 														
-														const cellAlign = getCellAlign(cell.id);
-														const cellType = getCellType(cell.id);
-														const cellEditable = getCellEditable(cell.id);
+														const cellAlign = getCellAlignFromHeader(cell.id);
+														const cellType = getCellTypeFromHeader(cell.id);
+														const cellEditable = getCellEditableFromHeader(cell.id);
+														const cellHidden = getCellHiddenFromHeader(cell.id);
+														const cellPadding = getCellPaddingFromHeader(cell.id);
+														
+														//console.log("cellPadding", cell.id, cellPadding);
+														
 														//console.log(`${cell.id} : ${cellAlign}`)
 														//console.log(cell.id, cellType, cellEditable);
 														
@@ -334,7 +402,13 @@ const TableList = (props) => {
 														return(
 															
 															(cell.id === 'isEdit') ?
-															<TableCell id='edit'>
+															<TableCell 
+																id='edit'
+																padding={cellPadding ? "normal" : "none"}
+																sx={{
+																	//border:1
+																}}
+															>
 																<IconButton aria-label="edit" onClick={(e) => onToggleEditMode(e, rowSeq)}>
 																	<ModeEditOutlineOutlinedIcon/>
 																</IconButton>
@@ -342,12 +416,16 @@ const TableList = (props) => {
 															: 
 															<TableCell
 															component="th"
-															padding="none"
+															padding={cellPadding ? "normal" : "none"}
 															scope="row"
 															id={labelId}
-															align={cellAlign}
+															align="left"
+															sx={{
+																	display: cellHidden ? "none" : "", 
+																	//border: 0,
+																}}
 															>
-															
+															 
 															{(isEditRow) ?  cellEditable ? <EditableCell row={row} cell={cell} type={cellType} onCellChange={handleCellChange} /> : cell.value : cell.value}
 															
 															</TableCell> 
@@ -429,18 +507,24 @@ function TableListHead(props){
 				{headerData.map(cell=>{
 					
 				//console.log("cell.width", cell.width)	
-				
-				return(<TableCell 
-					key={cell.cell_id} 
-					align="center" 
-					padding={cell.disablePadding ? 'normal':'none'}
-					sortDirection={false}
-					width={cell.width}
-					>
-					<TableSortLabel active={orderBy === cell.cell_id} onClick={(e) => onSortTableList(e, cell.cell_id)} direction={orderBy === cell.cell_id ? order : 'asc'} >
-						{cell.title}
-					</TableSortLabel>
-				</TableCell>)
+				//console.log("cell.disablePadding", cell.disablePadding);
+					return(
+							<TableCell 
+								key={cell.cell_id} 
+								align="left" 
+								padding={cell.disablePadding ? 'normal':'none'}
+								sortDirection={false}
+								sx={{
+									display: cell.hidden ? "none" : "", 
+									//border: 0,
+									}}
+								width={cell.width}>
+									<TableSortLabel  active={orderBy === cell.cell_id} onClick={(e) => onSortTableList(e, cell.cell_id)} direction={orderBy === cell.cell_id ? order : 'asc'} >
+										{cell.title}
+									</TableSortLabel>
+							</TableCell>
+						
+					)
 				})}
 				
 				{/* Edit Cell */}

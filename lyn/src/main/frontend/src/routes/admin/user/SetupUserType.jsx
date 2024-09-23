@@ -1,6 +1,6 @@
 import * as React from 'react'
 import PropTypes from 'prop-types';
-import {alpha, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography, Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch, TablePagination } from '@mui/material';
+import {alpha, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Toolbar, Typography, Paper, Checkbox, IconButton, Tooltip, FormControlLabel, Switch, TablePagination, Collapse } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'
 import FilterListIcon from '@mui/icons-material/FilterList'
 
@@ -133,27 +133,38 @@ function EnhancedTableHead(props){
 					/>
 				</TableCell>
 				{
-					headCells.map((headCell) => (
-						<TableCell 
-							key={headCell.id} align={headCell.numeric ? 'right' : 'left'} 
-							padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false}>
-								<TableSortLabel
-									active={orderBy === headCell.id}
-									direction={orderBy === headCell.id ? order : 'asc'}
-									onClick={createSortHandler(headCell.id)}
-								>
-									
-									{headCell.label}
-									{orderBy === headCell.id ? (
-										<Box component="span" >
-											{order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-										</Box>
-									) : null
+					headCells.map((headCell) => {
+						
+						console.log(headCell.id);
+						
+						let isDisplay = headCell.id === "carbs" ? "none" : ""; 
+						
+						console.log(headCell.id, isDisplay);
+						
+						return(
+								<TableCell
+								sx={{display: isDisplay, border: 1, borderColor: 'aquamarine', borderRadius: 2, displayPrint: 'none'}} 
+								key={headCell.id} align={headCell.numeric ? 'right' : 'left'} 
+								padding={headCell.disablePadding ? 'none' : 'normal'} sortDirection={orderBy === headCell.id ? order : false}>
+									<TableSortLabel
+										active={orderBy === headCell.id}
+										direction={orderBy === headCell.id ? order : 'asc'}
+										onClick={createSortHandler(headCell.id)}
+									>
 										
-									}
-								</TableSortLabel>						
-						</TableCell>
-					))	
+										{headCell.label}
+										{orderBy === headCell.id ? (
+											<Box component="span" >
+												{order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+											</Box>
+										) : null
+											
+										}
+									</TableSortLabel>						
+								</TableCell>
+							
+						)
+					})	
 				}
 				
 			</TableRow>
@@ -355,10 +366,16 @@ const SetupUserType = () => {
 													{row.name}
 													</TableCell>
 													
-													<TableCell align='right'>{row.calories}</TableCell>
+													<TableCell align='right'>{row.caloris}</TableCell>
 													<TableCell align='right'>{row.fat}</TableCell>
+													
+													
 													<TableCell align='right'>{row.carbs}</TableCell>
-													<TableCell align='right'>{row.protein}</TableCell>
+													
+													
+													
+													<TableCell sx={{display:'none'}} align='right'>{row.protein}</TableCell>
+													
 													
 												</TableRow>
 											);

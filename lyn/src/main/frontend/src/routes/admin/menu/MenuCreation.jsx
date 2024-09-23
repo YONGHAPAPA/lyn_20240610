@@ -37,7 +37,7 @@ const MenuCreation = () => {
 	
 	React.useEffect(()=>{
 		
-		console.log("MenuCreation - useEffect >>> ");
+		//console.log("MenuCreation - useEffect >>> ");
 		menuUtil.getNavMenuByDomain('').then((res)=>{
 			
 			//console.log(res.data.data);
@@ -47,21 +47,11 @@ const MenuCreation = () => {
 					cell_id: "seq", 
 					editable: false, 
 					type:"",
-					hidden: true,
+					hidden: false,
 					width: "10%",
 					align:"center",
 					disablePadding: false,
 				},
-				{
-					title: "DOMAIN", 
-					cell_id: "domainCd",
-					editable: false, 
-					type: "text",
-					hidden: false,
-					width: "15%",
-					align:"center", 
-					disablePadding: true,
-				}, 
 				{
 					title: "TITLE",
 					cell_id: "title",
@@ -71,6 +61,16 @@ const MenuCreation = () => {
 					width: "30%",
 					align:"left",
 					disablePadding: true, 
+				}, 
+				{
+					title: "DOMAIN", 
+					cell_id: "domainCd",
+					editable: false, 
+					type: "text",
+					hidden: false,
+					width: "15%",
+					align:"center", 
+					disablePadding: true,
 				}, 
 				{
 					title: "LEVEL", 
@@ -115,6 +115,10 @@ const MenuCreation = () => {
 			
 			
 			const menuRawData = res.data.data;
+			
+			//console.log("menuRawData", menuRawData);
+			//console.log("menuRawData", menuRawData);
+			
 			let newRowData = [];
 			
 			if(menuRawData){
@@ -142,13 +146,24 @@ const MenuCreation = () => {
 						}
 					}
 					
+					//rowCells 순서바꾸기 테스트
+					/*console.log(rowCells);
+					
+					const t1 = rowCells[1];
+					const t2 = rowCells[2];
+					rowCells[1] = t2;
+					rowCells[2] = t1;*/
+					
 					newRowData.push(rowCells);
+					
 				}
 				
 				
 				//debugger;
 				
 				//console.log(newRowData);
+				
+				//console.log("newRowData", newRowData);
 				
 				//console.log(listDataSource);
 				const newDataSource = {headerDataSource: headerColumns, rowDataSource: newRowData};
@@ -162,7 +177,6 @@ const MenuCreation = () => {
 	
 	
 	const handleOnClickSave = (event) => {
-		
 		//console.log("handleOnClickSave", event);
 		
 		console.log("changedListData", changedListData);
@@ -181,7 +195,7 @@ const MenuCreation = () => {
 					<Stack direction="row" spacing={2} sx={{justifyContent: "flex-start", marginBottom: '10px'}} >
 						<Button 
 							variant='outlined' 
-							size='medium' 
+							size='small' 
 							startIcon={<Save/>} 
 							sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}}
 							onClick={(e)=>{handleOnClickSave(e)}}

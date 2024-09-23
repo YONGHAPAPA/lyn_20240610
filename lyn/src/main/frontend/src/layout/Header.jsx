@@ -143,21 +143,22 @@ const Header = () => {
 				}}
 			>
 				<Box>
-					<ButtonGroup size='small' variant='contained' aria-label='Basic button group' sx={{float: "left"}}>
-						<Button onClick={(e) => link_onClick(e, 'home')}>Home</Button>
-						<Button onClick={(e) => link_onClick(e, 'join')}>join</Button>
-						<Button onClick={(e) => link_onClick(e, 'login')}>login</Button>
-						<Button onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>
+					<ButtonGroup size='small' variant='outlined' aria-label='Basic button group' sx={{float: "left"}}>
+						
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'home')}>Home</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'join')}>join</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'login')}>login</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>
 						
 						{
-							userType === "ADMIN" && <Button onClick={(e)=>link_onClick(e, 'admin')}>bunker</Button>
+							userType === "ADMIN" && <Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e)=>link_onClick(e, 'admin')}>bunker</Button>
 						}
 					</ButtonGroup>
 				</Box>
 				
 				<Box>
 					<ButtonGroup size='small' sx={{float:"right"}}>
-						<Button onClick={(e) => link_onClick(e, 'logout')}>logout</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'logout')}>logout</Button>
 					</ButtonGroup>
 				</Box>
 				<Box>[{userType}]</Box>				

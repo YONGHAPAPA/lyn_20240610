@@ -17,6 +17,7 @@ import MenuCreation from './routes/admin/menu/MenuCreation';
 import MenuRole from './routes/admin/menu/MenuRole';
 
 import { useInsertionEffect } from 'react';
+import SetupUserType from './routes/admin/user/SetupUserType';
 
 
 
@@ -60,6 +61,7 @@ function App() {
 						<Route path="user/UserManagement" element={<UserManagement/>} />
 						<Route path="menu/MenuCreation" element={<MenuCreation/>} />
 						<Route path="menu/MenuRole" element={<MenuRole/>} />
+						<Route path="user/SetupUserType" element={<SetupUserType/>} />
 					</Route>
 				</Routes>
 			</div>

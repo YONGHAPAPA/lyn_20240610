@@ -206,9 +206,9 @@ export function isAuthenctedUser(){
 		
 		//alert("isAuthenctedUser > true");
 		
-		console.log("LOCAL_STRG_AUTH_TYPE", localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE));
-		console.log("LOCAL_STRG_AUTH", localStorage.getItem(authProps.LOCAL_STRG_AUTH));
-		console.log("LOCAL_STRG_AUTH_EXP_DT", localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT));
+		//console.log("LOCAL_STRG_AUTH_TYPE", localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE));
+		//console.log("LOCAL_STRG_AUTH", localStorage.getItem(authProps.LOCAL_STRG_AUTH));
+		//console.log("LOCAL_STRG_AUTH_EXP_DT", localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT));
 		
 		return true;	
 	} else {
