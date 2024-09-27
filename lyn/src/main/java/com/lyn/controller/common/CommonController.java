@@ -26,18 +26,71 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@RequestMapping("/home")
 public class CommonController {
 
 //	@Autowired
 //	AuthenticationService authService;
+	
+	
+	class Money implements Comparable<Money> {
+		
+		Integer amount;
+		
+		Money(Integer amt){
+			this.amount = amt;
+		}
+		
+		Integer getAmount() {
+			return amount;
+		}
+		
+		@Override
+		public int compareTo(Money o) {
+			return this.amount.compareTo(o.getAmount());
+		}
+	}
+	
+	class Won extends Money {
+		
+		Won(Integer amt){
+			super(amt);
+		}
+	}
+	
+	class Dollar extends Money {
+		Dollar(Integer amt){
+			super(amt);
+		}
+	}
 	
 	@GetMapping("/index")
 	public String index() {
 		
 		try {
 			
-			
 			log.info("this is index page");
+			
+			
+			Money w1 = new Won(10);
+			Money w2 = new Won(20);
+			log.info("{}-{} >> {}", w1.getAmount(), w2.getAmount(), w1.compareTo(w2));
+			
+			
+			Money d1 = new Dollar(1);
+			Money d2 = new Dollar(2);
+			log.info("{}-{} >> {}", d1.getAmount(), d2.getAmount(), d1.compareTo(d2));
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 		
 //			String[] arr = new String[] {"a", "b", "c", "d"};
 //			
@@ -79,9 +132,6 @@ public class CommonController {
 //			log.info("list.flatMap > {}", list.stream().flatMap(Collection::stream));
 //			log.info("list 0 > {}", list.get(0));
 //			log.info("list 1 > {}", list.get(1));
-			
-			
-			
 			
 		} catch(Exception e) {
 			log.error("CommonController::Exception Error::index > {}", e.getMessage());

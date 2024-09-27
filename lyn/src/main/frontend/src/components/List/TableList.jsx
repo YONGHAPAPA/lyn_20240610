@@ -1,5 +1,8 @@
-import { Paper, TableHead, TableRow, Box, TableContainer, Table, TableCell, Checkbox, TableSortLabel, TableBody, TablePagination, IconButton, Collapse } from "@mui/material";
+import { Paper, TableHead, TableRow, Box, TableContainer, Table, TableCell, Checkbox, TableSortLabel, TableBody, TablePagination, IconButton, Collapse, ButtonGroup } from "@mui/material";
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
+import RestoreIcon from '@mui/icons-material/Restore';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import SaveAsOutlinedIcon from '@mui/icons-material/SaveAsOutlined';
 import PropTypes from 'prop-types';
 import * as React from "react";
 
@@ -10,10 +13,10 @@ const TableList = (props) => {
 		테이블 리스트는 TableContainer > Table > TableHead > TableRow 구조를 포함해서 구성해야 오류 발생안함
 	*/	
 	const {dataSource, changedListData, setChangedListData} = props;
+	const [beforeEditRows, setBeforeEditRows] = React.useState([]);
 	
 	//console.log("changedList", changedList);
 	//console.log("setChangedList", setChangedList);
-	
 	//console.log("populateChangedTableList", populateChangedTableList);
 	
 	const {headerDataSource, rowDataSource} = dataSource;
@@ -26,7 +29,6 @@ const TableList = (props) => {
 	const [page, setPage] = React.useState(0);
 	const [headerData, setHeaderData] = React.useState([]);
 	const [rowData, setRowData] = React.useState([]);
-	const [editRow, setEditRow] = React.useState([]);
 	
 	
 	//console.log("headerDataSource", ...headerDataSource);
@@ -140,44 +142,55 @@ const TableList = (props) => {
 	
 	
 	
-	const onToggleEditMode = (event, editRowSeq) => {
+	const onToggleEditRow = (e, row) => {
+		setRowCellValue(row, "isEdit", true);
+	}
+	
+	
+	const onRestoreEditRow = (e, row) => {
 		
-		//console.log("onToggleEditMode", editRow, editRowSeq);
-		//console.log(rowData);
+		const currRowId = getRowCellValueById(row, "rowId");
+		const previous = beforeEditRows[currRowId] ? beforeEditRows[currRowId] : [];
 		
-		if(!editRow.includes(editRowSeq)){
-			setEditRow([...editRow, editRowSeq]);
-		} else {
-			const newEditRow = editRow.filter(n => n !== editRowSeq);
-			setEditRow(newEditRow);
-		}
+		//console.log(previousRow);
 		
-		
-		const newRowDataSource = rowData.map(row => {
-						
-			if(getRowCellValueById(row, "seq") === editRowSeq){
-				
-				const updatedRow = row.map(cell => {
-					if(cell.id === "isEdit"){
-						//console.log("onToggleEditMode", editRowSeq, cell.value)
-						return {id:'isEdit', value: !cell.value}
-					} else {
-						return cell;
-					}
-				})
-				
-				//console.log("updatedRow", updatedRow);
-				return updatedRow;
+		const newRowData = rowData.map(row=>{
+			if(getRowCellValueById(row, "rowId") === currRowId){
+				return previous;
 			} else {
 				return row;
 			}
 		})
-					
-		//console.log("onToggleEditMode", newRowDataSource);
-		setRowData(newRowDataSource);
 		
 		
+		setRowData(state=>{
+			return rowData.map(row => {
+				
+				const rowId = getRowCellValueById(row, "rowId");
+
+				if(getRowCellValueById(row, "rowId") === currRowId){
+					return previous.map(cell => {
+
+						if(cell.id === 'isEdit'){
+							return {id: 'isEdit', value: false}
+						}
+						return cell;
+					});
+				}
+				
+				return row;
+			});
+		})
+		
+		delete beforeEditRows[currRowId];
 	}
+	
+	
+	const onSaveEditRow = (e, row) => {
+		console.log("onDoneEditRow", row);
+	}
+	
+	
 	
 	const getCellAlignFromHeader = (cellId) => {
 		const cell = headerData.filter(n=> n.cell_id === cellId);
@@ -225,46 +238,32 @@ const TableList = (props) => {
 	//const getCellType = (cellId)
 	
 	const handleSortTableList = (e, cellId) => {
-		
-		//console.log(rowData); //>> 접근됨...
-		
 		const isAsc = orderBy === cellId && order === 'asc';
 		setOrder(isAsc ? 'desc' : 'asc');
 		setOrderBy(cellId);
 	}
 	
 	
-
-	const handleCellChange = (event, row, editCell) => {
-		//console.log(row);
+	const handleCellChange = (e, row, editCell) => {
+		const currRowId = getRowCellValueById(row, "rowId");
 		
-		console.log("changedListData", changedListData);
+		//console.log(currRowId);
+		//console.log("handleCellChange", row);
+		//console.log("beforeEditRows", beforeEditRows);
+		//beforeEditRows[currRowId]  
 		
+		if(!beforeEditRows[currRowId]){
+			setBeforeEditRows(state => ({...state, [currRowId]: row}));
+		}
 		
-		const editRowSeq = row.filter(cell => cell.id === "seq")[0].value;
+		//setBeforeEditRows(state => ({...state, row}));
+		//console.log(editCell.id);
 		
-		const newRowData = rowData.map(
-			row => {
-				if(getRowCellValueById(row, "seq") === editRowSeq){
-					row.map(cell => {
-						if(cell.id === editCell.id){
-							cell.value = event.target.value;
-							return cell;
-						}
-						return cell;
-					})
-					return row;
-				}
-				return row;	
-			}
-		)
-		
-		//console.log(newRowData);
-		setRowData(newRowData);
+		setRowCellValue(row, editCell.id, e.target.value);
 		
 		
 		//변경사항 내용추가 
-		setChangedListData(newRowData);
+		//setChangedListData(newRowData);
 	}
 	
 	
@@ -276,6 +275,43 @@ const TableList = (props) => {
 		}
 		
 		return "";
+	}
+	
+	
+	function setRowCellValue(row, cellId, value){
+		const currRowId = getRowCellValueById(row, "rowId");
+		//console.log("currRowId", currRowId);
+		
+		const newRowData = rowData.map(
+			r => {
+				if(getRowCellValueById(r, "rowId") === currRowId){
+					//cell update 처리
+					return r.map(cell=>{
+						if(cell.id === cellId){
+							
+							//console.log("cell", cell);
+							//cell.value = value;
+							//console.log(cell.id, value);
+							//return {id: 'isEdit', value: true}
+							//return cell;
+							
+							//속성값자체를 변경하니... 새로 랜더링하게 되네.. 신규값으로 바꿔 넣어주니 업데이트안하게 되고... [체크]
+							//좀더 테스트 해보니 랜덤하게 재랜더링 되네...
+							return {id:cellId, value: value};
+						}
+						return cell;
+					})
+					//return r;	//여길 리턴하면 안되고,, r.map 을 리턴 해야되네...
+				} else {
+					return r;
+				}
+			}
+		);
+		
+		//console.log("newRowData", newRowData)
+		
+		//setRowData 를 호출하지 않아도 새로 리스트를 새로 render 하네... 일단 주석처리하고 코딩해보자 [체크]
+		setRowData(newRowData);
 	}
 	
 	function getComparator(order, orderBy){
@@ -345,6 +381,7 @@ const TableList = (props) => {
 											//console.log("table body", idx);
 											//console.log("row", row)
 											
+											const rowId = getRowCellValueById(row, "rowId");
 											const labelId = `table-checkbox-${rowIdx}`;
 											const rowSeq = getRowCellValueById(row, "seq");
 											const isEditRow = getRowCellValueById(row, "isEdit");
@@ -358,7 +395,7 @@ const TableList = (props) => {
 											return(
 												<TableRow 
 													hover 
-													key={rowSeq} 
+													key={rowId} 
 													//onClick={(e)=>handleRowClick(e, idx)}	//min 일단 셀별로 클릭이벤트 처리해야 할듯... 에디트 모드 처리하려면 전체 ROW에 클릭에 이벤트 주면 안되겠네.. 
 													//selected={isSelectedRow}
 													sx={{cursor:'pointer'}}
@@ -393,11 +430,8 @@ const TableList = (props) => {
 														const cellPadding = getCellPaddingFromHeader(cell.id);
 														
 														//console.log("cellPadding", cell.id, cellPadding);
-														
 														//console.log(`${cell.id} : ${cellAlign}`)
 														//console.log(cell.id, cellType, cellEditable);
-														
-														
 														
 														return(
 															
@@ -409,9 +443,21 @@ const TableList = (props) => {
 																	//border:1
 																}}
 															>
-																<IconButton aria-label="edit" onClick={(e) => onToggleEditMode(e, rowSeq)}>
-																	<ModeEditOutlineOutlinedIcon/>
-																</IconButton>
+																{isEditRow ?
+																	<ButtonGroup> 
+																		<IconButton onClick={(e)=> onRestoreEditRow(e, row)} >
+																			<RestoreIcon/>
+																		</IconButton>
+																		<IconButton onClick={(e)=> onSaveEditRow(e, row)}>
+																			<SaveAsOutlinedIcon/>
+																		</IconButton>
+																	</ButtonGroup>
+																	 : 
+																	<IconButton aria-label="edit" onClick={(e) => onToggleEditRow(e, row)}>
+																		<ModeEditOutlineOutlinedIcon/>
+																	</IconButton>
+																}
+																
 															</TableCell> 
 															: 
 															<TableCell

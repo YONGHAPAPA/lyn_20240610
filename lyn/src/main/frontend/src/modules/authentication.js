@@ -201,21 +201,29 @@ export function removeAuthentication(){
 
 export function isAuthenctedUser(){
 	
+	let isAuthenticatedUser = false;
 	
 	if(localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH) !== null && localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT) !== null){
 		
 		//alert("isAuthenctedUser > true");
+		//console.log("isAuthenctedUser", "true");
 		
 		//console.log("LOCAL_STRG_AUTH_TYPE", localStorage.getItem(authProps.LOCAL_STRG_AUTH_TYPE));
 		//console.log("LOCAL_STRG_AUTH", localStorage.getItem(authProps.LOCAL_STRG_AUTH));
 		//console.log("LOCAL_STRG_AUTH_EXP_DT", localStorage.getItem(authProps.LOCAL_STRG_AUTH_EXP_DT));
 		
-		return true;	
+		isAuthenticatedUser = true;	
 	} else {
 		
-		//alert("isAuthenctedUser > false"); 
-		return false;
+		//alert("isAuthenctedUser > false");
+		//console.log("isAuthenctedUser", "false");
+		 
+		isAuthenticatedUser = false;
 	}
+	
+	//console.log("isAuthenticatedUser", isAuthenticatedUser);
+	
+	return isAuthenticatedUser;
 }
 
 
