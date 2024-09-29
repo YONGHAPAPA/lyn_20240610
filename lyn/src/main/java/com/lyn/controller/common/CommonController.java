@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.checkerframework.common.returnsreceiver.qual.This;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,71 @@ import com.lyn.service.authentication.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+class Rectangle {
+	
+	Integer width;
+	Integer height;
+	String surface;
+	String border;
+	Integer size;
+	
+	public void print() {
+		log.info("width:{}, height:{}, surface:{}, border:{}, size:{}", this.width, this.height, this.surface, this.border, this.size);
+	}
+	
+	
+	public static class Builder {
+		
+		Integer width;
+		Integer height;
+		
+		String surface;
+		String border;
+		Integer size;
+		
+		public Builder(Integer width, Integer height) {
+			
+			this.width = width;
+			this.height = height;
+			
+			surface = "default";
+			border = "default";
+			size = 1;
+		}
+		
+		public Builder setSurface(String surface) {
+			this.surface = surface;
+			return this;
+		}
+		
+		public Builder setBorder(String border) {
+			this.border = border;
+			return this;
+		}
+		
+		public Builder setSize(Integer size) {
+			this.size = size;
+			return this;
+		}
+		
+		public Rectangle build() {
+			
+			Rectangle rt = new Rectangle(this);
+			return rt;
+		}
+	}
+	
+	Rectangle(Builder builder) {
+		this.width = builder.width;
+		this.height = builder.width;
+		this.surface = builder.surface;
+		this.border = builder.border;
+		this.size = builder.size;
+	}
+}
+
+
+@Slf4j
 @RestController
 @RequestMapping("/home")
 public class CommonController {
@@ -33,36 +99,7 @@ public class CommonController {
 //	AuthenticationService authService;
 	
 	
-	class Money implements Comparable<Money> {
-		
-		Integer amount;
-		
-		Money(Integer amt){
-			this.amount = amt;
-		}
-		
-		Integer getAmount() {
-			return amount;
-		}
-		
-		@Override
-		public int compareTo(Money o) {
-			return this.amount.compareTo(o.getAmount());
-		}
-	}
 	
-	class Won extends Money {
-		
-		Won(Integer amt){
-			super(amt);
-		}
-	}
-	
-	class Dollar extends Money {
-		Dollar(Integer amt){
-			super(amt);
-		}
-	}
 	
 	@GetMapping("/index")
 	public String index() {
@@ -72,16 +109,12 @@ public class CommonController {
 			log.info("this is index page");
 			
 			
-			Money w1 = new Won(10);
-			Money w2 = new Won(20);
-			log.info("{}-{} >> {}", w1.getAmount(), w2.getAmount(), w1.compareTo(w2));
+			Rectangle rt = new Rectangle.Builder(20, 30).build();
 			
+			rt.print();
 			
-			Money d1 = new Dollar(1);
-			Money d2 = new Dollar(2);
-			log.info("{}-{} >> {}", d1.getAmount(), d2.getAmount(), d1.compareTo(d2));
-
-			
+			//myRt.
+		
 			
 			
 			
