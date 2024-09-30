@@ -12,7 +12,7 @@ const TableList = (props) => {
 	/*
 		테이블 리스트는 TableContainer > Table > TableHead > TableRow 구조를 포함해서 구성해야 오류 발생안함
 	*/	
-	const {dataSource, changedListData, setChangedListData} = props;
+	const {dataSource, changedListData, setChangedListData, handleRowUpdate} = props;
 	const [beforeEditRows, setBeforeEditRows] = React.useState([]);
 	
 	//console.log("changedList", changedList);
@@ -150,46 +150,45 @@ const TableList = (props) => {
 	const onRestoreEditRow = (e, row) => {
 		
 		const currRowId = getRowCellValueById(row, "rowId");
-		const previous = beforeEditRows[currRowId] ? beforeEditRows[currRowId] : [];
+		const beforeEditRow = beforeEditRows[currRowId] ? beforeEditRows[currRowId] : [];
 		
-		//console.log(previousRow);
-		
-		const newRowData = rowData.map(row=>{
-			if(getRowCellValueById(row, "rowId") === currRowId){
-				return previous;
-			} else {
-				return row;
-			}
-		})
-		
-		
-		setRowData(state=>{
-			return rowData.map(row => {
-				
-				const rowId = getRowCellValueById(row, "rowId");
-
+		setRowData(state => {
+			return rowData.map(row=>{
 				if(getRowCellValueById(row, "rowId") === currRowId){
-					return previous.map(cell => {
-
-						if(cell.id === 'isEdit'){
-							return {id: 'isEdit', value: false}
-						}
-						return cell;
-					});
+					
+					let newRow = beforeEditRow.length > 0 ? beforeEditRow : row;
+					
+					//isEdit 셀속성은 false 재처리
+					return newRow.map(cell=>{
+						//console.log(cell);
+						return (cell.id === "isEdit") ? {id: 'isEdit', value: false} : cell; 
+					})
+					
+				} else {
+					return row;
 				}
-				
-				return row;
-			});
+			})
 		})
+		
 		
 		delete beforeEditRows[currRowId];
 	}
 	
 	
 	const onSaveEditRow = (e, row) => {
-		console.log("onDoneEditRow", row);
-	}
-	
+		handleRowUpdate(row);
+		
+		//edit:false 모드 변경
+		setRowData(state => {
+			return rowData.map(row => {
+				return row.map(cell=>{
+					return (cell.id === "isEdit") ? {id: 'isEdit', value: false} : cell; 
+				});
+			})
+		})
+		
+		
+	}	
 	
 	
 	const getCellAlignFromHeader = (cellId) => {
@@ -592,7 +591,8 @@ TableList.propTypes = {
 	dataSource: PropTypes.object.isRequired,
 	//onSelectAll: PropTypes.func.isRequired,
 	changedListData: PropTypes.array,
-	setChangedListData: PropTypes.func
+	setChangedListData: PropTypes.func, 
+	handleRowUpdate: PropTypes.func,
 }
 
 

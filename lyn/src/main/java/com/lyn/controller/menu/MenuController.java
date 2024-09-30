@@ -39,4 +39,12 @@ public class MenuController {
 		
 		return ApiResponse.ok(navMenus);
 	}
+	
+	
+	@PostMapping("/setNavMenuItem")
+	public ApiResponse<?> setNavMenu(){
+		
+		log.info("setNavMenu >>>>>>>>>>>>>>>>>> ");
+		return ApiResponse.ok("OK");
+	}
 }

@@ -3,6 +3,7 @@ import { Box, Typography, Button, Stack } from '@mui/material';
 import { Save } from '@mui/icons-material';
 import TableList from '../../../components/List/TableList';
 import * as menuUtil from '../../../modules/menu/menuUtility';
+import axios from 'axios';
 
 
 
@@ -148,7 +149,6 @@ const MenuCreation = () => {
 					
 					//rowCells 순서바꾸기 테스트
 					/*console.log(rowCells);
-					
 					const t1 = rowCells[1];
 					const t2 = rowCells[2];
 					rowCells[1] = t2;
@@ -158,13 +158,9 @@ const MenuCreation = () => {
 					
 				}
 				
-				
 				//debugger;
-				
 				//console.log(newRowData);
-				
 				//console.log("newRowData", newRowData);
-				
 				//console.log(listDataSource);
 				const newDataSource = {headerDataSource: headerColumns, rowDataSource: newRowData};
 				//console.log("MenuCreation", newDataSource);
@@ -175,13 +171,27 @@ const MenuCreation = () => {
 	
 	
 	
-	
-	const handleOnClickSave = (event) => {
-		//console.log("handleOnClickSave", event);
+	const updateMenuItem = (rowData) => {
 		
-		console.log("changedListData", changedListData);
+		console.log(rowData);
+		
+		const url = "menu/setNavMenuItem";
+		
+		axios.post(url, null, {
+			params:{
+				seq: 1, 
+			}
+		}).then(res => {
+			
+			console.log("updateMenuItem", res);
+			
+		})		
 	}
 	
+	const handleRowUpdate = (rowData) => {
+		//console.log("handleRowUpdate", rowData);
+		updateMenuItem(rowData);
+	}
 	
 	
 	if(listDataSource) {
@@ -198,7 +208,6 @@ const MenuCreation = () => {
 							size='small' 
 							startIcon={<Save/>} 
 							sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}}
-							onClick={(e)=>{handleOnClickSave(e)}}
 						>Save</Button>
 					</Stack>
 				</Box>
@@ -206,7 +215,7 @@ const MenuCreation = () => {
 				{
 					listDataSource && 
 					<Box>
-						<TableList dataSource={listDataSource} changedListData={changedListData} setChangedListData={setChangedListData}/>					
+						<TableList dataSource={listDataSource} changedListData={changedListData} setChangedListData={setChangedListData} handleRowUpdate={handleRowUpdate}/>					
 					</Box>
 				}
 				

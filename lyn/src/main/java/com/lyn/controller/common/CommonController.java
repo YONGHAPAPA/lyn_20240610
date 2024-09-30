@@ -25,69 +25,6 @@ import com.lyn.service.authentication.AuthenticationService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-class Rectangle {
-	
-	Integer width;
-	Integer height;
-	String surface;
-	String border;
-	Integer size;
-	
-	public void print() {
-		log.info("width:{}, height:{}, surface:{}, border:{}, size:{}", this.width, this.height, this.surface, this.border, this.size);
-	}
-	
-	
-	public static class Builder {
-		
-		Integer width;
-		Integer height;
-		
-		String surface;
-		String border;
-		Integer size;
-		
-		public Builder(Integer width, Integer height) {
-			
-			this.width = width;
-			this.height = height;
-			
-			surface = "default";
-			border = "default";
-			size = 1;
-		}
-		
-		public Builder setSurface(String surface) {
-			this.surface = surface;
-			return this;
-		}
-		
-		public Builder setBorder(String border) {
-			this.border = border;
-			return this;
-		}
-		
-		public Builder setSize(Integer size) {
-			this.size = size;
-			return this;
-		}
-		
-		public Rectangle build() {
-			
-			Rectangle rt = new Rectangle(this);
-			return rt;
-		}
-	}
-	
-	Rectangle(Builder builder) {
-		this.width = builder.width;
-		this.height = builder.width;
-		this.surface = builder.surface;
-		this.border = builder.border;
-		this.size = builder.size;
-	}
-}
 
 
 @Slf4j
@@ -108,14 +45,7 @@ public class CommonController {
 			
 			log.info("this is index page");
 			
-			
-			Rectangle rt = new Rectangle.Builder(20, 30).build();
-			
-			rt.print();
-			
-			//myRt.
 		
-			
 			
 			
 			
