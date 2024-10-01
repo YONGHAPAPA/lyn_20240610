@@ -43,5 +43,9 @@
 		
 		SELECT SEQ, DOMAIN_CD, TITLE, PARENT_SEQ, URL, ICON, MENU_GROUP, MENU_GROUP_ORDER, ORDER_SEQ, level, RMK, IS_USE, DELT_FLG, CRE_ID, CRE_DT, UPD_ID, UPD_DT FROM SEARCH_NAV ORDER BY MENU_GROUP_ORDER, level, ORDER_SEQ
 	</select>
+	
+	<update id="UpdateNavMenu" parameterType="com.lyn.dto.menu.NavMenuDto">
+		update nav_menu set title = #{title}, rmk = #{rmk} where seq = #{seq}
+	</update>
 
 </mapper>

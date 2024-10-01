@@ -1,15 +1,18 @@
 package com.lyn.controller.menu;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lyn.dto.menu.NavMenuDto;
 import com.lyn.model.common.ApiResponse;
+import com.lyn.model.exception.CustomException;
 import com.lyn.service.menu.NavMenuService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,10 +44,16 @@ public class MenuController {
 	}
 	
 	
-	@PostMapping("/setNavMenuItem")
-	public ApiResponse<?> setNavMenu(){
+	@PostMapping("/updateNavMenuItem")
+	public ApiResponse<?> updateNavMenuItem(@RequestBody NavMenuDto menu){
 		
-		log.info("setNavMenu >>>>>>>>>>>>>>>>>> ");
-		return ApiResponse.ok("OK");
+		log.info("setNavMenuItem > menu seq: {}", menu.getSeq());
+		
+		if(menuService.UpdateNavMenu(menu) > 0)
+			return ApiResponse.ok("OK");
+		else {
+			
+			return ApiResponse.ok("Update Fail");
+		}
 	}
 }

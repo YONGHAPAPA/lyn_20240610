@@ -174,9 +174,21 @@ const TableList = (props) => {
 		delete beforeEditRows[currRowId];
 	}
 	
+	const convertRowToJson = (row) => {
+		
+		let rowJson = {};
+		
+		row.map(cell => {
+			rowJson[cell.id] = cell.value;
+		})
+		
+		return rowJson;
+	}
 	
 	const onSaveEditRow = (e, row) => {
-		handleRowUpdate(row);
+		
+		const rowJsonData = convertRowToJson(row); 
+		handleRowUpdate(rowJsonData);
 		
 		//edit:false 모드 변경
 		setRowData(state => {

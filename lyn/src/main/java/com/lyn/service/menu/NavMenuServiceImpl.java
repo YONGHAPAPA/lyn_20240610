@@ -1,5 +1,6 @@
 package com.lyn.service.menu;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NavMenuServiceImpl implements NavMenuService{
 	
 	private final SqlSession sqlSession;
+	
 
 	@Transactional
 	@Override
@@ -40,4 +42,29 @@ public class NavMenuServiceImpl implements NavMenuService{
 		
 		return navMenus;
 	}
+
+	@Transactional
+	@Override
+	public int UpdateNavMenu(NavMenuDto dto) {
+
+		NavMenuMapper mapper = sqlSession.getMapper(NavMenuMapper.class);
+		
+		int updateCnt = 0;
+		
+		try {
+			updateCnt = mapper.UpdateNavMenu(dto);
+			
+			if(updateCnt != 1) {
+				throw new SQLException();
+			}
+			
+		} catch(Exception e) {
+			log.error(e.getStackTrace().toString(), e.getMessage());
+		}
+		
+		return updateCnt;
+	}
+	
+	
+	
 }

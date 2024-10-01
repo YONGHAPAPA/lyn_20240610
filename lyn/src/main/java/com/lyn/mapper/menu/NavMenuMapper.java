@@ -10,4 +10,6 @@ import com.lyn.dto.menu.NavMenuDto;
 public interface NavMenuMapper {
 
 	public List<NavMenuDto> GetNavMenuByDomain(String domainCd);
+	
+	public int UpdateNavMenu(NavMenuDto dto);
 }
