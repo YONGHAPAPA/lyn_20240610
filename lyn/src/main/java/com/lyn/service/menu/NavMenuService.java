@@ -9,5 +9,5 @@ public interface NavMenuService {
 	public List<NavMenuDto> GetNavMenuByDomain(String domainCd);
 	
 	
-	public int UpdateNavMenu(NavMenuDto dto);
+	public Integer UpdateNavMenu(NavMenuDto dto);
 }

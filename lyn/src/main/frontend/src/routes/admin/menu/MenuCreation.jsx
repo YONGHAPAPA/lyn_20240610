@@ -5,8 +5,7 @@ import TableList from '../../../components/List/TableList';
 import * as menuUtil from '../../../modules/menu/menuUtility';
 import axios from 'axios';
 
-
-
+import {useMutation, useQueryClient} from '@tanstack/react-query'
 
 
 
@@ -33,7 +32,17 @@ const MenuCreation = () => {
 	
 	
 	const [listDataSource, setListDataSource] = React.useState(initListDataSource);
-	const [changedListData, setChangedListData] = React.useState([]); 
+	const [changedListData, setChangedListData] = React.useState([]);
+	
+	
+	const queryClient = useQueryClient(); 
+	
+	const { mutate } = useMutation({
+		mutationFn: (updateRowData)=>{updateMenuItem(updateRowData)}, 
+		onSuccess: ()=>{
+			console.log("useMutation >> success ");
+		}
+	});
 	
 	
 	React.useEffect(()=>{
@@ -153,9 +162,7 @@ const MenuCreation = () => {
 					const t2 = rowCells[2];
 					rowCells[1] = t2;
 					rowCells[2] = t1;*/
-					
 					newRowData.push(rowCells);
-					
 				}
 				
 				//debugger;
@@ -171,24 +178,27 @@ const MenuCreation = () => {
 	
 	
 	
-	const updateMenuItem = (newRowdata) => {
+	const updateMenuItem = async (newRowdata) => {
 		//console.log(JSON.stringify(menuItemData));
 		//console.log(newRowdata);
 		
 		const url = "/menu/updateNavMenuItem";
 		
-		axios.post(url, newRowdata, {
+		const res = await axios.post(url, newRowdata, {
 			headers: {
 				"Content-Type": `application/json`
 			}
 		}).then(res => {
-			console.log("updateMenuItem", res);
-		})		
+			//console.log("updateMenuItem", res);
+		});
+		
+		return res;		
 	}
 	
-	const handleRowUpdate = (rowData) => {
+	const handleRowUpdate = (newRowData) => {
 		//console.log("handleRowUpdate", rowData);
-		updateMenuItem(rowData);
+		//updateMenuItem(newRowData);
+		mutate(newRowData);
 	}
 	
 	

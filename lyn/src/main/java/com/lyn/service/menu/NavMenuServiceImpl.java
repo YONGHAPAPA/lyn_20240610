@@ -45,7 +45,7 @@ public class NavMenuServiceImpl implements NavMenuService{
 
 	@Transactional
 	@Override
-	public int UpdateNavMenu(NavMenuDto dto) {
+	public Integer UpdateNavMenu(NavMenuDto dto) {
 
 		NavMenuMapper mapper = sqlSession.getMapper(NavMenuMapper.class);
 		
