@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import {useMutation, useQueryClient} from '@tanstack/react-query'
 
+import * as common from '../../../modules/common';
 
 
 const MenuCreation = () => {
@@ -195,17 +196,41 @@ const MenuCreation = () => {
 		return res;		
 	}
 	
-	const handleRowUpdate = (newRowData) => {
-		//console.log("handleRowUpdate", rowData);
-		//updateMenuItem(newRowData);
+	const handleSaveRow = (newRowData) => {
 		mutate(newRowData);
+	}
+	
+	const handleSaveRow2 = async (newRow) => {
+		
+		//console.log("handleSaveRow2 start:", new Date())
+		
+		const sleep = await common.sleep(3000);
+		//console.log("handleSaveRow2 : ", sleep, new Date())
+		
+		const url = "/menu/updateNavMenuItem";
+		const res = await axios.post(url, newRow, {
+			headers: {
+				"Content-Type": 'application/json', 
+			}
+		}).then(res => {
+			//console.log("handleSaveRow2", res);
+			return res.data;
+		});
+		
+		//console.log("handleSaveRow2 end:", res.data, new Date())
+	}
+	
+	
+	
+	const handleInitList = () => {
+		
 	}
 	
 	
 	if(listDataSource) {
 		return(
 			<div>
-				<Typography variant='h6' >Menu Creation</Typography>
+				<Typography variant='h6'>Menu Creation</Typography>
 				
 				
 				{/* menu table list (s)*/}
@@ -223,7 +248,7 @@ const MenuCreation = () => {
 				{
 					listDataSource && 
 					<Box>
-						<TableList dataSource={listDataSource} changedListData={changedListData} setChangedListData={setChangedListData} handleRowUpdate={handleRowUpdate}/>					
+						<TableList dataSource={listDataSource} changedListData={changedListData} setChangedListData={setChangedListData} handlInitList={handleInitList} handleSaveRow={handleSaveRow2}/>					
 					</Box>
 				}
 				

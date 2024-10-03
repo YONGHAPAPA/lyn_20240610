@@ -2,9 +2,13 @@ import { Paper, TableHead, TableRow, Box, TableContainer, Table, TableCell, Chec
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import RestoreIcon from '@mui/icons-material/Restore';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress';
 import SaveAsOutlinedIcon from '@mui/icons-material/SaveAsOutlined';
 import PropTypes from 'prop-types';
 import * as React from "react";
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import axios from "axios";
 
 
 const TableList = (props) => {
@@ -12,7 +16,7 @@ const TableList = (props) => {
 	/*
 		테이블 리스트는 TableContainer > Table > TableHead > TableRow 구조를 포함해서 구성해야 오류 발생안함
 	*/	
-	const {dataSource, changedListData, setChangedListData, handleRowUpdate} = props;
+	const {dataSource, handleSaveRow, handlInitList} = props;
 	const [beforeEditRows, setBeforeEditRows] = React.useState([]);
 	
 	//console.log("changedList", changedList);
@@ -31,7 +35,74 @@ const TableList = (props) => {
 	const [rowData, setRowData] = React.useState([]);
 	
 	
-	//console.log("headerDataSource", ...headerDataSource);
+	//console.log("handlInitList", handlInitList);
+	
+	const fetchRow = (rowDataJson)=>{
+		const result = handleSaveRow(rowDataJson)
+		//console.log(handleSaveRow);
+	}
+	
+	
+	
+	
+	const rowMutation  = useMutation({
+		mutationKey: [`updaterow`],
+		mutationFn: async (rowDataJson) => { 
+			//fetchRow(rowData);
+			
+			
+			console.log("mutation:", rowDataJson);
+			
+			return handleSaveRow(rowDataJson);
+			
+			//console.log(rowDataJson);
+			
+			/*
+			const url = "/menu/updateNavMenuItem";
+			return axios.post(url, rowDataJson, {
+				headers: {
+					"Content-Type": `application/json`
+				}
+			})
+			*/
+		}, 
+		onMutate(){
+			console.log("onMutate: isPending", rowMutation.isPending)
+		}, 
+		onSuccess(data, variable, context){
+			//console.log(mutation.isSuccess);
+			//console.log(variable);
+			//console.log(context);
+			
+			//console.log("onSuccess.isPending", mutation.isPending);
+			//console.log("onSuccess", variable)
+			const rowId = variable.rowId;
+			//console.log("rowId::", rowId);
+
+			toggleRowEditModeByRowId(rowId, false);
+						
+			//setRowCellValueByRowId(rowId, "status", "R");
+			//setRowCellValueByRowId(rowId, "isEdit", false);
+			
+			
+			
+			//console.log(`onSuccess >> isSuccess:${mutation.isSuccess}, isIdle:${mutation.isIdle}, isPending:${mutation.isPending} `)
+		}, 
+		onSettled(){
+			//console.log(`onSettled >> isSuccess:${mutation.isSuccess}, isIdle:${mutation.isIdle}, isPending:${mutation.isPending} `)
+		}, 
+		onError(data, variable, context){
+			
+			//console.log("onError> data:", data);
+			//console.log("onError> variable:", variable);
+			//console.log("onError> context:", context);
+			const rowId = variable.rowId;
+			setRowCellValueByRowId(rowId, "status", "R");
+			//setRowCellValueByRowId(rowId, "isEdit", false);
+			//delete beforeEditRows[rowId];
+			
+		}
+	});
 	
 	React.useEffect(()=>{
 
@@ -53,15 +124,26 @@ const TableList = (props) => {
 			
 			const editCell = {
 				title: "EDIT", 
-				cell_id: "edit", 
+				cell_id: "isEdit", 
 				type: "icon", 
 				hidden: false,
 				width: 10, 
 				align: "center", 
-				disablePadding: false, 
+				disablePadding: false,
 			}
 			
-			newHeaderDataSource = [rowIdCell, ...headerDataSource, editCell];
+			const statusCell = {
+				title: "STATUS",
+				cell_id: "status", 
+				type: "text",
+				hidden: true,
+				width: 0,
+				align: "",
+				disablePadding: false,	 
+			}
+			
+			newHeaderDataSource = [rowIdCell, ...headerDataSource, editCell, statusCell];
+			//newHeaderDataSource = [rowIdCell, ...headerDataSource, editCell];
 			
 			setHeaderData(newHeaderDataSource);
 		}
@@ -89,7 +171,8 @@ const TableList = (props) => {
 				//console.log("reRangedRow", reRangedRow);
 				//let reRangeRow2 = reRangedRow
 				
-				const rowData = [{id:'rowId', value:index}, ...reRangedRow, {id:'isEdit', value: false},];
+				const rowData = [{id:'rowId', value:index}, ...reRangedRow, {id:'isEdit', value: false}, {id:'status', value:"R"}];
+				//const rowData = [{id:'rowId', value:index}, ...reRangedRow, {id:'isEdit', value: false}];
 				index = index + 1;
 				return rowData;
 			});
@@ -102,6 +185,9 @@ const TableList = (props) => {
 		}
 
 	}, [dataSource])
+	
+	
+	
 	
 	
 	const handleSelectAll = (event)=>{
@@ -185,12 +271,33 @@ const TableList = (props) => {
 		return rowJson;
 	}
 	
+	
 	const onSaveEditRow = (e, row) => {
 		
+		setRowCellValue(row, "status", "U");
+		
 		const rowJsonData = convertRowToJson(row); 
-		handleRowUpdate(rowJsonData);
+		//handleSaveRow(rowJsonData);
+		
+		//console.log("mutate.isPending", mutation.isPending);
+		
+		rowMutation.mutate(rowJsonData);
+		
+		console.log("onSaveEditRow: isPending", rowMutation.isPending);
+		console.log("onSaveEditRow: isIdle", rowMutation.isIdle);
+		
+		//const result = mutation.mutateAsync(rowJsonData);
+		//result.then(res=>{
+			//console.log(res);
+		//	console.log("mutation.isPending", mutation.isPending);
+		//})
+		
+		console.log("after mutate: isPending", rowMutation.isPending);
+		
+		
 		
 		//edit:false 모드 변경
+		/*
 		setRowData(state => {
 			return rowData.map(row => {
 				return row.map(cell=>{
@@ -198,8 +305,7 @@ const TableList = (props) => {
 				});
 			})
 		})
-		
-		
+		*/
 	}	
 	
 	
@@ -289,6 +395,57 @@ const TableList = (props) => {
 	}
 	
 	
+	function toggleRowEditModeByRowId(rowId, isEdit){
+		const newRowData = rowData.map(row => {
+					
+					if(rowId === getRowCellValueById(row, "rowId")){
+						return row.map(cell => {
+							
+							if(isEdit){
+								if(cell.id === "isEdit"){
+									return {id:"isEdit", value:true};
+								} else {
+									return cell;
+								}	
+							} else {
+								if(cell.id === "isEdit"){
+									return {id:"isEdit", value: false}
+								} else if(cell.id === "status"){
+									return {id:"status", value:'R'}
+								} else {
+									return cell;
+								}
+							}
+						})	
+					} else {return row;} 
+				})
+				
+				delete beforeEditRows[rowId];
+				setRowData(newRowData);	
+	}
+	
+	function setRowCellValueByRowId(rowId, cellId, value){
+		
+		const newRowData = rowData.map(row => {
+			
+			if(rowId === getRowCellValueById(row, "rowId")){
+				return row.map(cell => {
+					if(cell.id === cellId){
+						console.log("setRowCellValueByRowId", cell, value);
+						return {id: cellId, value: value};
+					} else {
+						return cell;
+					}  
+				})	
+			} else {return row;} 
+		})
+		
+		setRowData(newRowData);
+	}
+	
+	
+	
+	
 	function setRowCellValue(row, cellId, value){
 		const currRowId = getRowCellValueById(row, "rowId");
 		//console.log("currRowId", currRowId);
@@ -299,13 +456,6 @@ const TableList = (props) => {
 					//cell update 처리
 					return r.map(cell=>{
 						if(cell.id === cellId){
-							
-							//console.log("cell", cell);
-							//cell.value = value;
-							//console.log(cell.id, value);
-							//return {id: 'isEdit', value: true}
-							//return cell;
-							
 							//속성값자체를 변경하니... 새로 랜더링하게 되네.. 신규값으로 바꿔 넣어주니 업데이트안하게 되고... [체크]
 							//좀더 테스트 해보니 랜덤하게 재랜더링 되네...
 							return {id:cellId, value: value};
@@ -397,11 +547,13 @@ const TableList = (props) => {
 											const rowSeq = getRowCellValueById(row, "seq");
 											const isEditRow = getRowCellValueById(row, "isEdit");
 											const isSelectedRow = isSelected(rowSeq);
+											const status = getRowCellValueById(row, "status");
 
 											//console.log("rowSeq", rowSeq);
 											//console.log("editRow", editRow);
 											//console.log("isSelectedRow", idx, isSelectedRow);
-											//console.log("isEditRow", isEditRow);
+											console.log("isEditRow", rowId, isEditRow);
+											//console.log("status", rowId, status);
 
 											return(
 												<TableRow 
@@ -439,6 +591,7 @@ const TableList = (props) => {
 														const cellEditable = getCellEditableFromHeader(cell.id);
 														const cellHidden = getCellHiddenFromHeader(cell.id);
 														const cellPadding = getCellPaddingFromHeader(cell.id);
+														 
 														
 														//console.log("cellPadding", cell.id, cellPadding);
 														//console.log(`${cell.id} : ${cellAlign}`)
@@ -459,9 +612,13 @@ const TableList = (props) => {
 																		<IconButton onClick={(e)=> onRestoreEditRow(e, row)} >
 																			<RestoreIcon/>
 																		</IconButton>
-																		<IconButton onClick={(e)=> onSaveEditRow(e, row)}>
+																		
+																		
+																		{status === "U" ? (<Stack spacing={2} direction={"row"} alignItems={"center"}><CircularProgress size={20}/></Stack>) : 
+																		(<IconButton onClick={(e)=> onSaveEditRow(e, row)}>
 																			<SaveAsOutlinedIcon/>
-																		</IconButton>
+																		</IconButton>)
+																		}
 																	</ButtonGroup>
 																	 : 
 																	<IconButton aria-label="edit" onClick={(e) => onToggleEditRow(e, row)}>
@@ -602,9 +759,10 @@ TableListHead.propTypes = {
 TableList.propTypes = {
 	dataSource: PropTypes.object.isRequired,
 	//onSelectAll: PropTypes.func.isRequired,
-	changedListData: PropTypes.array,
-	setChangedListData: PropTypes.func, 
-	handleRowUpdate: PropTypes.func,
+	//changedListData: PropTypes.array,
+	//setChangedListData: PropTypes.func,
+	handlInitList: PropTypes.func, 
+	handleSaveRow: PropTypes.func,
 }
 
 
