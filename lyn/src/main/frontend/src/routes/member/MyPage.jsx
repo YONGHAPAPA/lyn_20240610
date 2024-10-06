@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios';
 //import * as auth from '../../modules/authentication';
 
+import {useSelector, useDispatch} from 'react-redux';
+
 
 
 
@@ -11,6 +13,9 @@ const MyPage = () => {
  	let navigate = useNavigate();
  	let accessToken = useRef('');
  	let pids = useRef([]);
+	
+	
+	const { count1 } = useSelector(state => state.count1);
     
 	useEffect(()=>{
 		
@@ -69,6 +74,7 @@ const MyPage = () => {
 	return(<>
 		<div>
 			My page
+			<div>count: {count1}</div>
 		</div>
 	</>);
 	
