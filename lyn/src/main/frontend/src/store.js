@@ -5,14 +5,22 @@ import { configureStore } from '@reduxjs/toolkit'
 
 //const store = createStore(rootReducer);
 
+import postsReducer from './reducers/postSlice';
+import usersReducer from './reducers/usersSlice';
+
+
 const store = configureStore({
-	reducer: rootReducer
-	
-	
+	//reducer: rootReducer
+	reducer: {
+		posts: postsReducer, 
+		users: usersReducer,
+	}
 })
 
 
-console.log(store.getState())
+
+console.log("store");
+console.log(store.getState()) 
 
 
 export default store;
