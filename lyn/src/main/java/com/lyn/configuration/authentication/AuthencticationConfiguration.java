@@ -37,7 +37,7 @@ public class AuthencticationConfiguration {
 	
 	private final JwtUtil jwtUtil;
 	//private static final String[] IGNOR_AUTH_API_LIST = {"/ignore_test"};
-	private static final String[] AUTH_API_WHITE_LIST = {"/home/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser", "/auth/SlientLogin", "/except1"};
+	private static final String[] AUTH_API_WHITE_LIST = {"/home/index", "/test/**", "/auth/JoinUser", "/auth/LoginUser", "/auth/SlientLogin", "/except1", "/fakeApi/**"};
 	private static final String[] AUTH_API_USER_ACCESS_LIST = {"/member/myInfo"};
 	private static final String[] AUTH_API_USER_ACCESS_ROLE = {"USR01", "USR02", "ADM01", "ADM00"};
 	private static final String[] AUTH_API_ADMIN_ACCESS_LIST = {"/admin/dashBoard", "/menu/getNavMenuByDomain"};

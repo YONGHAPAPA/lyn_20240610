@@ -173,15 +173,18 @@ const MenuCreation = () => {
 	
 	const updateMenuItem = (rowData) => {
 		
-		console.log(rowData);
+		//console.log(rowData);
 		
-		const url = "menu/setNavMenuItem";
+		console.log(JSON.stringify(rowData)) 
 		
-		axios.post(url, null, {
-			params:{
-				seq: 1, 
+		const url = "/menu/updateNavMenuItem";
+		
+		axios.post(url, JSON.stringify(rowData), {
+			headers: {
+				"Content-Type": `application/json`
 			}
-		}).then(res => {
+		}
+		).then(res => {
 			
 			console.log("updateMenuItem", res);
 			

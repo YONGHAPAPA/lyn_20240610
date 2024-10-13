@@ -19,6 +19,9 @@ import MenuRole from './routes/admin/menu/MenuRole';
 import { useInsertionEffect } from 'react';
 import SetupUserType from './routes/admin/user/SetupUserType';
 
+import { SinglePostPage } from './routes/common/SinglePostPage';
+import { EditPostForm } from './routes/common/EditPostForm';
+
 
 
 function App() {
@@ -63,6 +66,10 @@ function App() {
 						<Route path="menu/MenuRole" element={<MenuRole/>} />
 						<Route path="user/SetupUserType" element={<SetupUserType/>} />
 					</Route>
+					
+					{/* for test */}
+					<Route exact path='/posts/:postId' Component={SinglePostPage} />
+					<Route path='/editPosts/:postId' Component={EditPostForm} />
 				</Routes>
 			</div>
 		</>

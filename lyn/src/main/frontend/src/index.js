@@ -13,26 +13,69 @@ import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 import store from './store';
 import { Provider } from 'react-redux'
 
-const queryClient = new QueryClient();
+//import { worker } from './api/fake/server'
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-		<React.StrictMode>
-			<QueryClientProvider client={queryClient} >
-			
-				{/* devtools */}
-				<ReactQueryDevtools initialIsOpen={true} />
-				 
-				 <Provider store={store}>
-					<BrowserRouter>
-						<Header/>
-						<App/>
-						<Footer/>
-					</BrowserRouter> 
-				 </Provider>
-			</QueryClientProvider>
-		</React.StrictMode>
-);
+import { fetchUsers } from './reducers/usersSlice'
+
+
+
+
+
+
+
+async function main() {
+	
+	//console.log("index start!")
+	
+	//Start mock API server
+	//await worker.start({onUnhandledRequest: 'bypass'}) 
+	//console.log("worker started");
+	if (process.env.NODE_ENV === "development") {
+	  await (async () => {
+		
+		//console.log("index start! 1")
+	    const { worker } = await import("./api/fake/server");
+	    await worker.start({onUnhandledRequest: 'bypass'});	//await 주의 없으면, ui 렌더링이 비동기로 처
+		
+		store.dispatch(fetchUsers());
+
+	  })();
+	}
+	//console.log("index start! 2")
+}
+
+main().then((res)=>{
+	
+	//console.log("index start! 3", res);
+	
+	const queryClient = new QueryClient();
+
+	const root = ReactDOM.createRoot(document.getElementById('root'));
+
+	root.render(
+			<React.StrictMode>
+				<QueryClientProvider client={queryClient} >
+				
+					{/* devtools */}
+					<ReactQueryDevtools initialIsOpen={true} /> 
+					 
+					 <Provider store={store}>
+						<BrowserRouter>
+							<Header/>
+							<App/>
+							<Footer/>
+						</BrowserRouter> 
+					 </Provider>
+				</QueryClientProvider>
+			</React.StrictMode>
+	);
+	
+})
+
+
+
+
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

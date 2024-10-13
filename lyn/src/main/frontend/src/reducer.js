@@ -1,3 +1,5 @@
+
+/*
 import {combineReducers} from 'redux'
 
 import addsubReducer from './reducers/addsub';
@@ -12,3 +14,5 @@ const rootReducer = combineReducers({
 })
 
 export default rootReducer
+
+*/

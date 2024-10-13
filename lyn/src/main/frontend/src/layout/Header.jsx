@@ -16,16 +16,13 @@ const Header = () => {
 	
 	//component update 가 발생할때마다 useEffect 발생할수 있도록처리
 	useEffect(()=>{
-		//debugger;
-		
-		//console.log("Header-useEffect::start");
-		//console.log("LOCAL_STRG_ROLES:", localStorage.getItem(authProps.LOCAL_STRG_ROLES));
-		
+				
 		
 
+		
 		//default header 메뉴처리
 		populateUserRole();
-		//renderHeaderMenu();
+
 		
 		//console.log("Header -------------------------");
 		//세션유효기간 체크하고..
@@ -40,7 +37,6 @@ const Header = () => {
 						} else {
 							alert("인증세션이 만료되었습니다. 재로긴하세요.");
 							auth.removeAuthentication();
-							//userRoles.current = null;
 							navigate("auth/Login");
 						}
 					}).catch(e=>{
@@ -52,8 +48,8 @@ const Header = () => {
 		}
 			
 		return()=>{
-			//console.log("useEffect-header-close");
 		}
+		
 	});
 	
 	

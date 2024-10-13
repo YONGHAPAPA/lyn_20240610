@@ -4,18 +4,30 @@ import { useSelector } from 'react-redux'
 
 //thunk 적용
 import { selectPostById } from '../../reducers/postSlice'
+import { useParams } from 'react-router-dom';
 
-export const SinglePostPage = ({postId}) => {
+export const SinglePostPage = () => {
 	
-	//const { postId } = post.id
+	const params = useParams();
+	
+	console.log("SingelPostPage", params.postId);
+	
+	
+	
+	const postId = params.postId;
+	
+	console.log(postId);
 	
 	//thunk 적용
-	/*const post = useSelector(state => 
-		state.posts.find(post => post.id === postId)
-	)*/
+	/*
+	const post = useSelector(state =>
+		state.posts.posts.find(post => post.id === postId)
+	)
+	*/
+	
 	const post = useSelector(state => selectPostById(state, postId))
 	
-	
+	console.log("SinglePost", post)
 	
 	if(!post){
 		

@@ -19,7 +19,7 @@ export const ReactionButtons = ({post}) => {
 		
 		//console.log("ReactionButtons >>> ", nm, emoj);
 		return(
-			<button onClick={()=> dispatch(reactionAdded({postId: post.id, reaction: nm}))}>
+			<button key={nm} onClick={()=> dispatch(reactionAdded({postId: post.id, reaction: nm}))}>
 				{emoj} {post.reactions[nm]}
 			</button>
 		)
