@@ -152,8 +152,6 @@ export const handlers = [
   http.post('/fakeApi/posts', async function ({ request }) {
     const data = await request.json()
 	
-	
-	console.log("server.js > /fakeApi/posts", data);
 
     if (data.content === 'error') {
       await delay(ARTIFICIAL_DELAY_MS)
@@ -313,6 +311,7 @@ const notificationTemplates = [
 ]
 
 function generateRandomNotifications(since, numNotifications, db) {
+	
   const now = new Date()
   let pastDate
 

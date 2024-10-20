@@ -19,8 +19,15 @@ import MenuRole from './routes/admin/menu/MenuRole';
 import { useInsertionEffect } from 'react';
 import SetupUserType from './routes/admin/user/SetupUserType';
 
+//Redux Test
 import { SinglePostPage } from './routes/common/SinglePostPage';
 import { EditPostForm } from './routes/common/EditPostForm';
+import { UserPage } from './routes/sample/redux/user/UserPage'
+import { UsersList } from './routes/sample/redux/user/UsersList'
+
+import { Study } from './routes/sample/Study';
+import { ReduxSample } from './routes/sample/ReduxSample'
+import { NotificationsList } from './routes/sample/redux/notifications/NotificationsList';
 
 
 
@@ -56,6 +63,8 @@ function App() {
 			<div className='main-wrapper'>
 				<Routes>
 					<Route path="/" element={<Home/>} />
+					<Route path="/study" element={<Study/>} />
+					<Route path="/reduxSample" element={<ReduxSample/>} />
 					<Route path="/auth/Join" element={<Join/>} />
 		            <Route path="/auth/login" element={isAuthenticated ? <MyPage/> : <Login/>} />
 					<Route path="/member/Mypage" element={<MyPage/>} />
@@ -67,9 +76,13 @@ function App() {
 						<Route path="user/SetupUserType" element={<SetupUserType/>} />
 					</Route>
 					
-					{/* for test */}
+					{/* for redux test */}
 					<Route exact path='/posts/:postId' Component={SinglePostPage} />
 					<Route path='/editPosts/:postId' Component={EditPostForm} />
+					<Route path='/users' Component={UsersList} />
+					<Route path='/users/:userId' Component={UserPage} />
+					<Route path='/notifications' Component={NotificationsList} />
+					
 				</Routes>
 			</div>
 		</>

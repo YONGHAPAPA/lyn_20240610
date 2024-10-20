@@ -78,6 +78,12 @@ const Header = () => {
 			case "home":
 				navigate("/"); 
 			break;
+			case "study":
+				navigate("/study") 
+			break;
+			case "redux":
+				navigate("reduxSample")
+			break;
 			case "join": 
 				navigate("/auth/join");
 			break;
@@ -140,8 +146,9 @@ const Header = () => {
 			>
 				<Box>
 					<ButtonGroup size='small' variant='outlined' aria-label='Basic button group' sx={{float: "left"}}>
-						
 						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'home')}>Home</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'study')}>Study</Button>
+						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'redux')}>Redux</Button>
 						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'join')}>join</Button>
 						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'login')}>login</Button>
 						<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>

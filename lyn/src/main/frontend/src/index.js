@@ -47,9 +47,7 @@ async function main() {
 main().then((res)=>{
 	
 	//console.log("index start! 3", res);
-	
 	const queryClient = new QueryClient();
-
 	const root = ReactDOM.createRoot(document.getElementById('root'));
 
 	root.render(

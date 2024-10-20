@@ -37,17 +37,18 @@ const Home = () => {
 	//console.log(posts);
 	//console.log(users);
 	
+	//console.log("addRequestStatus", addRequestStatus);
 	
 	const canSave = [postTitle, postContent, userId].every(Boolean) && addRequestStatus === 'idle';
 	
-	console.log("canSave", canSave)
+	//console.log("canSave", canSave)
 	
 	const onSavePostClicked = async () => {
 		if(canSave){
 			try{
 				setAddRequestStatus('pending')
 				
-				console.log();
+				//console.log();
 				
 				await dispatch(addNewPost({title: postTitle, content: postContent, user: userId})).unwrap()
 				setPostTitle('');
@@ -172,7 +173,7 @@ const Home = () => {
 			</div>
 
 			<div>
-				<button onClick={(e)=>{onSavePostClicked()}}>save post</button>
+				<button onClick={(e)=>{onSavePostClicked()}} disabled={addRequestStatus === "idle" ? false : true} >{addRequestStatus === "idle" ? "save post" : "saving..."}</button>
 				<button onClick={(e)=>{onClickGetAllPosts()}}>get all posts</button>
 			</div>
 						
