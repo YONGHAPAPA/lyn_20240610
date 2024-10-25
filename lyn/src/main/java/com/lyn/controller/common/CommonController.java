@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//import com.lyn.model.common.ApiResponse;
-import com.lyn.model.exception.ApiResponse;
-import com.lyn.model.common.CustomException;
-import com.lyn.model.common.ErrorCode;
+import com.lyn.model.common.ApiResponse;
+//import com.lyn.model.exception.ApiResponse;
+import com.lyn.model.exception.CustomException;
+import com.lyn.model.code.ErrorCode;
 import com.lyn.service.authentication.AuthenticationService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,13 +44,6 @@ public class CommonController {
 		try {
 			
 			log.info("this is index page");
-			
-		
-			
-			
-			
-			
-			
 			
 			
 			

@@ -117,7 +117,7 @@ const Home = () => {
 		const url = "/home/index";
 		axios.get(url, "", null).then(res=>{
 			
-			//console.log(res);
+			console.log(res);
 		})
 	}
 	

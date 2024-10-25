@@ -11,9 +11,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lyn.model.code.ErrorCode;
 import com.lyn.model.common.ApiResponse;
 import com.lyn.model.exception.CustomException;
-import com.lyn.model.exception.ErrorCode;
 
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;

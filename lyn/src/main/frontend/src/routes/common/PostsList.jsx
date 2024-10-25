@@ -45,7 +45,8 @@ export const PostsList = () => {
 	let allPosts = useSelector(selectAllPosts);
 	
 	
-	//console.log("PostsList >> ", allPosts);
+	let userlist = allPosts.map(post => post.user)
+	console.log("userlist >> ", userlist);
 	
 	
 	const postStatus = useSelector(state => state.posts.status)

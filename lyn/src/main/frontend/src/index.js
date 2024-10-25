@@ -31,15 +31,18 @@ async function main() {
 	//await worker.start({onUnhandledRequest: 'bypass'}) 
 	//console.log("worker started");
 	if (process.env.NODE_ENV === "development") {
+	  
+	  //2024.10.22 MSW 중지하고 테스트DB로 처리
+	  /* 
 	  await (async () => {
-		
-		//console.log("index start! 1")
 	    const { worker } = await import("./api/fake/server");
 	    await worker.start({onUnhandledRequest: 'bypass'});	//await 주의 없으면, ui 렌더링이 비동기로 처
-		
 		store.dispatch(fetchUsers());
 
 	  })();
+	  */
+	  
+	  
 	}
 	//console.log("index start! 2")
 }

@@ -5,8 +5,8 @@ import org.springframework.lang.Nullable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.lyn.model.exception.CustomException;
-import com.lyn.model.exception.ErrorCode;
-import com.lyn.model.exception.ExceptionDto;
+import com.lyn.model.code.ErrorCode;
+import com.lyn.model.common.ExceptionDto;
 
 import lombok.extern.slf4j.Slf4j;
 

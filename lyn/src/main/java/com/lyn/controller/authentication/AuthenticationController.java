@@ -23,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lyn.dto.UserDto;
+import com.lyn.dto.exception.authentication.AuthExceptionDTO;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
+import com.lyn.model.code.ErrorCode;
+import com.lyn.model.code.authError.AuthErrorCode;
 import com.lyn.model.common.ApiResponse;
+import com.lyn.model.exception.AuthException;
 import com.lyn.model.exception.CustomException;
-import com.lyn.model.exception.ErrorCode;
-
+import com.lyn.model.response.AuthResponse;
 import com.lyn.service.authentication.AuthenticationService;
 
 import io.micrometer.common.util.StringUtils;
@@ -71,23 +74,32 @@ public class AuthenticationController {
 	
 
 	@PostMapping("/LoginUser")
-	public ApiResponse<?> LoginUser(HttpServletResponse response, @RequestParam(required=true, value="userEmail") String userEmail, @RequestParam(required=true, value="userPassword") String userPassword){
+	public AuthResponse<?> LoginUser(HttpServletResponse response, @RequestParam(required=true, value="email") String email, @RequestParam(required=true, value="password") String password){
 		
 		JwtTokenDto tokenDto = null;
 		//logger.info(String.format("/LoginUser : %s : %s", userEmail, userPassword));
 		
 		UserDto loginUser = new UserDto();
-		loginUser.setUser_email(userEmail);
-		loginUser.setUser_pwd(userPassword);
+		loginUser.setUser_email(email);
+		loginUser.setUser_pwd(password);
 		
 		try {
+			
+			log.info("LoginUser start....");
+			
+			
 			tokenDto = authService.SignInUser(loginUser);
 			
 			log.info("access Token: {}", tokenDto.getAccessToken());
 			log.info("refresh Token: {}", tokenDto.getRefreshToken());
 			log.info("grant type: {}", tokenDto.getGrantType());
 			
-			//refreshToken 은 Http-Secure Cookie로 전달.
+			/*
+			 * refreshToken 은 Http-Secure Cookie로 전달. 
+			 * refreshToken Expiry 로 현재 60초 설정
+			 * secure cookie 유효기간이 지나면 client session으로 별도로 처리를 해야하나??
+			 * */
+			//
 			Cookie cookie = new Cookie("refreshToken", tokenDto.getRefreshToken());
 			cookie.setMaxAge(Integer.parseInt(refreshTokenExpSec));	//Secure Http Cookie Expiry - refreshToken Expiry 로 설정(현재 60sec)
 			cookie.setHttpOnly(true);
@@ -96,15 +108,37 @@ public class AuthenticationController {
 			
 		} catch (Exception e) {
 			if(e instanceof UsernameNotFoundException) {
-				return ApiResponse.fail(new CustomException(ErrorCode.USER_NOT_FOUND));
+				//return ApiResponse.fail(new CustomException(ErrorCode.USER_NOT_FOUND));
+				return AuthResponse.fail(new AuthException(AuthErrorCode.USER_NOT_FOUND));
 			} else if (e instanceof BadCredentialsException) {
-				return ApiResponse.fail(new CustomException(ErrorCode.USER_PWD_NOT_MATCHED));
+				
+				
+				AuthException ex = new AuthException(AuthErrorCode.USER_PASSWORD_UNMATCH);
+				AuthErrorCode authErrorCode = ex.getAuthErrorCode();
+				String authErrorMessage = ex.getMessage();
+				log.info("authErrorCode {}, {}, {}", authErrorCode.getCode(), authErrorCode.getMessage(), authErrorMessage);
+				
+				AuthResponse<?> res = AuthResponse.fail(ex);
+				log.info("res: {}", res.toString());
+				
+				
+				
+				return res;
+				//return ApiResponse.fail(new CustomException(ErrorCode.USER_PWD_NOT_MATCHED));
+				
+				
+				
+				
+				
+				//return AuthResponse.fail(new AuthException(AuthErrorCode.USER_PASSWORD_UNMATCH));
 			} else {
-				return ApiResponse.fail(new CustomException(ErrorCode.USER_CREDENTIAL_ERROR));
+				//return ApiResponse.fail(new CustomException(ErrorCode.USER_CREDENTIAL_ERROR));
+				return AuthResponse.fail(new AuthException(AuthErrorCode.UNAUTHORIZED));
 			}
 		}
 		
-		return ApiResponse.ok(tokenDto);
+		//return ApiResponse.ok(tokenDto);
+		return AuthResponse.success(tokenDto);
 	}
 	
 	
@@ -129,6 +163,9 @@ public class AuthenticationController {
 			//log.info("authorizationToken: {}", authorizationToken);
 			
 			if(StringUtils.isEmpty(authorizationToken)) {
+				
+				
+				
 				return ApiResponse.fail(new CustomException(ErrorCode.ACCESS_TOKEN_INVALID));
 			}
 			

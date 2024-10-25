@@ -76,6 +76,9 @@ const Login = () => {
 	const login_onClick = (e) => {
 
 		//debugger;
+		
+		const pre_url = "https://localhost:8080"
+		
 		axios.post("/auth/LoginUser", null, {
 			params:{
 				userEmail: userEmail, 

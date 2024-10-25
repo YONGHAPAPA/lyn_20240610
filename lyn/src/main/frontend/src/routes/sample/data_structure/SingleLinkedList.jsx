@@ -246,7 +246,6 @@ export const SingleLinkedList = () => {
 			let selectedNode = null;
 			
 			while(curIndex !== getIndex){
-				//console.log(curIndex, getIndex);
 				current = current.next;
 				curIndex++
 			}
@@ -256,12 +255,6 @@ export const SingleLinkedList = () => {
 		
 		
 		set(index, val){
-			
-			
-			console.log(index, this.size);
-			//return;
-			
-			
 			if(Number(index) > this.size || Number(index) < 0){
 				return null;
 			}
@@ -283,24 +276,78 @@ export const SingleLinkedList = () => {
 			let curIndex = 0;
 			let selectedNode = null;
 			
-			
 			while(Number(index) !== curIndex){
 				curIndex++;
-				
-				console.log(current);
-				
 				current = current.next;
 			}
 			
 			current.value = val;
-			
-			//console.log(selectedNode);
-			
-			
-			console.log(this.head);
-			
 		}
 		
+		insert(pIndex, val){
+			const newNode = new Node(val);
+			
+			const index = Number(pIndex);
+			
+			if(!this.head){
+				this.head = newNode;
+				this.tail = newNode;
+				this.size++;
+				return this;
+			} else {
+				
+				if(index === 0){
+					this.head = newNode.next(this.head);
+					//console.log(this.head);
+					this.size++;
+					return this;
+				}
+				
+				if(index === (this.size-1)){
+					this.tail.next = newNode;
+					this.size++;
+					return this;
+				}
+				
+				if(index > 0 && index < this.size-1){
+
+					let nextNodes = this.get(index);
+					let current = this.head;
+					let currIdx = 0
+					
+					let prev = this.get(index-1);
+					newNode.next = prev.next;
+					prev.next = newNode;
+					return this;
+				}
+				
+				return this;
+			}
+		}
+		
+		remove(pIndex){
+			
+			const index = Number(pIndex);
+			
+			if(index === this.size-1){
+				this.pop();
+				return this;
+			}
+			
+			if(index === 0){
+				this.shift();
+				return this;
+			}
+			
+			if(index > 0 && index < this.size){
+				let prev = this.get(index-1);
+				let temp = prev.next;
+				prev.next = temp.next;
+				this.size--;
+				//console.log(this);
+				return this	
+			}
+		}
 		
 		toString(){
 			let current = this.head;
@@ -356,9 +403,21 @@ export const SingleLinkedList = () => {
 		//console.log("get", node);
 	}
 	
+	const onClick_remove = (e, getIndex) => {
+		const newLink = link.remove(getIndex);
+		setGetIndex('');
+		//setLink(newLink);
+		setToggle(!toggle);
+	}
+	
 	
 	const onClick_set = (e, index, value) => {
 		const newLink = link.set(index, value);
+		setToggle(!toggle);
+	}
+	
+	const onClick_insert = (e, index, value) => {
+		const newLink = link.insert(index, value);
 		setToggle(!toggle);
 	}
 	
@@ -367,7 +426,6 @@ export const SingleLinkedList = () => {
 		const re = /^[0-9]*$/g;
 		let result = re.test(e.target.value);
 		result && setGetIndex(e.target.value);
-		
 		//console.log(getIndex, e.target.value);
 	}
 	
@@ -395,8 +453,14 @@ export const SingleLinkedList = () => {
 				<button onClick={onClick_shift}>shift</button>
 				<button onClick={onClick_unShift}>unShift</button>
 				<div>
-					index:<input  type='text' value={getIndex} onChange={onChange_get_index}/><button onClick={(e)=>onClick_get(e, getIndex)}>get</button><br/>
-				 	value:<input type="text" value={newLinkValue} onChange={onChange_link_value} /><button onClick={(e)=>onClick_set(e, getIndex, newLinkValue)}>set</button>
+					index:<input  type='text' value={getIndex} onChange={onChange_get_index}/>
+					<button onClick={(e)=>onClick_get(e, getIndex)}>get</button>
+					<button onClick={(e)=>onClick_remove(e, getIndex)}>remove</button>
+					<br/>
+				 	value:<input type="text" value={newLinkValue} onChange={onChange_link_value} />
+				 	<button onClick={(e)=>onClick_set(e, getIndex, newLinkValue)}>set</button>
+				 	<button onClick={(e)=>onClick_insert(e, getIndex, newLinkValue)}>insert</button>
+				 	
 				 </div>
 			</div>
 		</section>

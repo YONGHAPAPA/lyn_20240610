@@ -1,4 +1,4 @@
-package com.lyn.model.exception;
+package com.lyn.model.code;
 
 import org.springframework.http.HttpStatus;
 
