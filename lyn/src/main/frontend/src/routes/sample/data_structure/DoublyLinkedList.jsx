@@ -127,7 +127,7 @@ export const DoublyLinkedList = () => {
 					//console.log(current.value);
 					current = current.next;
 					selectedNode = current;
-					console.log(current);
+					//console.log(current);
 					runIndex++;
 				}
 				
@@ -161,6 +161,36 @@ export const DoublyLinkedList = () => {
 				current.value = value;
 				return this;	
 			}
+		}
+		
+		insert(index, value){
+			let curIndex = 0; 
+			
+			//console.log(index, value);
+			
+			const newNode = new Node(value);
+			
+			this.size++;
+			
+			if(!this.head){
+				this.head = newNode;
+				this.tail = newNode;
+				return this;
+			}
+			
+			if(index === 0) {
+				newNode.next = this.head;
+				this.head = newNode;
+				return this;
+			}
+			
+			const prev = this.get(index-1);
+			const next = prev.next;
+			
+			newNode.next = next;
+			prev.next = newNode;
+			
+			return this;
 		}
 		
 		
@@ -214,6 +244,8 @@ export const DoublyLinkedList = () => {
 	
 	const onClick_get = () => {
 		const result = link.get(Number(index));
+		console.log(result);
+		
 		alert(result.value);
 		setIndex('');
 	}
@@ -226,6 +258,12 @@ export const DoublyLinkedList = () => {
 		
 		console.log("newLink", newLink);
 		setToggle(!toggle);
+	}
+	
+	const onClick_insert = () => {
+		link.insert(Number(index), Number(value));
+		setToggle(!toggle);
+		
 	}
 	
 	
@@ -256,7 +294,7 @@ export const DoublyLinkedList = () => {
 				<br/>
 				index: <input type='text' onChange={onChange_index} value={index} /><button onClick={onClick_get}>get</button>
 				<br/>
-				value: <input type='text' onChange={onChange_value} value={value} /><button onClick={onClick_set}>set</button>
+				value: <input type='text' onChange={onChange_value} value={value} /><button onClick={onClick_set}>set</button><button onClick={onClick_insert}>insert</button>
 			</div>
 		</section>
 	)

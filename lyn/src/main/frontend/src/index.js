@@ -17,11 +17,15 @@ import { Provider } from 'react-redux'
 
 import { fetchUsers } from './reducers/usersSlice'
 
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore} from 'redux-persist';
 
 
 
 
 
+
+export let persistor = persistStore(store);
 
 async function main() {
 	
@@ -61,11 +65,13 @@ main().then((res)=>{
 					<ReactQueryDevtools initialIsOpen={true} /> 
 					 
 					 <Provider store={store}>
-						<BrowserRouter>
-							<Header/>
-							<App/>
-							<Footer/>
-						</BrowserRouter> 
+					 	<PersistGate loading={null} persistor={persistor}>
+					 		<BrowserRouter>
+								<Header/>
+								<App/>
+								<Footer/>
+							</BrowserRouter>
+					 	</PersistGate>
 					 </Provider>
 				</QueryClientProvider>
 			</React.StrictMode>

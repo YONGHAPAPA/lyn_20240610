@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.lyn.dto.UserDto;
+import com.lyn.dto.user.UserDto;
 import com.lyn.mapper.user.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 		try {
 			
 			
-			log.info("loadUserByUsername::userEmail: {}", userEmail);
+			//log.info("loadUserByUsername::userEmail: {}", userEmail);
 			
 			/*
 			 * 인증시 loadUserByUsername 에서 처리된 UserDetails 객체에서 패스워드 인증 처리 및 권한처리가 됨
@@ -39,11 +39,10 @@ public class AuthenticationUserDetailService implements UserDetailsService {
 			UserDto user = new UserDto();
 			user.setUser_email(userEmail);
 			
-			return buildUserDetails(mapper.GetUserByUserName(user.getUser_email()));
+			return buildUserDetails(mapper.GetUserByUserEmail(user.getUser_email()));
 			
 		} catch(Exception e) {
-			
-			log.error("loadUserByUsername:: {}", "user is not exist");
+			//log.error("loadUserByUsername:: {}", "user is not exist");
 			throw new UsernameNotFoundException("There is no user");
 		}
 	}

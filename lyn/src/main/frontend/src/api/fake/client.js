@@ -5,7 +5,7 @@ import axios from 'axios'
 
 
 export async function client(endpoint, { body, ...customConfig } = {}) {
-  
+	//두번째 파라메터는 '객체 디스트럭처링'  
   	
 	
 	const headers = { "Content-Type": `application/json` };

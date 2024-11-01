@@ -316,6 +316,10 @@ export const SingleLinkedList = () => {
 					let currIdx = 0
 					
 					let prev = this.get(index-1);
+					
+					console.log(prev);
+					
+					
 					newNode.next = prev.next;
 					prev.next = newNode;
 					return this;

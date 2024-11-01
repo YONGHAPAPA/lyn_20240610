@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lyn.component.jwt.JwtUtil;
-import com.lyn.dto.UserDto;
+import com.lyn.dto.user.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
 import com.lyn.model.jwt.ClaimsProp;
@@ -198,18 +198,26 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 	
 	
-	
-	
-	
-	
-	
+	/*
+	 * 사용자 로그아웃시 로그아웃 시간 업데이트
+	 * */
+	@Override
+	public boolean logoutUser(String userEmail) throws Exception {
+		
+		try {
+			UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+			userMapper.SetUserLogoutTime(userEmail);
+		} catch(Exception ex) {
+			throw new Exception(ex.getMessage());
+		}
+		
+		return true;
+	}
 	
 	
 //	@Override
 //	public String EncodePassword(String password) throws Exception {
 //		return passwordEncoder.encode(password);
 //	}
-	
-	
 	
 }

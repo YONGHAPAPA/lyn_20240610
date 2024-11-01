@@ -2,12 +2,21 @@ import { styled } from '@mui/material/styles'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
-import React, { useState } from 'react'
-import {invokeUserToken} from '../../api/user/userApi' 
+import React, { useEffect, useState } from 'react'
+import { fetchUserLogin } from '../../reducers/session/sessionSlice' 
+import { useDispatch, useSelector } from 'react-redux'
 
 
 
 export const LoginDialog = ({loginOpen, setLoginOpen, setLoginResult}) => {
+	
+	const disPatch = useDispatch();
+	const userSession = useSelector(state => state.session);
+	
+	useEffect(()=>{
+		//console.log(userSession);
+	})
+	
 	const BootstrapDialog = styled(Dialog)(({theme})=>({
 		'& .MuiDialogContent-root': {
 			padding: theme.spacing(2), 
@@ -18,16 +27,28 @@ export const LoginDialog = ({loginOpen, setLoginOpen, setLoginResult}) => {
 	}));
 	
 
-
 	const handleClose = () => {
 		setLoginOpen(false);
 	}
 
-	
 	const doLogin = async (email, password) => {
-		const result = await invokeUserToken(email, password)
+		
+		const objSubmit = {
+			email: email, 
+			password: password
+		}
+		
+		disPatch(fetchUserLogin(objSubmit)).then(
+			res => {
+				//console.log(res);
+				setLoginResult({
+					success: res.payload.success, 
+					message: res.payload.message,
+				});
+			}
+		)
+		
 		setLoginOpen(false);
-		setLoginResult(result);
 	}
 	
 	return (

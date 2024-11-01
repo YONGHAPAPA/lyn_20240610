@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.lyn.mapper.user.UserMapper">
-	<insert id="CreateUser" parameterType="com.lyn.dto.UserDto">
+	<insert id="CreateUser" parameterType="com.lyn.dto.user.UserDto">
 		
 		<selectKey resultType="Integer" keyProperty="user_seq" order="BEFORE">
 			select nextval('user_seq') 
@@ -12,14 +12,14 @@
 		values (#{user_seq}, #{user_email}, #{user_pwd}, 'USER', #{cre_id}, now(), #{upd_id}, now())
 	</insert>
 	
-	<select id="GetUserByUserName" parameterType="String" resultType="com.lyn.dto.UserDto">
+	<select id="GetUserByUserEmail" parameterType="String" resultType="com.lyn.dto.user.UserDto">
 		SELECT 
 		USER_SEQ, 
 		USER_EMAIL, 
 		USER_PWD, 
 		(SELECT STRING_AGG(C.ROLE, ',') FROM USERS A, USER_ROLES B, USER_ROLE_GROUP C 
-		WHERE A.USER_ROLE = B.ROLE_CD
-		AND B.ROLE_GROUP = C.ROLE_GROUP_CD AND A.USER_EMAIL = USERS.USER_EMAIL ) USER_ROLE 
+		WHERE A.ROLE_CD = B.ROLE_CD
+		AND B.ROLE_GROUP_CD = C.ROLE_GROUP_CD AND A.USER_EMAIL = USERS.USER_EMAIL ) USER_ROLE 
 		FROM USERS 
 		WHERE USER_EMAIL = #{userEmail} limit 1
 	</select>
@@ -27,4 +27,8 @@
 	<select id="GetUserRoles" parameterType="String" resultType="String" >
 		select role from authority where user_id = ${userId}
 	</select>
+	
+	<update id="SetUserLogoutTime" parameterType="String">
+		update users set last_logout = now() where user_email = #{user_email}
+	</update>
 </mapper>

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 
-import com.lyn.dto.UserDto;
+import com.lyn.dto.user.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 
 public interface AuthenticationService {
@@ -22,4 +22,6 @@ public interface AuthenticationService {
 	public JwtTokenDto regenerateAccessTokenByRefreshToken(String refreshToken) throws Exception;
 	
 	public Collection<? extends GrantedAuthority> getUserRolesFromToken(String accessToken) throws Exception;
+	
+	public boolean logoutUser(String userEmail) throws Exception;
 }

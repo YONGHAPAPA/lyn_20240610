@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.lyn.dto.UserDto;
+import com.lyn.dto.user.UserDto;
 import com.lyn.dto.exception.authentication.AuthExceptionDTO;
 import com.lyn.dto.jwt.JwtTokenDto;
 import com.lyn.mapper.user.UserMapper;
@@ -85,14 +85,14 @@ public class AuthenticationController {
 		
 		try {
 			
-			log.info("LoginUser start....");
+			//log.info("LoginUser start....");
 			
 			
 			tokenDto = authService.SignInUser(loginUser);
 			
-			log.info("access Token: {}", tokenDto.getAccessToken());
-			log.info("refresh Token: {}", tokenDto.getRefreshToken());
-			log.info("grant type: {}", tokenDto.getGrantType());
+			//log.info("access Token: {}", tokenDto.getAccessToken());
+			//log.info("refresh Token: {}", tokenDto.getRefreshToken());
+			//log.info("grant type: {}", tokenDto.getGrantType());
 			
 			/*
 			 * refreshToken 은 Http-Secure Cookie로 전달. 
@@ -105,6 +105,7 @@ public class AuthenticationController {
 			cookie.setHttpOnly(true);
 			cookie.setSecure(true);
 			response.addCookie(cookie);
+			
 			
 		} catch (Exception e) {
 			if(e instanceof UsernameNotFoundException) {
@@ -242,6 +243,21 @@ public class AuthenticationController {
 		}
 		
 		return result;
+	}
+	
+
+	
+	/*
+	 * 사용자 Logout 처리
+	 * 로그아웃시간 업데이트 
+	 * */
+	@PostMapping("/LogoutUser")
+	public boolean logoutUser(String email) {
+		try {
+			return authService.logoutUser(email);
+		} catch(Exception e) {
+			return false;
+		}
 	}
 	
 	

@@ -1,11 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
-import axios from 'axios'
 import * as auth from '../../src/modules/authentication';
 import authProps from '../modules/authenticationProps';
-import { Box, ButtonGroup, Button, Divider, Snackbar } from '@mui/material'
+import { Box, ButtonGroup, Button, Divider, Snackbar, useColorScheme, Container } from '@mui/material'
+import IconButton from '@mui/material/IconButton'
+import MenuIcon from '@mui/icons-material/Menu';
 import { LoginDialog } from '../routes/Login/LoginDialog';
 import Alert from '@mui/material/Alert';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserLogout } from '../reducers/session/sessionSlice'
+
+
 
 
 
@@ -15,6 +20,9 @@ const Header = () => {
 	const [loginSnakbar, setloginSnakbar] = useState(false);	//Login 처리결과 snakbar popup 여부
 	const [loginErrorMessage, setLoginErrorMessage] = useState('');
 	
+	const userSession = useSelector(state => state.session);
+	const dispatch = useDispatch();
+	
 	//let userRoles = useRef('');
 	let [userRoles, setUserRoles] = useState('');
 	let [userType, setUserType] = useState('');
@@ -22,6 +30,9 @@ const Header = () => {
 	
 	//component update 가 발생할때마다 useEffect 발생할수 있도록처리
 	useEffect(()=>{
+		
+		//console.log("userSession");
+		//console.log(userSession)
 		
 		//default header 메뉴처리
 		populateUserRole();
@@ -74,19 +85,18 @@ const Header = () => {
 	
 	const setLoginResult = (result) => {
 		
-		console.log("setLoginResult", result);
+		//console.log("setLoginResult", result);
 		
 		if(result.success){
 			navigate("/memeber/myPage");
 		} else {
 			setLoginErrorMessage(result.message);
-			setloginSnakbar(true);
+			setloginSnakbar(true);	
 		}
 	}
 	
 	
 	const handlClose_loginSnakbar = () => {
-		
 		setloginSnakbar(false);
 	}
 	
@@ -138,16 +148,25 @@ const Header = () => {
 				}
 			break;
 			case "logout":
+				//console.log(userSession);
+				dispatch(fetchUserLogout(userSession)).then(res => {
+					//console.log(res);
+					
+					if(res.success){
+						//정상 로그아웃
+					} else {
+						//비정상 로그아웃
+					}
+				})
 
-				//debugger;
-				//console.log("logout", axios.defaults.headers.common["Authorization"]);
+				//doLogoutUser()
 				
-				if(axios.defaults.headers.common["Authorization"] !== undefined && axios.defaults.headers.common["Authorization"] !== ""){
+				/*if(axios.defaults.headers.common["Authorization"] !== undefined && axios.defaults.headers.common["Authorization"] !== ""){
 					auth.removeAuthentication();
 					
 					//userRoles.current = null;
 					alert("정상적으로 로그아웃되었습니다.");
-				} 
+				}*/ 
 				
 				navigate("/");
 			break;
@@ -164,71 +183,92 @@ const Header = () => {
 	return(
 		<React.Fragment>
 			<LoginDialog loginOpen={loginOpen} setLoginOpen={setLoginOpen} setLoginResult={setLoginResult} />
-			<header className='header'>
-				<Box 
-					sx={{
-						display: 'flex', 
-						flexDirection: 'row', 
-						alignItems: 'center', 
-						'& > *' : {
-							m: 1, 
-							
-						}
-					}}
+				
+			<Container sx={{display:'flex', border:0, backgroundColor:'whitesmoke'}}>
+				<Box sx={(theme) => ({
+					display:'flex', 
+					flexDirection:'row', 
+					width:'30%',
+					border:0 
+				})}
 				>
-					<Box>
-						<ButtonGroup size='small' variant='outlined' aria-label='Basic button group' sx={{float: "left"}}>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'home')}>Home</Button>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'study')}>Study</Button>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'redux')}>Redux</Button>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'join')}>join</Button>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'login')}>login</Button>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>
-							
-							{
-								userType === "ADMIN" && <Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e)=>link_onClick(e, 'admin')}>bunker</Button>
-							}
-						</ButtonGroup>
-					</Box>
-					
-					<Box>
-						<ButtonGroup size='small' sx={{float:"right"}}>
-							<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'logout')}>logout</Button>
-						</ButtonGroup>
-					</Box>
-					<Box>[{userType}]</Box>				
+					<IconButton sx={(theme) => ({
+						
+					})} size='large'>
+						<MenuIcon/>
+					</IconButton>
 				</Box>
+				<Box 
+				sx={{
+					display: 'flex', 
+					flexDirection: 'row-reverse', 
+					'& > *' : {
+						m: 1, 
+					},
+					width:'70%',
+					border:0, 
+				}}
+				>
+					
+				<ButtonGroup size='small' >
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'logout')}>logout</Button>
+				</ButtonGroup>
 				
-				{/*
-				<div className='div-header-menu-left'>
-								<Link to='/' key={1} name="home" onClick={(e)=> {link_onClick(e, "home")}}>Home</Link>&nbsp;|&nbsp;
-								<Link to='/auth/Join' onClick={(e) => {link_onClick(e, "join")}}>Join</Link>&nbsp;|&nbsp;
-								<Link to='/auth/login' onClick={(e) => {link_onClick(e, "login")}} state={{data: '1'}}>Login</Link>&nbsp;|&nbsp;
-								<Link to='/member/MyPage' onClick={(e) => {link_onClick(e, "mypage")}}>My Page</Link>&nbsp;|&nbsp;
-								{userType === "ADMIN" && <Link to="/admin" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
-							</div>
-							
-							<div className='div-header-menu-right'>
-								<Link to='' onClick={(e) => {link_onClick(e, "logout")}}>[Log out]</Link>
-							</div>
-				*/}
+				<ButtonGroup size='small' variant='outlined' aria-label='Basic button group' sx={{float: "left"}}>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'home')}>Home</Button>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'study')}>Study</Button>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'redux')}>Redux</Button>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'join')}>join</Button>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'login')}>login</Button>
+					<Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e) => link_onClick(e, 'mypage')}>my Page</Button>
+					{
+						userType === "ADMIN" && <Button sx={{color: "black", borderColor:"gray", ":hover" : {borderColor: "gray"}}} onClick={(e)=>link_onClick(e, 'admin')}>bunker</Button>
+					}
+				</ButtonGroup>
+			</Box>
+			
+			{/*
+			<Box sx={{border:1}}>
+				[{userType}]	
+			</Box>
+			*/}
+			
+			
+			{/*
+			<div className='div-header-menu-left'>
+							<Link to='/' key={1} name="home" onClick={(e)=> {link_onClick(e, "home")}}>Home</Link>&nbsp;|&nbsp;
+							<Link to='/auth/Join' onClick={(e) => {link_onClick(e, "join")}}>Join</Link>&nbsp;|&nbsp;
+							<Link to='/auth/login' onClick={(e) => {link_onClick(e, "login")}} state={{data: '1'}}>Login</Link>&nbsp;|&nbsp;
+							<Link to='/member/MyPage' onClick={(e) => {link_onClick(e, "mypage")}}>My Page</Link>&nbsp;|&nbsp;
+							{userType === "ADMIN" && <Link to="/admin" onClick={(e)=>{link_onClick(e, "admin")}}>Bunker</Link>}
+						</div>
+						
+						<div className='div-header-menu-right'>
+							<Link to='' onClick={(e) => {link_onClick(e, "logout")}}>[Log out]</Link>
+						</div>
+			*/}
+			
+			</Container>
 				
+			{/*
+			<Container sx={(theme)=>({
+				backgroundColor:'whitesmoke'
+			})}>
 				
-				<br/>
-				
-				<div>
-					<Snackbar open={loginSnakbar} autoHideDuration={6000} onClose={handlClose_loginSnakbar}>
-						<Alert 
-							onClose={handlClose_loginSnakbar}
-							severity='error'
-							variant='filled'
-							sx={{width:'100%'}}
-						 >
-							{loginErrorMessage}
-						</Alert>
-					</Snackbar>
-				</div>
-			</header>
+			</Container>
+			*/}
+			
+			<Snackbar open={loginSnakbar} autoHideDuration={6000} onClose={handlClose_loginSnakbar}>
+				<Alert 
+					onClose={handlClose_loginSnakbar}
+					severity='error'
+					variant='filled'
+					sx={{width:'100%'}}
+				 >
+					{loginErrorMessage}
+				</Alert>
+			</Snackbar>
+			<Divider />
 		</React.Fragment>
 		
 	);

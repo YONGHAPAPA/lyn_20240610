@@ -2,7 +2,7 @@ package com.lyn.service.authentication;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.lyn.dto.UserDto;
+import com.lyn.dto.user.UserDto;
 import com.lyn.dto.jwt.JwtTokenDto;
 
 public interface IAuthenticationService {
