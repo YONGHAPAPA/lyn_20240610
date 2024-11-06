@@ -184,7 +184,7 @@ const Header = () => {
 		<React.Fragment>
 			<LoginDialog loginOpen={loginOpen} setLoginOpen={setLoginOpen} setLoginResult={setLoginResult} />
 				
-			<Container sx={{display:'flex', border:0, backgroundColor:'whitesmoke'}}>
+			<Container sx={{display:'flex', border:0, backgroundColor:'whitesmoke'}} maxWidth={false}>
 				<Box sx={(theme) => ({
 					display:'flex', 
 					flexDirection:'row', 

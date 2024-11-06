@@ -3,6 +3,8 @@ import { StackPage } from './data_structure/StackPage'
 import { QueuePage } from './data_structure/QueuePage'
 import { SingleLinkedList } from './data_structure/SingleLinkedList'
 import { DoublyLinkedList } from './data_structure/DoublyLinkedList'
+import { BinarySearchTreePage } from './data_structure/BinarySearchTreePage'
+
 
 export const DataStructure = () => {
 	
@@ -12,16 +14,23 @@ export const DataStructure = () => {
 		<section>
 			<div>
 				<StackPage/>
-			</div><br/>
+			</div>
+			&nbsp;
 			<div>
 				<QueuePage/>
-			</div><br/>
+			</div>
+			&nbsp;
 			<div>
 				<SingleLinkedList/>
-			</div><br/>
+			</div>
+			&nbsp;
 			<div>
 				<DoublyLinkedList/>
-			</div><br/>
+			</div>
+			&nbsp;
+			<div>
+				<BinarySearchTreePage/>
+			</div>
 		</section>
 	)
 }

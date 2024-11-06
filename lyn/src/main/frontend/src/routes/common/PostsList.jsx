@@ -46,7 +46,7 @@ export const PostsList = () => {
 	
 	
 	let userlist = allPosts.map(post => post.user)
-	console.log("userlist >> ", userlist);
+	//console.log("userlist >> ", userlist);
 	
 	
 	const postStatus = useSelector(state => state.posts.status)
@@ -60,7 +60,7 @@ export const PostsList = () => {
 	
 	
 	useEffect(()=>{
-		console.log("postStatus", postStatus);
+		//console.log("postStatus", postStatus);
 		
 		if(postStatus === 'idle'){
 			//dispatch(fetchPosts())	//개발시점에는 렌더링이 2번 발생하기 때문에 일단  주석 <React.StrictMode> 설정일경우 2번 랜더링 
